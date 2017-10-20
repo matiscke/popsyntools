@@ -1,14 +1,7 @@
-
-# coding: utf-8
-
-# In[6]:
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from astropy.table import Table
 
 # Set plot style
 sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',\
@@ -37,13 +30,12 @@ sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',
 'ytick.minor.size'     : 2.
 })
 
-#sns.set_color_codes()
+sns.set_color_codes()
 
-# read simulation results from file
-out001 = np.genfromtxt('outputs/tracks_001.outputdat')
-disk = np.genfromtxt('outputs/structure_disk.outputdat')
-
-
+### read simulation results from file
+#out = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
+disk = pd.read_table('outputs/structure_disk.outputdat',header=None,sep='  ')
+disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 ## read planet parameters
 #t=out001[:,1]
 #m=out001[:,4]
@@ -51,11 +43,6 @@ disk = np.genfromtxt('outputs/structure_disk.outputdat')
 #r=out001[:,14]
 #L=out001[:,5]
 
-# read disk parameters
-t=disk[:,9]
-r=disk[:,1]
-Sigma=disk[:,2]
-disktab = Table(disk) 
 
 ''' let's plot something
 '''
@@ -78,42 +65,23 @@ disktab = Table(disk)
 
 
 # plot disk surface density
-#for time in range(4):#t[:10:]:
-#    ax.plot(r,np.sin(r))
+ntimes=5
+step = int(len(disk['t'])/ntimes)
+sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
+pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
+g = sns.FacetGrid(disk[::step], row="t", hue="t", aspect=15, size=.5, palette=pal)
+g.map(plt.plot, "r", "Sigma", alpha=1, lw=1.5)
+g.map(plt.plot, "r", "Sigma", color="w", lw=2)
+#g.map(plt.axhline, y=0, lw=2, clip_on=False)
+
+
+
+
+
+
 #ax.set_xscale('log')
 #ax.set_yscale('log')
 #ax.set_xlabel('radius [au]')
 #ax.set_ylabel('gas surface density [g/cm2]')
 
 
-sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
-nplots = 5
-step = int(len(t)/nplots)
-fig,ax = plt.subplots(nplots)
-pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-
-for a in ax:
-    sns.kdeplot(r,Sigma,ax=a)
-
-# Draw the densities in a few steps
-#g.map(sns.kdeplot, "Sigma", clip_on=False, shade=True, alpha=1, lw=1.5, bw=.2)
-#g.map(sns.kdeplot, "Sigma", clip_on=False, color="w", lw=2, bw=.2)
-#g.map(plt.axhline, y=0, lw=2, clip_on=False)
-plt.xscale('log')
-plt.yscale('log')
-
-## Define and use a simple function to label the plot in axes coordinates
-#def label(r, color, label):
-#    ax = plt.gca()
-#    ax.text(0, .2, label, fontweight="bold", color=color, 
-#            ha="left", va="center", transform=ax.transAxes)
-#g.map(label, "Sigma")
-#
-## Set the subplots to overlap
-#g.fig.subplots_adjust(hspace=-.25)
-#
-## Remove axes details that don't play will with overlap
-#g.set_titles("")
-#g.set(yticks=[])
-#g.despine(bottom=True, left=True)
-##plt.show()
