@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from astropy.table import Table
 
 # Set plot style
 sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',\
@@ -54,7 +55,7 @@ disk = np.genfromtxt('outputs/structure_disk.outputdat')
 t=disk[:,9]
 r=disk[:,1]
 Sigma=disk[:,2]
-
+disktab = Table(disk) 
 
 ''' let's plot something
 '''
@@ -83,32 +84,36 @@ Sigma=disk[:,2]
 #ax.set_yscale('log')
 #ax.set_xlabel('radius [au]')
 #ax.set_ylabel('gas surface density [g/cm2]')
-## plot it the fancy way ('joy plot')
+
+
 sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
-step = int(len(t)/10)
-g = np.tile(t[::step],step)
-df = pd.DataFrame(dict(Sigma=Sigma, g=g))
+nplots = 5
+step = int(len(t)/nplots)
+fig,ax = plt.subplots(nplots)
 pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-g = sns.FacetGrid(df, row="g", hue="g", aspect=15, size=.5, palette=pal)
+
+for a in ax:
+    sns.kdeplot(r,Sigma,ax=a)
+
 # Draw the densities in a few steps
-g.map(sns.kdeplot, "Sigma", clip_on=False, shade=True, alpha=1, lw=1.5, bw=.2)
-g.map(sns.kdeplot, "Sigma", clip_on=False, color="w", lw=2, bw=.2)
-g.map(plt.axhline, y=0, lw=2, clip_on=False)
+#g.map(sns.kdeplot, "Sigma", clip_on=False, shade=True, alpha=1, lw=1.5, bw=.2)
+#g.map(sns.kdeplot, "Sigma", clip_on=False, color="w", lw=2, bw=.2)
+#g.map(plt.axhline, y=0, lw=2, clip_on=False)
 plt.xscale('log')
 plt.yscale('log')
 
-# Define and use a simple function to label the plot in axes coordinates
-def label(r, color, label):
-    ax = plt.gca()
-    ax.text(0, .2, label, fontweight="bold", color=color, 
-            ha="left", va="center", transform=ax.transAxes)
-g.map(label, "Sigma")
-
-# Set the subplots to overlap
-g.fig.subplots_adjust(hspace=-.25)
-
-# Remove axes details that don't play will with overlap
-g.set_titles("")
-g.set(yticks=[])
-g.despine(bottom=True, left=True)
-#plt.show()
+## Define and use a simple function to label the plot in axes coordinates
+#def label(r, color, label):
+#    ax = plt.gca()
+#    ax.text(0, .2, label, fontweight="bold", color=color, 
+#            ha="left", va="center", transform=ax.transAxes)
+#g.map(label, "Sigma")
+#
+## Set the subplots to overlap
+#g.fig.subplots_adjust(hspace=-.25)
+#
+## Remove axes details that don't play will with overlap
+#g.set_titles("")
+#g.set(yticks=[])
+#g.despine(bottom=True, left=True)
+##plt.show()
