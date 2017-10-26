@@ -34,54 +34,66 @@ sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',
 sns.set_color_codes()
 
 ### read simulation results from file
-#out = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
-disk = pd.read_table('outputs/structure_disk.outputdat',header=None,sep='  ')
-disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
-## read planet parameters
-#t=out001[:,1]
-#m=out001[:,4]
-#mCore=out001[:,2]
-#r=out001[:,14]
-#L=out001[:,5]
+out001 = np.genfromtxt('outputs/tracks_001.outputdat')
+#tracks = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
+#tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
+#disk = pd.read_table('outputs/structure_disk2.outputdat',header=None,sep='  ')
+#disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
+
+
+## if planet parameters read by np.genfromtxt:
+t=out001[:,1]
+m=out001[:,4]
+mCore=out001[:,2]
+r=out001[:,14]
+L=out001[:,5]
 
 
 ''' let's plot something
 '''
 fig,ax = plt.subplots()
-# plot mass
-#ax.plot(t,m)
+
+## plot mass
+#ax.plot(tracks['t'],tracks['m'])
 #ax.set_xlabel('time (arbitrary units)')
 #ax.set_ylabel('mass (Earth masses)')
+#ax.set_xscale('log')
+#ax.set_yscale('log')
 
 ## plot core mass
-#ax.plot(t,mCore)
+#ax.plot(tracks['t'],tracks['mCore'])
 #ax.set_xlabel('time (arbitrary units)')
 #ax.set_ylabel('core mass (Earth masses)')
+#ax.set_xscale('log')
+#ax.set_yscale('log')
 
 ## plot radius
-#ax.plot(t,r)
-#ax.set_xlabel('time [yr]')
-#ax.set_ylabel('radius [Jupiter radii]')
+#ax.plot(tracks['t'],tracks['r'])
+ax.plot(t,r)
+ax.set_xlabel('time [yr]')
+ax.set_ylabel('radius [Jupiter radii]')
+ax.set_xscale('log')
+ax.set_yscale('log')
 
 
 
 ### plot disk surface density
-ntimesteps=12
-step = int(len(disk['t'])/ntimesteps)
-print('tmin = {} yr'.format(min(disk['t'])))
-print('tmax = {} yr'.format(max(disk['t'])))
-for s in range(ntimesteps+1):
-    if s == ntimesteps:
-        # for last plot, use maximum time value
-        subset = disk.loc[disk['t'] == max(disk['t'])]
-    else:
-        subset = disk.loc[disk['t'] == disk.iloc[s*step]['t']]
-    ax.plot(subset['r'],subset['Sigma'],label='t={:.2E} yr'.format(Decimal(subset.iloc[0]['t'])))
-ax.set_xscale('log')
-ax.set_yscale('log')
-ax.set_xlabel('radius [au]')
-ax.set_ylabel('gas surface density [g/cm2]')
-plt.legend()
+#ntimesteps=12
+#step = int(len(disk['t'])/ntimesteps)
+#print('tmin = {} yr'.format(min(disk['t'])))
+#print('tmax = {} yr'.format(max(disk['t'])))
+#for s in range(ntimesteps+1):
+#    if s == ntimesteps:
+#        # for last plot, use maximum time value
+#        subset = disk.loc[disk['t'] == max(disk['t'])]
+#    else:
+#        subset = disk.loc[disk['t'] == disk.iloc[s*step]['t']]
+#    ax.plot(subset['r'],subset['Sigma'],label='t={:.2E} yr'.format(Decimal(subset.iloc[0]['t'])))
+#ax.set_xscale('log')
+#ax.set_yscale('log')
+#ax.set_xlabel('radius [au]')
+#ax.set_ylabel('gas surface density [g/cm2]')
+#plt.legend()
 
 ### TEST for overlay plot of surface density (not working)
 #ntimes=5
