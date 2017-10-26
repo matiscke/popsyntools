@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from decimal import Decimal
 
 # Set plot style
 sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',\
@@ -46,7 +47,7 @@ disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
 ''' let's plot something
 '''
-#fig,ax = plt.subplots()
+fig,ax = plt.subplots()
 # plot mass
 #ax.plot(t,m)
 #ax.set_xlabel('time (arbitrary units)')
@@ -64,15 +65,33 @@ disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
 
 
-# plot disk surface density
-ntimes=5
-step = int(len(disk['t'])/ntimes)
-sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
-pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-g = sns.FacetGrid(disk[::step], row="t", hue="t", aspect=15, size=.5, palette=pal)
-g.map(plt.plot, "r", "Sigma", alpha=1, lw=1.5)
-g.map(plt.plot, "r", "Sigma", color="w", lw=2)
-#g.map(plt.axhline, y=0, lw=2, clip_on=False)
+### plot disk surface density
+ntimesteps=12
+step = int(len(disk['t'])/ntimesteps)
+print('tmin = {} yr'.format(min(disk['t'])))
+print('tmax = {} yr'.format(max(disk['t'])))
+for s in range(ntimesteps+1):
+    if s == ntimesteps:
+        # for last plot, use maximum time value
+        subset = disk.loc[disk['t'] == max(disk['t'])]
+    else:
+        subset = disk.loc[disk['t'] == disk.iloc[s*step]['t']]
+    ax.plot(subset['r'],subset['Sigma'],label='t={:.2E} yr'.format(Decimal(subset.iloc[0]['t'])))
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('radius [au]')
+ax.set_ylabel('gas surface density [g/cm2]')
+plt.legend()
+
+### TEST for overlay plot of surface density (not working)
+#ntimes=5
+#step = int(len(disk['t'])/ntimes)
+#sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
+#pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
+#g = sns.FacetGrid(disk[::step], row="t", hue="t", aspect=15, size=.5, palette=pal)
+#g.map(plt.plot, "r", "Sigma", alpha=1, lw=1.5)
+#g.map(plt.plot, "r", "Sigma", color="w", lw=2)
+##g.map(plt.axhline, y=0, lw=2, clip_on=False)
 
 
 
