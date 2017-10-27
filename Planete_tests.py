@@ -58,7 +58,7 @@ def plot_mass(tracks, ax):
     # plot mass
     ax.plot(tracks['t'],tracks['m'])
     ax.set_xlabel('time [yr]')
-    ax.set_ylabel('mass (Earth masses)')
+    ax.set_ylabel('mass [$m_{Earth}$]')
     ax.set_xscale('log')
     ax.set_yscale('log')
     return ax
@@ -67,7 +67,7 @@ def plot_coreMass(tracks, ax):
     ## plot core mass
     ax.plot(tracks['t'],tracks['mCore'])
     ax.set_xlabel('time [yr]')
-    ax.set_ylabel('core mass (Earth masses)')
+    ax.set_ylabel('core mass [$m_{Earth}$]')
     ax.set_xscale('log')
     ax.set_yscale('log')
     return ax
