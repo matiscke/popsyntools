@@ -1,0 +1,7 @@
+30.10.2017 Bern
+Alexandre installiert aktuelle Version von Planete und macht allerlei Zeug
+Auf Bachelor: 
+see nodes: qstat -f
+submit job: qsub -N jobname -cwd -b y ../kevin/sources/planete_sources_2504
+dann nochmal qstat
+
