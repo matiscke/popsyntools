@@ -1,11 +1,12 @@
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from decimal import Decimal
+#from decimal import Decimal
 
 # Set plot style
-sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',\
+sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',\
     rc={
 'text.usetex':True,
 'text.latex.unicode':True,
@@ -32,9 +33,11 @@ sns.set(context='notebook', style='ticks', font_scale=1.3, palette='colorblind',
 })
 
 sns.set_color_codes()
+#%%
 
 ### read simulation results from file
 out001 = np.genfromtxt('outputs/tracks_002.outputdat')
+#out001 = np.genfromtxt('outputs/bernNov17/tracks_001.outputdat')
 tracks = pd.DataFrame(out001)
 #tracks = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
 tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
@@ -42,17 +45,17 @@ tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
 
-## if planet parameters read by np.genfromtxt:
-t=out001[:,1]
-m=out001[:,4]
-mCore=out001[:,2]
-r=out001[:,14]
-L=out001[:,5]
+### if planet parameters read by np.genfromtxt:
+#t=out001[:,1]
+#m=out001[:,4]
+#mCore=out001[:,2]
+#r=out001[:,14]
+#L=out001[:,5]
 
-
+#%%
 ''' let's plot something
 '''
-fig,ax = plt.subplots(4)
+
 
 def plot_mass(tracks, ax):
     # plot mass
@@ -89,7 +92,9 @@ def plot_lum(tracks, ax):
     ax.set_xscale('log')
     ax.set_yscale('log')
     return ax    
-    
+  
+#%%    
+fig,ax = plt.subplots(4)
 ### plot disk surface density
 #ntimesteps=12
 #step = int(len(disk['t'])/ntimesteps)
