@@ -1,2 +1,4 @@
 *.pdf
 *.outputdat
+*.hdf5
+outputs/*

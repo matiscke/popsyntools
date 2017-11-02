@@ -425,35 +425,35 @@ class PlaneteSystemFiles(PlaneteSystem):
 			return None
 
 	def convertToTable( self, handle, group ):
-		handle.setNodeAttr( group, "n", len( self ) )
+		handle.set_node_attr( group, "n", len( self ) )
 
 		if not self.line is None:
-			handle.setNodeAttr( group, "line", self.line )
+			handle.set_node_attr( group, "line", self.line )
 
 		disklifetime = self.getDiskLifetime()
 		if not disklifetime is None:
-			handle.setNodeAttr( group, "disklifetime", disklifetime )
+			handle.set_node_attr( group, "disklifetime", disklifetime )
 
 		for filtName in self.filters:
-			handle.setNodeAttr( group, "filter_{}".format( filtName ), self.filters[ filtName ] )
+			handle.set_node_attr( group, "filter_{}".format( filtName ), self.filters[ filtName ] )
 
 		for i in range( len( self ) ):
-			handle.createArray( group, "planet_{:03d}".format( i + 1 ), self[ i + 1 ] )
+			handle.create_array( group, "planet_{:03d}".format( i + 1 ), self[ i + 1 ] )
 
 		for other in self.listOtherData():
 			otherData = self.getOtherData( other )
 			if otherData is not None and len( otherData ):
-				handle.createArray( group, "other_{}".format( other ), otherData )
+				handle.create_array( group, "other_{}".format( other ), otherData )
 
 		for emps in self.listEMPSData():
 			empsData = self.getEMPSData( emps )
 			if empsData is not None and len( empsData ):
-				handle.createArray( group, "emps_{}".format( emps ), empsData )
+				handle.create_array( group, "emps_{}".format( emps ), empsData )
 
 		for text in [ "sortie", "erreur" ]:
 			textCont = self.getText( text )
 			if not textCont is None:
-				handle.setNodeAttr( group, "text_{}".format( text ), textCont )
+				handle.set_node_attr( group, "text_{}".format( text ), textCont )
 
 
 class PlaneteSystemTable(PlaneteSystem):
@@ -909,7 +909,7 @@ def convertToTable( systems, filename ):
 		for filt in filters:
 			system.getFilter( filt.getName() )
 
-		group = handle.createGroup( root, system.name )
+		group = handle.create_group( root, system.name )
 		system.convertToTable( handle, group )
 
 	handle.close()
