@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-#from decimal import Decimal
+from astropy.table import Table
+import tables
 
 # Set plot style
 sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',\
@@ -51,6 +52,24 @@ tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #mCore=out001[:,2]
 #r=out001[:,14]
 #L=out001[:,5]
+
+def read_popHdf5(filename): 
+    """Reads a population from a hdf5 file.
+    """
+    tab = tables.open_file(filename)
+    for g in tab.walk_groups():
+        print(g._v_pathname)
+    data = tab.root.SIM1.planet_001
+    return data
+    #hdf = pd.HDFStore(filename)
+    #v = hdf['/SIM1/planet_001']
+    #return hdf
+
+# read hdf5
+filename = '/media/martin/Daten/phd/planete/outputs/bernNov17/popu/popu.hdf5'
+pdhdf5 = read_popHdf5(filename)
+
+
 
 #%%
 ''' let's plot something
