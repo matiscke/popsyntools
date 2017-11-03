@@ -86,18 +86,6 @@ def read_popHdf5(filename):
                     # only planet tracks
                     dfcontainer[array.name] = pd.DataFrame(array.read())
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
-    
-#    for sim in tab.walk_groups():
-#        for array in sim:
-##            df = pd.DataFrame(array)
-#            print('bla')
-##        dfcontainer[g] = pd.DataFrame(g)
-##        print(sim._v_pathname)
-#    data = tab.root.SIM1.planet_001
-
-
-    #hdf = pd.HDFStore(filename)
-    #v = hdf['/SIM1/planet_001']
     return population
 
 # read hdf5
