@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from astropy.table import Table
 import tables
 
 # Set plot style
@@ -54,20 +53,57 @@ tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #L=out001[:,5]
 
 def read_popHdf5(filename): 
-    """Reads a population from a hdf5 file.
+    """Reads a population from a hdf5 file. 
+    
+    The output is a dictionary of pandas panels that correspond to a simulation
+    each. They contain the tracks of each planet in a DataFrame.
+    
+    Parameters
+    ----------
+    filename : string
+        filename of the HDF5 file containing the population data
+        
+    Returns
+    -------
+    population : dict
+        Dictionary of pandas panels
+        
+    Example
+    -------
+    >>> population = read_popHdf5(filename)
+    >>> SIM1planet001tracks = population['SIM1']['planet_005',:]
     """
-    tab = tables.open_file(filename)
-    for g in tab.walk_groups():
-        print(g._v_pathname)
-    data = tab.root.SIM1.planet_001
-    return data
+    # read hdf5 file with pytables
+    tab = tables.open_file(filename)   
+    population = {}
+    for i, sim in enumerate(tab.walk_groups('/')):
+        if i != 0:
+            # ignore rootGroup
+            print(sim)
+            dfcontainer = {}
+            for array in sim:
+                if "planet" in array.name:
+                    # only planet tracks
+                    dfcontainer[array.name] = pd.DataFrame(array.read())
+            population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
+    
+#    for sim in tab.walk_groups():
+#        for array in sim:
+##            df = pd.DataFrame(array)
+#            print('bla')
+##        dfcontainer[g] = pd.DataFrame(g)
+##        print(sim._v_pathname)
+#    data = tab.root.SIM1.planet_001
+
+
     #hdf = pd.HDFStore(filename)
     #v = hdf['/SIM1/planet_001']
-    #return hdf
+    return population
 
 # read hdf5
 filename = '/media/martin/Daten/phd/planete/outputs/bernNov17/popu/popu.hdf5'
-pdhdf5 = read_popHdf5(filename)
+population = read_popHdf5(filename)
+
 
 
 
