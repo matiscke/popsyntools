@@ -1,3 +1,9 @@
+""" Contains functions to handle output data of the Planet Population
+Synthesis Code 'Planete' by the Bern planet formation group.
+
+Written by: Martin Schlecker
+schlecker@mpia.de
+"""
 #%%
 import numpy as np
 import matplotlib.pyplot as plt
@@ -98,10 +104,8 @@ population = read_popHdf5(filename)
 
 
 #%%
-''' let's plot something
+''' The following plotting functions are meant for single planet tracks.
 '''
-
-
 def plot_mass(tracks, ax):
     # plot mass
     ax.plot(tracks['t'],tracks['m'])
