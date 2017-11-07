@@ -85,6 +85,8 @@ def read_popHdf5(filename):
                 if "planet" in array.name:
                     # only planet tracks
                     dfcontainer[array.name] = pd.DataFrame(array.read())
+                    dfcontainer[array.name].rename(columns = {1:'t',2:'mCore',
+                                                   4:'m',5:'L',14:'r'})
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     return population
 

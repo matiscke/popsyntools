@@ -1,0 +1,6 @@
+Warum sollte man zur Auswertung der Daten python verwenden?
+
+- Schnelligkeit. Dinge koennen in einer Zeile passieren, fuer die man in FORTRAN eine Seite braucht.
+- Anpassbarkeit. Durch die einfache high-level Sprache koennen Anederungen blitzschnell eingepflegt werden.
+- web support: Durch die weite Verbreitung von python: Fuer jedes Problem gibt es eine Loesung auf stackexchange
+- Zukunftsfaehigkeit. Wer auch immer in Zukunft daran arbeitet, wird python schon koennen und kann sofort loslegen
