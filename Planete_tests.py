@@ -43,10 +43,10 @@ sns.set_color_codes()
 
 ### read simulation results from file
 #out001 = np.genfromtxt('outputs/tracks_002.outputdat')
-out001 = np.genfromtxt('outputs/bernNov17/tracks_002.outputdat')
-tracks = pd.DataFrame(out001)
+# out001 = np.genfromtxt('outputs/bernNov17/tracks_002.outputdat')
+# tracks = pd.DataFrame(out001)
 #tracks = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
-tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
+# tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #disk = pd.read_table('outputs/structure_disk2.outputdat',header=None,sep='  ')
 #disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
@@ -58,29 +58,29 @@ tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #r=out001[:,14]
 #L=out001[:,5]
 
-def read_popHdf5(filename): 
-    """Reads a population from a hdf5 file. 
-    
+def read_popHdf5(filename):
+    """Reads a population from a hdf5 file.
+
     The output is a dictionary of pandas panels that correspond to a simulation
     each. They contain the tracks of each planet in a DataFrame.
-    
+
     Parameters
     ----------
     filename : string
         filename of the HDF5 file containing the population data
-        
+
     Returns
     -------
     population : dict
         Dictionary of pandas panels
-        
+
     Example
     -------
     >>> population = read_popHdf5(filename)
     >>> SIM1planet001tracks = population['SIM1']['planet_005',:]
     """
     # read hdf5 file with pytables
-    tab = tables.open_file(filename)   
+    tab = tables.open_file(filename)
     population = {}
     for i, sim in enumerate(tab.walk_groups('/')):
         if i != 0:
@@ -140,10 +140,10 @@ def plot_lum(tracks, ax):
     ax.set_ylabel('Luminosity [?]')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    return ax    
-  
-#%%    
-fig,ax = plt.subplots(4)
+    return ax
+
+#%%
+# fig,ax = plt.subplots(4)
 ### plot disk surface density
 #ntimesteps=12
 #step = int(len(disk['t'])/ntimesteps)
@@ -172,9 +172,8 @@ fig,ax = plt.subplots(4)
 #g.map(plt.plot, "r", "Sigma", color="w", lw=2)
 ##g.map(plt.axhline, y=0, lw=2, clip_on=False)
 
-ax[0] = plot_mass(tracks, ax[0])
-ax[1] = plot_coreMass(tracks,ax[1])
-ax[2] = plot_radius(tracks, ax[2])
-ax[3] = plot_lum(tracks,ax[3])
-plt.show()
-
+# ax[0] = plot_mass(tracks, ax[0])
+# ax[1] = plot_coreMass(tracks,ax[1])
+# ax[2] = plot_radius(tracks, ax[2])
+# ax[3] = plot_lum(tracks,ax[3])
+# plt.show()
