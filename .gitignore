@@ -2,4 +2,7 @@
 *.outputdat
 *.hdf5
 *.h5
+
 outputs/*
+exostat/*
+localExec/*
