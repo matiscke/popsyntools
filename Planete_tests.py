@@ -6,14 +6,15 @@ schlecker@mpia.de
 """
 #%%
 import numpy as np
+import matplotlib
+matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import tables
-
+import seaborn as sns
 # Set plot style
-sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',\
-    rc={
+sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',
+        rc={
 'text.usetex':True,
 'text.latex.unicode':True,
 'font.family' : 'sans-serif',
@@ -37,16 +38,14 @@ sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblin
 'xtick.minor.size'     : 2.,
 'ytick.minor.size'     : 2.
 })
-
 sns.set_color_codes()
 #%%
-
 ### read simulation results from file
-#out001 = np.genfromtxt('outputs/tracks_002.outputdat')
+out001 = np.genfromtxt('/media/martin/Daten/phd/planete/outputs/singleplanet/03dusttogasUnity/tracks_001.outputdat')
 # out001 = np.genfromtxt('outputs/bernNov17/tracks_002.outputdat')
-# tracks = pd.DataFrame(out001)
+tracks = pd.DataFrame(out001)
 #tracks = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
-# tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
+tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #disk = pd.read_table('outputs/structure_disk2.outputdat',header=None,sep='  ')
 #disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
@@ -57,6 +56,8 @@ sns.set_color_codes()
 #mCore=out001[:,2]
 #r=out001[:,14]
 #L=out001[:,5]
+
+#%%
 
 def read_popHdf5(filename):
     """Reads a population from a hdf5 file.
@@ -96,9 +97,9 @@ def read_popHdf5(filename):
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     return population
 
-# read hdf5
-filename = '/media/martin/Daten/phd/planete/outputs/bernNov17/popu/popu.hdf5'
-population = read_popHdf5(filename)
+# # read hdf5
+# filename = '/media/martin/Daten/phd/planete/outputs/'
+# population = read_popHdf5(filename)
 
 
 
@@ -143,7 +144,7 @@ def plot_lum(tracks, ax):
     return ax
 
 #%%
-# fig,ax = plt.subplots(4)
+fig,ax = plt.subplots(4)
 ### plot disk surface density
 #ntimesteps=12
 #step = int(len(disk['t'])/ntimesteps)
@@ -172,8 +173,8 @@ def plot_lum(tracks, ax):
 #g.map(plt.plot, "r", "Sigma", color="w", lw=2)
 ##g.map(plt.axhline, y=0, lw=2, clip_on=False)
 
-# ax[0] = plot_mass(tracks, ax[0])
-# ax[1] = plot_coreMass(tracks,ax[1])
-# ax[2] = plot_radius(tracks, ax[2])
-# ax[3] = plot_lum(tracks,ax[3])
-# plt.show()
+ax[0] = plot_mass(tracks, ax[0])
+ax[1] = plot_coreMass(tracks,ax[1])
+ax[2] = plot_radius(tracks, ax[2])
+ax[3] = plot_lum(tracks,ax[3])
+plt.show()
