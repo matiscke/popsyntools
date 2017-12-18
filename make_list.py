@@ -26,28 +26,40 @@ def read_simlist(filename):
     simlist : Pandas dataframe
         simulation list as a dataframe
     """
+    from io import StringIO
 
-    simlist = pd.DataFrame()
-    with open(filename, 'r') as listfile:
-        for i,line in enumerate(listfile):
-            # format consistent with driver.py by Alexandre Emsenhuber
+    columns = {
+        "CDname": "str",
+        "CDnumber": "float64",
+        "fgp": "float64",
+        "diskM": "float64",
+        "a_in": "float64",
+        "a_out": "float64",
+        "expo": "float64",
+        "windM": "float64",
+        "simName": "str",
+        "a_start": "float64",
+        "t_start": "float64"}
 
-            print("line {}".format(i))
+    # dirty hack because of inconsistent usage of separators in file
+    simlist = pd.read_csv(StringIO(''.join(l.replace('SIM', '_SIM')
+                          for l in open(filename))), sep='_', dtype='str',
+                          names=columns.keys())
 
-            data = {
-                    "CDname": line[0:17],
-                    "CDnumber": line[3:17],
-                    "fgp": line[20:34],
-                    "diskM": line[37:51],
-                    "a_in": line[54:68],
-                    "a_out": line[71:85],
-                    "expo": line[88:102],
-                    "windM": line[105:119],
-                    "simName": line[119:136],
-                    "simNumber": line[122:136],
-                    "a_start": line[139:153],
-                    "t_start": line[156:170]}
-            simlist = simlist.append(data, ignore_index=True)
+    # drop last row
+    simlist.drop(simlist.tail(1).index, inplace=True)
+
+    # decontaminate numeric values from non-numeric characters
+    simlist["CDnumber"] = simlist["CDnumber"].str.extract('(\d+)', expand=False)
+    simlist["fgp"] = simlist["fgp"].str[:-2]
+    simlist["diskM"] = simlist["diskM"].str[:-2]
+    simlist["a_in"] = simlist["a_in"].str[:-2]
+    simlist["a_out"] = simlist["a_out"].str[:-2]
+    simlist["expo"] = simlist["expo"].str[:-2]
+    simlist["a_start"] = simlist["a_start"].str[:-2]
+
+    # finally we can set the correct data types
+    simlist = simlist.astype(columns)
     return simlist
 
 
@@ -72,7 +84,6 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     simlist : pandas dataframe
         edited simulation list
     """
-
     for val in simlist[colname]:
         val = func(*funcArgs, **funcKwargs)
 
