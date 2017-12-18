@@ -6,3 +6,6 @@
 outputs/*
 exostat/*
 localExec/*
+zubehoer/*
+
+__pycache__/
