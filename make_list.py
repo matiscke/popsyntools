@@ -86,17 +86,3 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     """
     simlist[colname] = simlist[colname].apply(func, args=(funcArgs), **funcKwargs)
     return simlist
-
-
-def testfunc(var=None,*args,**kwargs):
-    """ returns a number. """
-    return 99999.
-
-def test2(var,a,b, st=None):
-    print(a)
-    print(b)
-    if st:
-        print(st)
-
-def test3(var):
-    return None
