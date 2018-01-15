@@ -69,7 +69,7 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     Parameters
     ----------
     simlist : Pandas dataframe
-        simulation list
+        simulation listx
     colname : string
         name of the column to change
     func : function handle
@@ -84,5 +84,17 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     simlist : pandas dataframe
         edited simulation list
     """
-    simlist[colname] = simlist[colname].apply(func, args=(funcArgs), **funcKwargs)
+    try:
+        simlist[colname] = func(*funcArgs, size=len(simlist), **funcKwargs)
+        # DEBUGGING
+        print("vectorized version")
+
+
+    except:
+        import numpy as np
+        simlist[colname] = np.array([func(*funcArgs, **funcKwargs) for i in range(len(simlist))])
+        # DEBUGGING
+        print("list comprehension version")
+
+
     return simlist
