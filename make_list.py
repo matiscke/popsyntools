@@ -69,11 +69,11 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     Parameters
     ----------
     simlist : Pandas dataframe
-        simulation listx
+        simulation list
     colname : string
         name of the column to change
     func : function handle
-        function to call that returns a single value for the column
+        function to call that returns values for the column
     *funcArgs : arbitrary
         positional arguments for func
     **funcKwargs : arbitrary
@@ -85,16 +85,11 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
         edited simulation list
     """
     try:
+        # vectorial method for functions accepting a "size" argument
         simlist[colname] = func(*funcArgs, size=len(simlist), **funcKwargs)
-        # DEBUGGING
-        print("vectorized version")
-
-
     except:
+        # list comprehension for functions returning single values
         import numpy as np
-        simlist[colname] = np.array([func(*funcArgs, **funcKwargs) for i in range(len(simlist))])
-        # DEBUGGING
-        print("list comprehension version")
-
-
+        simlist[colname] = np.array([func(*funcArgs, **funcKwargs)
+                                    for i in range(len(simlist))])
     return simlist
