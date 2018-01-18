@@ -152,26 +152,26 @@ def get_M0(rc, Sigma0, expo, r0=5.2):
     Parameters
     ----------
     rc : float
-        characteristic radius [AU]
+        characteristic radius [au]
     Sigma0 : float
-        gas surface density at 5.2 AU [g/cm^2]
+        gas surface density at 5.2 au [g/cm^2]
     expo : float
         Power law slope
     r0 : float
-        reference radius [AU], in general 5.2 AU
+        reference radius [au], in general 5.2 au
 
     Returns
     -------
     M0 : float
         total disk mass in solar masses
     """
-    # convert Sigma0 into [kg/m^2]; r0 and rc into [m]
-    Sigma0 *= 10
-    r0 *= 1.496e11
-    rc *= 1.496e11
+    # Define au, Msol in cm and g
+    au = 1.496e13
+    Msol = 1.98855e33
 
-    Msol = 1.98855e30
-    return 2*np.pi/(2-expo)*Sigma0*r0**expo*rc**(2-expo)/Msol
+    M0 = (2*np.pi)/(2-expo)*Sigma0*(r0*au)**expo*(rc*au)**(2-expo)
+    return M0/Msol
+
 
 def get_Sigma0(rc, M0, expo, r0=5.2):
     """Compute Sigma0, the gas surface density at the reference radius r0
@@ -180,30 +180,25 @@ def get_Sigma0(rc, M0, expo, r0=5.2):
     Parameters
     ----------
     rc : float
-        characteristic radius [AU]
+        characteristic radius [au]
     M0 : float
         total disk mass in solar masses
     expo : float
         Power law slope
     r0 : float
-        reference radius [AU], in general 5.2 AU
+        reference radius [au], in general 5.2 au
 
     Returns
     -------
     Sigma0 : float
-        gas surface density at 5.2 AU [g/cm^2]
+        gas surface density at 5.2 au [g/cm^2]
     """
-    # convert M0 into [kg], r0 and rc into [m]
-    Msol = 1.98855e30
-    AU = 1.496e11
-    r0 *= AU
-    rc *= AU
-    M0 *= Msol
+    # Define au, Msol in cm and g
+    au = 1.496e13
+    Msol = 1.98855e33
 
-    Sigma0 = (2-expo)/2*np.pi*M0*r0**(-expo)*rc**(expo-2)
+    return (r0*au)**(-expo)*(rc*au)**(-2+expo)*(2-expo)*M0*Msol/(2*np.pi)
 
-    # return Sigma0 in [g/cm^2]
-    return Sigma0/10
 
 
 
