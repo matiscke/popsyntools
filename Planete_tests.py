@@ -203,7 +203,8 @@ def get_Sigma0(rc, M0, expo, r0=5.2):
 
 
 #%%
-fig,ax = plt.subplots(4)
+# fig,ax = plt.subplots(4)
+
 ### plot disk surface density
 #ntimesteps=12
 #step = int(len(disk['t'])/ntimesteps)
@@ -232,8 +233,8 @@ fig,ax = plt.subplots(4)
 #g.map(plt.plot, "r", "Sigma", color="w", lw=2)
 ##g.map(plt.axhline, y=0, lw=2, clip_on=False)
 
-ax[0] = plot_mass(tracks, ax[0])
-ax[1] = plot_coreMass(tracks,ax[1])
-ax[2] = plot_radius(tracks, ax[2])
-ax[3] = plot_lum(tracks,ax[3])
-plt.show()
+# ax[0] = plot_mass(tracks, ax[0])
+# ax[1] = plot_coreMass(tracks,ax[1])
+# ax[2] = plot_radius(tracks, ax[2])
+# ax[3] = plot_lum(tracks,ax[3])
+# plt.show()
