@@ -41,11 +41,11 @@ sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblin
 sns.set_color_codes()
 #%%
 ### read simulation results from file
-out001 = np.genfromtxt('/media/martin/Daten/phd/planete/outputs/singleplanet/03dusttogasUnity/tracks_001.outputdat')
+# out001 = np.genfromtxt('/media/martin/Daten/phd/planete/outputs/singleplanet/03dusttogasUnity/tracks_001.outputdat')
 # out001 = np.genfromtxt('outputs/bernNov17/tracks_002.outputdat')
-tracks = pd.DataFrame(out001)
+# tracks = pd.DataFrame(out001)
 #tracks = pd.read_table('outputs/tracks_001.outputdat',header=None,sep='  ')
-tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
+# tracks = tracks.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
 #disk = pd.read_table('outputs/structure_disk2.outputdat',header=None,sep='  ')
 #disk = disk.rename(columns = {9:'t',1:'r',2:'Sigma'})
 
