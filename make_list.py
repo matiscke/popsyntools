@@ -13,6 +13,7 @@ schlecker@mpia.de
 import pandas as pd
 
 
+
 def read_simlist(filename):
     """Read a simulation list from a file.
 
@@ -28,18 +29,18 @@ def read_simlist(filename):
     """
     from io import StringIO
 
-    columns = {
-        "CDname": "str",
-        "CDnumber": "float64",
-        "fgp": "float64",
-        "diskM": "float64",
-        "a_in": "float64",
-        "a_out": "float64",
-        "expo": "float64",
-        "windM": "float64",
-        "simName": "str",
-        "a_start": "float64",
-        "t_start": "float64"}
+        columns = {
+            "CDname": "str",
+            "CDnumber": "float64",
+            "fgp": "float64",
+            "diskM": "float64",
+            "a_in": "float64",
+            "a_out": "float64",
+            "expo": "float64",
+            "windM": "float64",
+            "simName": "str",
+            "a_start": "float64",
+            "t_start": "float64"}
 
     # dirty hack because of inconsistent usage of separators in file
     simlist = pd.read_csv(StringIO(''.join(l.replace('SIM', '_SIM')
@@ -93,3 +94,16 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
         simlist[colname] = np.array([func(*funcArgs, **funcKwargs)
                                     for i in range(len(simlist))])
     return simlist
+
+
+def write_simlist(filename, simlist):
+    """Write a simulation list to a file.
+
+    Parameters
+    ----------
+    filename : string
+        path to the output file
+    simlist : Pandas dataframe
+        simulation list as a dataframe
+    """
+    simlist.to_csv(filename)
