@@ -13,20 +13,26 @@ schlecker@mpia.de
 import pandas as pd
 
 
-def read_simlist(filename):
+def read_simlist(filename, varlength=17):
     """Read a simulation list from a file.
 
     Parameters
     ----------
     filename : string
         path to the simulation list
-
+    varlength : int
+        Number of characters for each variable
+        
     Returns
     -------
     simlist : Pandas dataframe
         simulation list as a dataframe
     """
     from io import StringIO
+
+with open(filename) as f:
+    line = [f.readline()[i:i+n] for i in range(0, len(line), n)
+
 
     columns = {
             "CDname": "str",
@@ -59,7 +65,7 @@ def read_simlist(filename):
     simlist["a_start"] = simlist["a_start"].str[:-2]
 
     # finally we can set the correct data types
-    simlist = simlist.astype(columns)
+    simlist = simlist.apply(pd.to_numeric, errors='ignore', downcast='float')
     return simlist
 
 
