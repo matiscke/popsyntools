@@ -13,7 +13,6 @@ schlecker@mpia.de
 import pandas as pd
 
 
-
 def read_simlist(filename):
     """Read a simulation list from a file.
 
@@ -29,7 +28,7 @@ def read_simlist(filename):
     """
     from io import StringIO
 
-        columns = {
+    columns = {
             "CDname": "str",
             "CDnumber": "float64",
             "fgp": "float64",
