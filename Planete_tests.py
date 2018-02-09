@@ -6,8 +6,8 @@ schlecker@mpia.de
 """
 #%%
 import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
+# import matplotlib
+# matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import tables
@@ -98,7 +98,7 @@ def read_popHdf5(filename):
     return population
 
 # # read hdf5
-# filename = '/media/martin/Daten/phd/planete/outputs/'
+# filename = '/home/schlecker/phd/planete/outputs/bernNov17/popu/popu.hdf5'
 # population = read_popHdf5(filename)
 
 
