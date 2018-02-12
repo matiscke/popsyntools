@@ -59,6 +59,23 @@ sns.set_color_codes()
 
 #%%
 
+def rename_tracksColumns(planetTracks):
+    """Rename some of the columns of a planet tracks table.
+
+    Parameters
+    ----------
+    planetTracks : Pandas DataFrame
+        Table with the tracks of a single planet
+
+    Returns
+    -------
+    planetTracks : Pandas DataFrame
+        DataFrame with changed column names
+    """
+    colnames = {1:'t',2:'mCore',4:'m',5:'L',14:'r'}
+    return planetTracks.rename(columns=colnames)
+
+
 def read_popHdf5(filename):
     """Reads a population from a hdf5 file.
 
@@ -92,13 +109,13 @@ def read_popHdf5(filename):
                 if "planet" in array.name:
                     # only planet tracks
                     df = pd.DataFrame(array.read())
-                    df = df.rename(columns = {1:'t',2:'mCore',4:'m',5:'L',14:'r'})
+                    df = rename_tracksColumns(df)
                     dfcontainer[array.name] = df
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     return population
 
-def read_simfolderrrrrrrr(foldername):
-    """Reads a simulation from a folder and returns it as a pandas DataFrame.
+def read_simFromFolder(foldername):
+    """Read a simulation from a folder and returns it as a pandas DataFrame.
 
     Parameters
     ----------
@@ -122,7 +139,9 @@ def read_simfolderrrrrrrr(foldername):
     for i, name in enumerate(sorted(glob.glob(filenamepattern))):
         if "tracks" in name and ".outputdat" in name:
             simname = "SIM{:03d}".format(i + 1)
-            simulation[simname] = "TEST"
+            planetTracks = pd.read_csv(name, delim_whitespace=True, header=None)
+            planetTracks = rename_tracksColumns(planetTracks)
+            simulation[simname] = planetTracks
     return simulation
 
 # # read hdf5
