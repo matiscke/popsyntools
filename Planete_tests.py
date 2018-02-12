@@ -78,7 +78,7 @@ def read_popHdf5(filename):
     Example
     -------
     >>> population = read_popHdf5(filename)
-    >>> SIM1planet001tracks = population['SIM1']['planet_005',:]
+    >>> SIM1planet005tracks = population['SIM1']['planet_005',:]
     """
     # read hdf5 file with pytables
     tab = tables.open_file(filename)
@@ -96,6 +96,34 @@ def read_popHdf5(filename):
                     dfcontainer[array.name] = df
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     return population
+
+def read_simfolderrrrrrrr(foldername):
+    """Reads a simulation from a folder and returns it as a pandas DataFrame.
+
+    Parameters
+    ----------
+    foldername : string
+        filename of the HDF5 file containing the population data
+
+    Returns
+    -------
+    simulation : pandas DataFrame
+        DataFrame containing the tracks of the planets
+
+    Example
+    -------
+    >>> simulation = read_simfolder(foldername)
+    >>> planet005tracks = simulation['planet_005',:]
+    """
+    import glob
+
+    simulation = {}
+    filenamepattern = foldername + "/tracks*.outputdat"
+    for i, name in enumerate(sorted(glob.glob(filenamepattern))):
+        if "tracks" in name and ".outputdat" in name:
+            simname = "SIM{:03d}".format(i + 1)
+            simulation[simname] = "TEST"
+    return simulation
 
 # # read hdf5
 # filename = '/home/schlecker/phd/planete/outputs/bernNov17/popu/popu.hdf5'
