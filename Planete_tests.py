@@ -129,7 +129,7 @@ def read_simFromFolder(foldername):
 
     Example
     -------
-    >>> simulation = read_simfolder(foldername)
+    >>> simulation = read_simFromFolder(foldername)
     >>> planet005tracks = simulation['planet_005',:]
     """
     import glob
