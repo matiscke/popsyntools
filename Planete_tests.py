@@ -72,7 +72,63 @@ def rename_tracksColumns(planetTracks):
     planetTracks : Pandas DataFrame
         DataFrame with changed column names
     """
-    colnames = {1:'t',2:'mCore',4:'m',5:'L',14:'r'}
+    colnames = {
+     0: 'n',
+     1: 't',
+     2: 'mCore',
+     3: 'menv',
+     4: 'm',
+     5: 'L',
+     6: 'Lcomp',
+     7: 'mdotcore',
+     8: 'mdotgasl',
+     9: 'rcore',
+     11: 'pcore',
+     12: 'tcore',
+     13: 'rhocen',
+     14: 'r',
+     18: 'a',
+     20: 'mdiskg',
+     21: 'mdiskp',
+     22: 'rroche',
+     23: 'racc',
+     24: 'dt',
+     25: 'sigmamean',
+     26: 'rfeed',
+     27: 'rcaptot',
+     29: 'tneb',
+     30: 'pneb',
+     31: 'type_mig',
+     32: 'mejetot',
+     33: 'macctot',
+     34: 'miso',
+     35: 'sigmagas',
+     39: 'dtpl',
+     41: 'rhocore',
+     42: 'mgazacc',
+     43: 'mgazevap',
+     44: 'pout',
+     45: 'tout',
+     51: 'lcont',
+     52: 'enew',
+     53: 'ediff',
+     54: 'kenergdiff',
+     55: 'lacccore',
+     56: 'ep',
+     57: 'ip',
+     62: 'e',
+     63: 'i',
+     66: 'typemig',
+     69: 'tmig',
+     70: 'tmige',
+     73: 'mdotgas',
+     78: 'dtmode',
+     100: 'lactual',
+     101: 'corrlesti',
+     102: 'correesti',
+     104: 'mdotgasmax',
+     107: 'lcontenv',
+     108: 'lcontsum'}
     return planetTracks.rename(columns=colnames)
 
 
@@ -114,6 +170,7 @@ def read_popHdf5(filename):
             population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     return population
 
+
 def read_simFromFolder(foldername):
     """Read a simulation from a folder and returns it as a pandas DataFrame.
 
@@ -124,32 +181,31 @@ def read_simFromFolder(foldername):
 
     Returns
     -------
-    simulation : pandas DataFrame
-        DataFrame containing the tracks of the planets
+    simulation : dictionary
+        contains a pandas DataFrame for each of the planets
 
     Example
     -------
     >>> simulation = read_simFromFolder(foldername)
-    >>> planet005tracks = simulation['planet_005',:]
+    >>> planet005tracks = simulation['planet005']
     """
     import glob
 
     simulation = {}
     filenamepattern = foldername + "/tracks*.outputdat"
+    print('Reading files: {}'.format(filenamepattern))
     for i, name in enumerate(sorted(glob.glob(filenamepattern))):
         if "tracks" in name and ".outputdat" in name:
-            simname = "SIM{:03d}".format(i + 1)
+            planetName = "planet{:03d}".format(i + 1)
+            print('Reading {}...'.format(planetName))
             planetTracks = pd.read_csv(name, delim_whitespace=True, header=None)
             planetTracks = rename_tracksColumns(planetTracks)
-            simulation[simname] = planetTracks
+            simulation[planetName] = planetTracks
     return simulation
 
 # # read hdf5
 # filename = '/home/schlecker/phd/planete/outputs/bernNov17/popu/popu.hdf5'
 # population = read_popHdf5(filename)
-
-
-
 
 #%%
 ''' The following plotting functions are meant for single planet tracks.
