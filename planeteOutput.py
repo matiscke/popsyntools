@@ -99,6 +99,7 @@ def rename_tracksColumns(planetTracks):
      62: 'e',
      63: 'i',
      66: 'typemig',
+     67: 'status',
      69: 'tmig',
      70: 'tmige',
      73: 'mdotgas',
