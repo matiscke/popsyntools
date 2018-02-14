@@ -108,7 +108,10 @@ def rename_tracksColumns(planetTracks):
      102: 'correesti',
      104: 'mdotgasmax',
      107: 'lcontenv',
-     108: 'lcontsum'}
+     108: 'lcontsum',
+     116: 'systemNo',
+     117: 'planetNo',
+     118: 'NoEmbryos'}
     return planetTracks.rename(columns=colnames)
 
 
