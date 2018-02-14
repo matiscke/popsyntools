@@ -99,6 +99,7 @@ def rename_tracksColumns(planetTracks):
      62: 'e',
      63: 'i',
      66: 'typemig',
+     67: 'status'
      69: 'tmig',
      70: 'tmige',
      73: 'mdotgas',
@@ -202,15 +203,15 @@ def read_ref_red(ref_redFilename):
     Returns
     -------
     tracks : pandas DataFrame
-        DataFrame containing data of all planets
+        DataFrame containing all planets, grouped by system number
+
+    Example
+    -------
+    >>> tracks = read_ref_red(ref_redFilename)
+    >>> system5status = tracks.get_group(5)['status']
     """
-    # Example
-    # -------
-    # >>> tracks = read_ref_red(ref_redFilename)
-    # >>>
-    # """
     tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
-    tracks = rename_tracksColumns(tracks)
+    tracks = rename_tracksColumns(tracks).groupby(by='systemNo')
     return tracks
 
 
