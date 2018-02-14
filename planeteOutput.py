@@ -112,6 +112,39 @@ def rename_tracksColumns(planetTracks):
     return planetTracks.rename(columns=colnames)
 
 
+def read_simFromFolder(foldername):
+    """Read a simulation from a folder and returns it as a pandas DataFrame.
+
+    Parameters
+    ----------
+    foldername : string
+        filename of the HDF5 file containing the population data
+
+    Returns
+    -------
+    simulation : dictionary
+        contains a pandas DataFrame for each of the planets
+
+    Example
+    -------
+    >>> simulation = read_simFromFolder(foldername)
+    >>> planet005tracks = simulation['planet005']
+    """
+    import glob
+
+    simulation = {}
+    filenamepattern = foldername + "/tracks*.outputdat"
+    print('Reading files: {}'.format(filenamepattern))
+    for i, name in enumerate(sorted(glob.glob(filenamepattern))):
+        if "tracks" in name and ".outputdat" in name:
+            planetName = "planet{:03d}".format(i + 1)
+            print('Reading {}...'.format(planetName))
+            planetTracks = pd.read_csv(name, delim_whitespace=True, header=None)
+            planetTracks = rename_tracksColumns(planetTracks)
+            simulation[planetName] = planetTracks
+    return simulation
+
+
 def read_popHdf5(filename):
     """Reads a population from a hdf5 file.
 
@@ -151,37 +184,31 @@ def read_popHdf5(filename):
     return population
 
 
-def read_simFromFolder(foldername):
-    """Read a simulation from a folder and returns it as a pandas DataFrame.
+def read_ref_red(ref_redFilename):
+    """Reads the content from a 'ref_redXeY' file into a pandas DataFrame.
+
+    'ref_redXeY' files contain the data of all planets in a population at
+    a specific time t = 'XeY' yr. This function transfers one such file
+    into a DataFrame for further analysis.
 
     Parameters
     ----------
-    foldername : string
-        filename of the HDF5 file containing the population data
+    ref_redFilename : string
+        full path to the 'ref_red' file
 
     Returns
     -------
-    simulation : dictionary
-        contains a pandas DataFrame for each of the planets
-
-    Example
-    -------
-    >>> simulation = read_simFromFolder(foldername)
-    >>> planet005tracks = simulation['planet005']
+    tracks : pandas DataFrame
+        DataFrame containing data of all planets
     """
-    import glob
-
-    simulation = {}
-    filenamepattern = foldername + "/tracks*.outputdat"
-    print('Reading files: {}'.format(filenamepattern))
-    for i, name in enumerate(sorted(glob.glob(filenamepattern))):
-        if "tracks" in name and ".outputdat" in name:
-            planetName = "planet{:03d}".format(i + 1)
-            print('Reading {}...'.format(planetName))
-            planetTracks = pd.read_csv(name, delim_whitespace=True, header=None)
-            planetTracks = rename_tracksColumns(planetTracks)
-            simulation[planetName] = planetTracks
-    return simulation
+    # Example
+    # -------
+    # >>> tracks = read_ref_red(ref_redFilename)
+    # >>>
+    # """
+    tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
+    tracks = rename_tracksColumns(tracks)
+    return tracks
 
 
 #%%
