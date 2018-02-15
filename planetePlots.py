@@ -35,6 +35,14 @@ sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblin
 })
 sns.set_color_codes()
 
+def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcKwargs):
+    """Plot an occurrence map in two parameters.
+    """
+
+    sns.kdeplot(population[xAxis], population[yAxis], ax=ax, shade=True)
+
+    return ax
+
 
 """ Plotting functions meant for single planet tracks.
 """
