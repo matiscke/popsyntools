@@ -37,8 +37,22 @@ sns.set_color_codes()
 
 def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcKwargs):
     """Plot an occurrence map in two parameters.
-    """
 
+    Parameters
+    ----------
+    population : pandas DataFrame
+        planet population to plot
+
+    Returns
+    -------
+    ax : Matplotlib axis object
+        axis containing the plot
+    """
+    try:
+        # if DataFrame has a column 'status', use only survived planets
+        survivedPlanets = population[population['status' == 0.0]]
+    except:
+        survivedPlanets = population
     sns.kdeplot(population[xAxis], population[yAxis], ax=ax, shade=True)
 
     return ax
