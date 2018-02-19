@@ -52,8 +52,9 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
         # if DataFrame has a column 'status', use only survived planets
         survivedPlanets = population[population['status'] == 0]
         print('using only planets with status "0"')
-    except:
+    except KeyError:
         survivedPlanets = population
+
     sns.kdeplot(survivedPlanets[xAxis], survivedPlanets[yAxis], ax=ax, shade=True)
 
     return ax
