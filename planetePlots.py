@@ -42,6 +42,7 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     ----------
     population : pandas DataFrame
         planet population to plot
+    keyword arguments
 
     Returns
     -------
@@ -55,7 +56,8 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     except KeyError:
         survivedPlanets = population
 
-    sns.kdeplot(survivedPlanets[xAxis], survivedPlanets[yAxis], ax=ax, shade=True)
+    ax = sns.kdeplot(survivedPlanets[xAxis], survivedPlanets[yAxis], ax=ax,
+                     cbar=True, shade=True)
 
     return ax
 
