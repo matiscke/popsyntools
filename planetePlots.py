@@ -46,8 +46,8 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
 
     Returns
     -------
-    ax : Matplotlib axis object
-        axis containing the plot
+    g : JointGrid
+        seaborn JointGrid object with the plot on it
     """
     try:
         # if DataFrame has a column 'status', use only survived planets
@@ -56,10 +56,14 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     except KeyError:
         survivedPlanets = population
 
-    ax = sns.kdeplot(survivedPlanets[xAxis], survivedPlanets[yAxis], ax=ax,
-                     cbar=True, shade=True)
+    # clip: do not allow negative values
+    g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
+                      clip=((0.,1e12),(0.,1e12)))
 
-    return ax
+    # overplot data points
+    g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
+    g.ax_joint.collections[0].set_alpha(0)
+    return g
 
 
 """ Plotting functions meant for single planet tracks.
