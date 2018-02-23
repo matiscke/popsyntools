@@ -4,61 +4,63 @@ The functions in this script are meant to create or manipulate a list of
 initial conditions for the Planet Population Synthesis
 Code 'Planete' by the Bern planet formation group.
 
+The functions are meant to replace the ones in the "make_liste.f" FORTRAN Code
+that was being used to create the same kind of lists.
+
 Written by: Martin Schlecker
 schlecker@mpia.de
 """
 import pandas as pd
 
 
-def read_simlist(filename, varlen=17):
+
+def read_simlist(filename):
     """Read a simulation list from a file.
 
     Parameters
     ----------
     filename : string
         path to the simulation list
-    varlen : int
-        Number of characters for each variable
 
     Returns
     -------
     simlist : Pandas dataframe
         simulation list as a dataframe
     """
+    from io import StringIO
 
-    simlist = []
-    with open(filename) as f:
-        # get line length without escape characters
-        lineLen = len(f.readline().rstrip('\n'))
-        for line in f:
-            """read line by line with new parameter every varlen characters.
-            In each parameter, the first 3 characters are omitted (they
-            contain parameter designations such as "EX_").
-            """
-            simParams = [line[i+3:i+varlen] for i in range(0, lineLen, varlen)]
-            simlist.append(simParams)
+        columns = {
+            "CDname": "str",
+            "CDnumber": "float64",
+            "fgp": "float64",
+            "diskM": "float64",
+            "a_in": "float64",
+            "a_out": "float64",
+            "expo": "float64",
+            "windM": "float64",
+            "simName": "str",
+            "a_start": "float64",
+            "t_start": "float64"}
 
-    # drop last row (contains only "END")
-    simlist = simlist[:-1]
+    # dirty hack because of inconsistent usage of separators in file
+    simlist = pd.read_csv(StringIO(''.join(l.replace('SIM', '_SIM')
+                          for l in open(filename))), sep='_', dtype='str',
+                          names=columns.keys())
 
-    # turn list into a pandas DataFrame
-    columns = [
-            "CDnumber",
-            "fgp",
-            "diskM",
-            "a_in",
-            "a_out",
-            "expo",
-            "windM",
-            "simName",
-            "a_start",
-            "t_start"]
-    simlist = pd.DataFrame(simlist, columns=columns)
+    # drop last row
+    simlist.drop(simlist.tail(1).index, inplace=True)
 
-    # set the correct data types
-    simlist[['fgp','diskM','a_in','a_out','expo','windM',
-             'a_start','t_start']] = simlist[['fgp','diskM','a_in','a_out',
-             'expo','windM','a_start','t_start']].apply(pd.to_numeric)
+    # decontaminate numeric values from non-numeric characters
+    simlist["CDnumber"] = simlist["CDnumber"].str.extract('(\d+)', expand=False)
+    simlist["fgp"] = simlist["fgp"].str[:-2]
+    simlist["diskM"] = simlist["diskM"].str[:-2]
+    simlist["a_in"] = simlist["a_in"].str[:-2]
+    simlist["a_out"] = simlist["a_out"].str[:-2]
+    simlist["expo"] = simlist["expo"].str[:-2]
+    simlist["a_start"] = simlist["a_start"].str[:-2]
+
+    # finally we can set the correct data types
+    simlist = simlist.astype(columns)
     return simlist
 
 
