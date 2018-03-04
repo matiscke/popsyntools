@@ -94,6 +94,24 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     return simlist
 
 
+def write_singleSim2File(fileHandle, singleSim):
+    """Writes a single simulation (a "line" of a DataFrame) to a file.
+
+    Parameters
+    ----------
+    fileHandle : file object
+        handle to an opened output file
+    singleSim : pandas DataFrame line
+        one line of a simulation list
+    """
+    line = 'CD_' + singleSim['CDnumber'] + 'FP_' + singleSim['fgp'] +
+           'SI_' + singleSim['diskM'] + 'AI_' + singleSim['a_in'] +
+           'AO_' + singleSim['a_out'] + 'EX_' + singleSim['expo'] +
+           'MW_' + singleSim['windM'] + 'SIM' + singleSim['simName'] +
+           'AS_' + singleSim['a_start'] + 'ST_' + singleSim['t_start']
+    fileHandle.write(line)
+
+
 def write_simlist(filename, simlist):
     """Write a simulation list to a file.
 
