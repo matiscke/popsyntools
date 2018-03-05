@@ -116,7 +116,16 @@ def write_singleSim2File(fileHandle, singleSim):
             # if variable is a string/object, return string of length 14
             return '{:11s}'.format(variable)
 
-    line = 'CD_' + var2str(singleSim['CDnumber']) + 'FP_' + var2str(singleSim['fgp']) + 'SI_' + var2str(singleSim['diskM'])+ 'AI_' + var2str(singleSim['a_in'])+ 'AO_' + var2str(singleSim['a_out'])+ 'EX_' + var2str(singleSim['expo'])+ 'MW_' + var2str(singleSim['windM'])+ 'SIM' + var2str(singleSim['simName'])+ 'AS_' + var2str(singleSim['a_start'])+ 'ST_' + var2str(singleSim['t_start'])
+    line = 'CD_' + var2str(singleSim['CDnumber'])\
+    + 'FP_' + var2str(singleSim['fgp'])\
+    + 'SI_' + var2str(singleSim['diskM'])\
+    + 'AI_' + var2str(singleSim['a_in'])\
+    + 'AO_' + var2str(singleSim['a_out'])\
+    + 'EX_' + var2str(singleSim['expo'])\
+    + 'MW_' + var2str(singleSim['windM'])\
+    + 'SIM' + var2str(singleSim['simName'])\
+    + 'AS_' + var2str(singleSim['a_start'])\
+    + 'ST_' + var2str(singleSim['t_start'])
     line += '\n'
     fileHandle.write(line)
 
