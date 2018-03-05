@@ -140,4 +140,9 @@ def write_simlist(filename, simlist):
     simlist : Pandas dataframe
         simulation list as a dataframe
     """
-    simlist.to_csv(filename)
+    with open(filename, 'w') as fileHandle:
+        for i in range(len(simlist)):
+            row = simlist.iloc[i]
+            write_singleSim2File(fileHandle, row)
+        fileHandle.write('END')
+    print('{} simulations written to "{}".'.format(i, filename))
