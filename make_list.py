@@ -28,8 +28,9 @@ def read_simlist(filename, varlen=17):
 
     simlist = []
     with open(filename) as f:
-        # get line length without escape characters
+        # get line length without escape characters and reset iterator
         lineLen = len(f.readline().rstrip('\n'))
+        f.seek(0)
         for line in f:
             """read line by line with new parameter every varlen characters.
             In each parameter, the first 3 characters are omitted (they
@@ -104,11 +105,7 @@ def write_singleSim2File(fileHandle, singleSim):
     singleSim : pandas DataFrame line
         one line of a simulation list
     """
-    line = 'CD_' + singleSim['CDnumber'] + 'FP_' + singleSim['fgp'] +
-           'SI_' + singleSim['diskM'] + 'AI_' + singleSim['a_in'] +
-           'AO_' + singleSim['a_out'] + 'EX_' + singleSim['expo'] +
-           'MW_' + singleSim['windM'] + 'SIM' + singleSim['simName'] +
-           'AS_' + singleSim['a_start'] + 'ST_' + singleSim['t_start']
+    line = 'CD_' + singleSim['CDnumber'] + 'FP_' + singleSim['fgp'] + 'SI_' + singleSim['diskM'] + 'AI_' + singleSim['a_in'] + 'AO_' + singleSim['a_out'] + 'EX_' + singleSim['expo'] + 'MW_' + singleSim['windM'] + 'SIM' + singleSim['simName'] + 'AS_' + singleSim['a_start'] + 'ST_' + singleSim['t_start']
     fileHandle.write(line)
 
 
