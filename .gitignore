@@ -3,6 +3,8 @@
 *.hdf5
 *.h5
 
+*Untitled*
+
 outputs/*
 exostat/*
 localExec/*
