@@ -8,7 +8,7 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 import pandas as pd
-
+import numpy as np
 
 def read_simlist(filename, varlen=17):
     """Read a simulation list from a file.
@@ -102,10 +102,22 @@ def write_singleSim2File(fileHandle, singleSim):
     ----------
     fileHandle : file object
         handle to an opened output file
-    singleSim : pandas DataFrame line
+    singleSim : pandas DataFrame row object
         one line of a simulation list
     """
-    line = 'CD_' + singleSim['CDnumber'] + 'FP_' + singleSim['fgp'] + 'SI_' + singleSim['diskM'] + 'AI_' + singleSim['a_in'] + 'AO_' + singleSim['a_out'] + 'EX_' + singleSim['expo'] + 'MW_' + singleSim['windM'] + 'SIM' + singleSim['simName'] + 'AS_' + singleSim['a_start'] + 'ST_' + singleSim['t_start']
+    def var2str(variable):
+        """helper function to distinguish between floats and other data types.
+        Returns a string of length 11.
+        """
+        try:
+            # if variable is a float, return in scientific format
+            return '{:1.8E}'.format(variable)
+        except ValueError:
+            # if variable is a string/object, return string of length 14
+            return '{:11s}'.format(variable)
+
+    line = 'CD_' + var2str(singleSim['CDnumber']) + 'FP_' + var2str(singleSim['fgp']) + 'SI_' + var2str(singleSim['diskM'])+ 'AI_' + var2str(singleSim['a_in'])+ 'AO_' + var2str(singleSim['a_out'])+ 'EX_' + var2str(singleSim['expo'])+ 'MW_' + var2str(singleSim['windM'])+ 'SIM' + var2str(singleSim['simName'])+ 'AS_' + var2str(singleSim['a_start'])+ 'ST_' + var2str(singleSim['t_start'])
+    line += '\n'
     fileHandle.write(line)
 
 
