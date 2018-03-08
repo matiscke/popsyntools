@@ -88,12 +88,12 @@ def rename_tracksColumns(planetTracks):
 
 
 def read_simFromFolder(foldername):
-    """Read a simulation from a folder and returns it as a pandas DataFrame.
+    """Read a simulation from a folder and return it as a pandas DataFrame.
 
     Parameters
     ----------
     foldername : string
-        filename of the HDF5 file containing the population data
+        path of the folder containing the population data
 
     Returns
     -------
