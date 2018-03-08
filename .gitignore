@@ -3,6 +3,7 @@
 *.hdf5
 *.h5
 *.out
+*.ipynb
 
 *Untitled*
 
