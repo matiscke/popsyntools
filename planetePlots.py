@@ -62,7 +62,10 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
 
     # overplot data points
     g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
-    g.ax_joint.collections[0].set_alpha(0)
+    ax = g.ax_joint.collections[0].set_alpha(0)
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
     return g
 
 
