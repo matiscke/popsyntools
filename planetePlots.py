@@ -58,14 +58,18 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
 
     # clip: do not allow negative values
     g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
-                      clip=((0.,1e12),(0.,1e12)))
+                      clip=((0.,1e12),(0.,1e12)), stat_func=None)
 
     # overplot data points
     g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
-    ax = g.ax_joint.collections[0].set_alpha(0)
+    g.ax_joint.collections[0].set_alpha(0)
+    g.set_axis_labels(xAxis,yAxis)
+    ax = g.ax_joint
 
-    ax.set_xscale('log')
-    ax.set_yscale('log')
+    # ax.set_xscale('log')
+    # ax.set_yscale('log')
+    # g.ax_marg_x.set_xscale('log')
+    # g.ax_marg_y.set_yscale('log')
     return g
 
 
