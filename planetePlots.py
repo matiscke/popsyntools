@@ -6,6 +6,7 @@ schlecker@mpia.de
 """
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 # Set plot style
@@ -46,8 +47,7 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
 
     Returns
     -------
-    g : JointGrid
-        seaborn JointGrid object with the plot on it
+    ax : axis object
     """
     try:
         # if DataFrame has a column 'status', use only survived planets
@@ -56,21 +56,23 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     except KeyError:
         survivedPlanets = population
 
-    # clip: do not allow negative values
-    g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
-                      clip=((0.,1e12),(0.,1e12)), stat_func=None)
+    if not ax:
+        fig, ax = plt.subplots()
+
+    x = survivedPlanets[xAxis]
+    y = survivedPlanets[yAxis]
+    H, xedges, yedges= np.histogram2d(x, y, bins=100)
+    implot = plt.imshow(H, interpolation='nearest', origin='low')
 
     # overplot data points
-    g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
-    g.ax_joint.collections[0].set_alpha(0)
-    g.set_axis_labels(xAxis,yAxis)
-    ax = g.ax_joint
+    # ax.scatter(x, y, marker=".", alpha = .1)
+    # g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
+    # g.ax_joint.collections[0].set_alpha(0)
+    # g.set_axis_labels(xAxis,yAxis)
+    # ax = g.ax_joint
 
-    # ax.set_xscale('log')
-    # ax.set_yscale('log')
-    # g.ax_marg_x.set_xscale('log')
-    # g.ax_marg_y.set_yscale('log')
-    return g
+
+    return ax
 
 
 """ Plotting functions meant for single planet tracks.
