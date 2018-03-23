@@ -76,21 +76,33 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     except KeyError:
         survivedPlanets = population
 
-    # clip: do not allow negative values
-    g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
-                      clip=((0.,1e12),(0.,1e12)), stat_func=None)
+    # # clip: do not allow negative values
+    # g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
+    #                   clip=((0.,1e12),(0.,1e12)), stat_func=None)
+    if not ax:
+        fig, ax = plt.subplots()
 
-    # overplot data points
-    g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
-    g.ax_joint.collections[0].set_alpha(0)
-    g.set_axis_labels(xAxis,yAxis)
-    ax = g.ax_joint
+    x = survivedPlanets[xAxis]
+    y = survivedPlanets[yAxis]
+    h, xedges, yedges, image = plt.hist2d(xAxis, yAxis,
+        data=survivedPlanets, bins=100)
+
+    # H, xedges, yedges= np.histogram2d(x, y, bins=100)
+    # implot = plt.imshow(H, interpolation='nearest', origin='low')
+
+
+
+    # # overplot data points
+    # g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
+    # g.ax_joint.collections[0].set_alpha(0)
+    # g.set_axis_labels(xAxis,yAxis)
+    # ax = g.ax_joint
 
     # ax.set_xscale('log')
     # ax.set_yscale('log')
     # g.ax_marg_x.set_xscale('log')
     # g.ax_marg_y.set_yscale('log')
-    return g
+    return h, xedges, yedges
 
 
 """ Plotting functions meant for single planet tracks.
