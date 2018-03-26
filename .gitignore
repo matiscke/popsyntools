@@ -11,5 +11,6 @@ outputs/*
 exostat/*
 localExec/*
 zubehoer/*
+notebooks/*
 
 __pycache__/
