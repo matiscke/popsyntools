@@ -62,13 +62,23 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     ----------
     population : pandas DataFrame
         planet population to plot
-    keyword arguments
-
+    ax : matplotlib axis
+        axis to plot on
+    xAxis : string
+        parameter for the x axis
+    yAxis : string
+        parameter for the y axis
+    *funcArgs : positional arguments
+        args to pass on to matplotlib
+    **funcKwargs : keyword arguments
+        kwargs to pass on to matplotlib
     Returns
     -------
     g : JointGrid
         seaborn JointGrid object with the plot on it
     """
+    import pylab
+
     try:
         # if DataFrame has a column 'status', use only survived planets
         survivedPlanets = population[population['status'] == 0]
@@ -82,14 +92,14 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     if not ax:
         fig, ax = plt.subplots()
 
-    # sort by systems
-    systems = survivedPlanets.set_index(['systemNo'])
+
 
     # create 2D histogram and normalize to 1/100stars
     h, xedges, yedges, image = plt.hist2d(xAxis, yAxis,
         data=systems, bins=100)
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
+    return h, xedges, yedges, image
 
 
 """ Plotting functions meant for single planet tracks.
