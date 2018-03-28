@@ -4,6 +4,7 @@ from the planet formation Code 'Planete' by the Bern planet formation group.
 Written by: Martin Schlecker
 schlecker@mpia.de
 """
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -77,8 +78,6 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     g : JointGrid
         seaborn JointGrid object with the plot on it
     """
-    import pylab
-
     try:
         # if DataFrame has a column 'status', use only survived planets
         survivedPlanets = population[population['status'] == 0]
@@ -92,13 +91,24 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     if not ax:
         fig, ax = plt.subplots()
 
-
+    # define logarithmic bins
+    xRange = (survivedPlanets[xAxis].min(), survivedPlanets[xAxis].max())
+    yRange = (survivedPlanets[yAxis].min(), survivedPlanets[yAxis].max())
+    xBins = np.logspace(np.floor(np.log10(xRange[0])), np.ceil(np.log10(xRange[1])), 50)
+    yBins = np.logspace(np.floor(np.log10(yRange[0])), np.ceil(np.log10(yRange[1])), 50)
 
     # create 2D histogram and normalize to 1/100stars
     h, xedges, yedges, image = plt.hist2d(xAxis, yAxis,
-        data=systems, bins=100)
+        data=survivedPlanets, bins=(xBins, yBins))
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
+
+    # eyecandy
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.colorbar()
+    plt.xlabel(xAxis)
+    plt.ylabel(yAxis)
     return h, xedges, yedges, image
 
 
