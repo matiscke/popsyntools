@@ -83,29 +83,13 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
         fig, ax = plt.subplots()
 
     # sort by systems
-    Nsystems = survivedPlanets.systemNo.max()
     systems = survivedPlanets.set_index(['systemNo'])
 
-
+    # create 2D histogram and normalize to 1/100stars
     h, xedges, yedges, image = plt.hist2d(xAxis, yAxis,
         data=systems, bins=100)
-
-    # H, xedges, yedges= np.histogram2d(x, y, bins=100)
-    # implot = plt.imshow(H, interpolation='nearest', origin='low')
-
-
-
-    # # overplot data points
-    # g.plot_joint(plt.scatter, c="b", s=2, marker=".", alpha = .1)
-    # g.ax_joint.collections[0].set_alpha(0)
-    # g.set_axis_labels(xAxis,yAxis)
-    # ax = g.ax_joint
-
-    # ax.set_xscale('log')
-    # ax.set_yscale('log')
-    # g.ax_marg_x.set_xscale('log')
-    # g.ax_marg_y.set_yscale('log')
-    return h, xedges, yedges
+    Nsystems = len(survivedPlanets)
+    h = h*100/Nsystems
 
 
 """ Plotting functions meant for single planet tracks.
