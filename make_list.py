@@ -64,7 +64,7 @@ def read_simlist(filename, varlen=17):
     return simlist
 
 
-def grid(start, stop, size, nsamples=50):
+def grid(start, stop, size, nsamples=50, log=False):
     """ Return a one-dimensional grid of repeating, evenly distributed values.
 
     The values in the grid are repeated until the specified length of the array
@@ -80,6 +80,8 @@ def grid(start, stop, size, nsamples=50):
         length of resulting array
     nsamples : int, optional
         Number of samples to generate. Default is 50. Must be non-negative.
+    log : boolean, optional
+        if True, samples are spaced evenly on a log scale.
 
     Returns
     -------
@@ -95,7 +97,12 @@ def grid(start, stop, size, nsamples=50):
     if nsamples > size:
         warnings.warn("number of samples > length of data column.")
 
-    grid = np.tile(np.linspace(start, stop, nsamples), int(np.ceil(size/nsamples)))
+    if log:
+        grid = np.tile(np.logspace(np.log10(start), np.log10(stop), nsamples),
+            int(np.ceil(size/nsamples)))
+    else:
+        grid = np.tile(np.linspace(start, stop, nsamples),
+            int(np.ceil(size/nsamples)))
     return grid[:size]
 
 
@@ -120,6 +127,9 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     simlist : pandas dataframe
         edited simulation list
     """
+    if not colname in simlist.columns:
+        warnings.warn('Table has no column "{}". A new column is created.')
+
     try:
         # vectorial method for functions accepting a "size" argument
         simlist[colname] = func(*funcArgs, size=len(simlist), **funcKwargs)
