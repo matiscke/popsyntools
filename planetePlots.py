@@ -56,7 +56,7 @@ def normalize_rate(n_planet, n_star):
     return norm_rate
 
 
-def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcKwargs):
+def plot_occurrence(population, ax=None, xAxis='a', yAxis='r', **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -69,14 +69,19 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
         parameter for the x axis
     yAxis : string
         parameter for the y axis
-    *funcArgs : positional arguments
-        args to pass on to matplotlib
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
+
     Returns
     -------
-    g : JointGrid
-        seaborn JointGrid object with the plot on it
+    h : numpy array
+        normalized 2D histogram
+    xedges : numpy array
+        bin edges along x axis
+    yedges : numpy array
+        bin edges along y axis
+    ax : matplotlib axis
+        axis with the plot
     """
     try:
         # if DataFrame has a column 'status', use only survived planets
@@ -98,18 +103,22 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r',*funcArgs, **funcK
     yBins = np.logspace(np.floor(np.log10(yRange[0])), np.ceil(np.log10(yRange[1])), 50)
 
     # create 2D histogram and normalize to 1/100stars
-    h, xedges, yedges, image = plt.hist2d(xAxis, yAxis,
-        data=survivedPlanets, bins=(xBins, yBins))
+    h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
+        survivedPlanets[yAxis], bins=(xBins, yBins))
+    h = h.T
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
+
+    X, Y = np.meshgrid(xedges, yedges)
+    im = ax.pcolormesh(X, Y, h, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
     plt.yscale('log')
-    plt.colorbar()
+    cb = fig.colorbar(im)
     plt.xlabel(xAxis)
     plt.ylabel(yAxis)
-    return h, xedges, yedges, image
+    return h, xedges, yedges, ax
 
 
 """ Plotting functions meant for single planet tracks.
