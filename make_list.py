@@ -9,6 +9,7 @@ schlecker@mpia.de
 """
 import pandas as pd
 import numpy as np
+import warnings
 
 def read_simlist(filename, varlen=17):
     """Read a simulation list from a file.
@@ -63,6 +64,41 @@ def read_simlist(filename, varlen=17):
     return simlist
 
 
+def grid(start, stop, size, nsamples=50):
+    """ Return a one-dimensional grid of repeating, evenly distributed values.
+
+    The values in the grid are repeated until the specified length of the array
+    "size" is reached.
+
+    Parameters
+    ----------
+    start : scalar
+        The starting value of the sequence.
+    stop : scalar
+        The end value of the sequence.
+    size : int
+        length of resulting array
+    nsamples : int, optional
+        Number of samples to generate. Default is 50. Must be non-negative.
+
+    Returns
+    -------
+    grid : numpy array
+        one-dimensional array of length `size` consisting of repeating sequences
+        of `nsamples` equally spaced samples.
+
+    Examples
+    --------
+    >>> grid(1, 10, 10, nsamples=4)
+    array([ 1.,  4.,  7., 10.,  1.,  4.,  7., 10.,  1.,  4.])
+    """
+    if nsamples > size:
+        warnings.warn("number of samples > length of data column.")
+
+    grid = np.tile(np.linspace(start, stop, nsamples), int(np.ceil(size/nsamples)))
+    return grid[:size]
+
+
 def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     """Fill a single column in a simulation list with new values.
 
@@ -88,10 +124,14 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
         # vectorial method for functions accepting a "size" argument
         simlist[colname] = func(*funcArgs, size=len(simlist), **funcKwargs)
     except:
-        # list comprehension for functions returning single values
-        import numpy as np
-        simlist[colname] = np.array([func(*funcArgs, **funcKwargs)
-                                    for i in range(len(simlist))])
+        # or a "num" argument
+        try:
+            simlist[colname] = func(*funcArgs, num=len(simlist), **funcKwargs)
+        except:
+            # list comprehension for functions returning single values
+            import numpy as np
+            simlist[colname] = np.array([func(*funcArgs, **funcKwargs)
+                                        for i in range(len(simlist))])
     return simlist
 
 
