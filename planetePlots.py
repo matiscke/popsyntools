@@ -83,6 +83,8 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r', **funcKwargs):
     ax : matplotlib axis
         axis with the plot
     """
+    import scipy.ndimage as nd
+
     try:
         # if DataFrame has a column 'status', use only survived planets
         survivedPlanets = population[population['status'] == 0]
@@ -99,13 +101,16 @@ def plot_occurrence(population, ax=None, xAxis='a', yAxis='r', **funcKwargs):
     # define logarithmic bins
     xRange = (survivedPlanets[xAxis].min(), survivedPlanets[xAxis].max())
     yRange = (survivedPlanets[yAxis].min(), survivedPlanets[yAxis].max())
-    xBins = np.logspace(np.floor(np.log10(xRange[0])), np.ceil(np.log10(xRange[1])), 50)
-    yBins = np.logspace(np.floor(np.log10(yRange[0])), np.ceil(np.log10(yRange[1])), 50)
+    xBins = np.logspace(np.floor(np.log10(xRange[0])), np.ceil(np.log10(xRange[1])), 100)
+    yBins = np.logspace(np.floor(np.log10(yRange[0])), np.ceil(np.log10(yRange[1])), 100)
 
-    # create 2D histogram and normalize to 1/100stars
+    # create 2D histogram
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
         survivedPlanets[yAxis], bins=(xBins, yBins))
     h = h.T
+
+    # smooth out the contours and normalize to 1/100stars
+    nd.gaussian_filter(h,(40,2))
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
 
