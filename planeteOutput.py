@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 import tables
 
+# Define au, Msol in cm and g
+au = 1.496e13
+Msol = 1.98855e33
 
 def rename_tracksColumns(planetTracks):
     """Rename some of the columns of a planet tracks table.
@@ -208,10 +211,6 @@ def get_M0(rc, Sigma0, expo, r0=5.2):
     M0 : float
         total disk mass in solar masses
     """
-    # Define au, Msol in cm and g
-    au = 1.496e13
-    Msol = 1.98855e33
-
     M0 = (2*np.pi)/(2-expo)*Sigma0*(r0*au)**expo*(rc*au)**(2-expo)
     return M0/Msol
 
@@ -236,8 +235,12 @@ def get_Sigma0(rc, M0, expo, r0=5.2):
     Sigma0 : float
         gas surface density at 5.2 au [g/cm^2]
     """
-    # Define au, Msol in cm and g
-    au = 1.496e13
-    Msol = 1.98855e33
-
     return (r0*au)**(-expo)*(rc*au)**(-2+expo)*(2-expo)*M0*Msol/(2*np.pi)
+
+
+def get_orbitalPeriod(population, Mstar=0.1):
+    """ Compute the orbital period P from the semi-major axis a and Mstar.
+
+    get_orbitalPeriod uses Kepler's Third Law to calculate the orbital period of
+    planets from their semi-major axis and a given stellar mass Mstar. It adds a
+    new column 'period' to the population table.
