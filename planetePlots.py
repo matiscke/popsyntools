@@ -56,7 +56,7 @@ def normalize_rate(n_planet, n_star):
     return norm_rate
 
 
-def plot_occurrence(population, ax=None, xAxis='a', yAxis='r', **funcKwargs):
+def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
