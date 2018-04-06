@@ -246,9 +246,26 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     planets from their semi-major axis and a given stellar mass Mstar. It adds a
     new column 'period' to the population table.
 
+    The semi-major axis must be given in [au], period will be in [d].
+
+    Example
+    -------
+    >>> MstarRel = 1.0
+    >>> a_Earth = 1.0
+    >>> a_Mars = 1.523662
+    >>> test = pd.DataFrame({'a' : [a_Earth, a_Mars]})
+    >>> get_orbitalPeriod(test, MstarRel)
+    >>>           a      period
+    >>> 0  1.000000  365.257762
+    >>> 1  1.523662  686.961516
     """
+    # convert a from au to cm
+    sma_cm = lambda sma_au : sma_au*au
 
     Mstar = MstarRel*Msol
-    KeplerConst = 4*np.pi()**2/(G*Mstar)
-    population['period'] = np.sqrt(KeplerConst*population['a']**3)
+    KeplerConst = 4*np.pi**2/(G*Mstar)
+    population['period'] = np.sqrt(KeplerConst*sma_cm(population['a'])**3)
+
+    # convert period from seconds to days
+    population['period'] = population['period']/86400
     return population
