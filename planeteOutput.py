@@ -246,7 +246,21 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     planets from their semi-major axis and a given stellar mass Mstar. It adds a
     new column 'period' to the population table.
 
+    Entries with negative semi-major axes are removed.
+
     The semi-major axis must be given in [au], period will be in [d].
+
+    Parameters
+    ----------
+    population : Pandas DataFrame
+        Table with the population. Has to contain a column 'a' (semi-major axis)
+    MstarRel : float
+        Mass of the stellar host in solar Masses
+
+    Returns
+    -------
+    population : Pandas DataFrame
+        Table with additional column `period`
 
     Example
     -------
@@ -261,6 +275,9 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     """
     # convert a from au to cm
     sma_cm = lambda sma_au : sma_au*au
+
+    # Remove entries with negative semi-major axis
+    population = population[population['a'] > 0.]
 
     Mstar = MstarRel*Msol
     KeplerConst = 4*np.pi**2/(G*Mstar)
