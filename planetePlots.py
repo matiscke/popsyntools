@@ -56,7 +56,8 @@ def normalize_rate(n_planet, n_star):
     return norm_rate
 
 
-def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', **funcKwargs):
+def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
+                    nBins=0, binWidth=(0.25, 0.1), **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -69,8 +70,15 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', **funcKwargs
         parameter for the x axis
     yAxis : string
         parameter for the y axis
+    nBins : integer
+        number of bins for each axis. Only relevant if a positive integer is
+        given, otherwise bins are defined via `binWidth`.
+    binWidth : float or sequence of scalars
+        width of each bin in dex for [xAxis, yAxis].
+        If `binWidth` is a scalar, it defines the bin width along both axes.
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
+
 
     Returns
     -------
@@ -92,17 +100,33 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', **funcKwargs
     except KeyError:
         survivedPlanets = population
 
-    # # clip: do not allow negative values
-    # g = sns.jointplot(xAxis, yAxis, data=survivedPlanets, kind="kde", color="m",
-    #                   clip=((0.,1e12),(0.,1e12)), stat_func=None)
     if not ax:
         fig, ax = plt.subplots()
 
-    # define logarithmic bins
+    # define the bins
     xRange = (survivedPlanets[xAxis].min(), survivedPlanets[xAxis].max())
     yRange = (survivedPlanets[yAxis].min(), survivedPlanets[yAxis].max())
-    xBins = np.logspace(np.floor(np.log10(xRange[0])), np.ceil(np.log10(xRange[1])), 100)
-    yBins = np.logspace(np.floor(np.log10(yRange[0])), np.ceil(np.log10(yRange[1])), 100)
+    if nBins:
+        # logarithmic bins of equal width
+        xBins = np.logspace(np.floor(np.log10(xRange[0])),
+                            np.ceil(np.log10(xRange[1])), nBins)
+        yBins = np.logspace(np.floor(np.log10(yRange[0])),
+                            np.ceil(np.log10(yRange[1])), nBins)
+    else:
+        # define bins by their width
+        if not np.iterable(binWidth):
+            # if only one number is given, use along both dimensions
+            binWidth = [binWidth, binWidth]
+        xBins = 10**np.arange(xRange[0], xRange[1], binWidth[0])
+        yBins = 10**np.arange(yRange[0], yRange[1], binWidth[1])
+
+# DEBUGGING
+    print('xRange {}'.format(xRange))
+    print('yRange {}'.format(yRange))
+    print(np.isnan(survivedPlanets[yAxis]).any())
+    # print(xBins)
+    # print(yBins)
+    # return (xBins, yBins)
 
     # create 2D histogram
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
