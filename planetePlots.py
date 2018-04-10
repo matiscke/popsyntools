@@ -83,8 +83,8 @@ def compute_logbins(binWidth_dex, Range):
     return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
 
 
-def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
-                    nBins=0, binWidth_dex=(0.25, 0.1), **funcKwargs):
+def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
+                    binWidth_dex=(0.25, 0.1), smooth=True, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -103,6 +103,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
     binWidth_dex : float or sequence of scalars
         width of each bin in dex for [xAxis, yAxis].
         If `binWidth_dex` is a scalar, it defines the bin width along both axes.
+    smooth : Bool
+        if True, apply Gaussian filter to the histogram
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -147,23 +149,15 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
         xBins = compute_logbins(binWidth_dex[0], xRange)
         yBins = compute_logbins(binWidth_dex[1], yRange)
 
-
-# DEBUGGING
-    print('xRange {}'.format(xRange))
-    print('yRange {}'.format(yRange))
-    print('xBins {}'.format(xBins[-5:]))
-    print(np.isnan(survivedPlanets[yAxis]).any())
-    # print(xBins)
-    # print(yBins)
-    # return (xBins, yBins)
-
     # create 2D histogram
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
                         survivedPlanets[yAxis], bins=(xBins, yBins))
     h = h.T
+    if smooth:
+        # smooth out the contours
+        h = nd.gaussian_filter(h,(4,2))
 
-    # smooth out the contours and normalize to 1/100stars
-    nd.gaussian_filter(h,(40,2))
+    # normalize to 1/100stars
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
 
