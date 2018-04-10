@@ -55,6 +55,23 @@ def normalize_rate(n_planet, n_star):
     norm_rate = 100*n_planet/n_star
     return norm_rate
 
+def compute_logbins(binWidth, Range):
+    """Compute the bin edges for a logarithmic grid.
+
+    Parameters
+    ----------
+    binWidth : float
+        width of bins in log space
+    Range : Tuple
+        range for parameter
+
+    Returns
+    -------
+    bins : array
+        bins for one dimension
+    """
+    logRange = (np.log10(Range[0]), np.log10(Range[1]))
+    return 10**np.arange(logRange[0], logRange[1], binWidth)
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
                     nBins=0, binWidth=(0.25, 0.1), **funcKwargs):
@@ -116,13 +133,15 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
         # define bins by their width
         if not np.iterable(binWidth):
             # if only one number is given, use along both dimensions
-            binWidth = [binWidth, binWidth]
-        xBins = 10**np.arange(xRange[0], xRange[1], binWidth[0])
-        yBins = 10**np.arange(yRange[0], yRange[1], binWidth[1])
+            binWidth = (binWidth, binWidth)
+        xBins = compute_logbins(binWidth[0], xRange)
+        yBins = compute_logbins(binWidth[1], yRange)
+
 
 # DEBUGGING
     print('xRange {}'.format(xRange))
     print('yRange {}'.format(yRange))
+    print('xBins {}'.format(xBins[-5:]))
     print(np.isnan(survivedPlanets[yAxis]).any())
     # print(xBins)
     # print(yBins)
@@ -130,7 +149,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
 
     # create 2D histogram
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
-        survivedPlanets[yAxis], bins=(xBins, yBins))
+                        survivedPlanets[yAxis], bins=(xBins, yBins))
     h = h.T
 
     # smooth out the contours and normalize to 1/100stars
