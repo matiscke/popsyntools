@@ -55,13 +55,13 @@ def normalize_rate(n_planet, n_star):
     norm_rate = 100*n_planet/n_star
     return norm_rate
 
-def compute_logbins(binWidth, Range):
+def compute_logbins(binWidth_dex, Range):
     """Compute the bin edges for a logarithmic grid.
 
     Parameters
     ----------
-    binWidth : float
-        width of bins in log space
+    binWidth_dex : float
+        width of bins in log space (dex)
     Range : Tuple
         range for parameter
 
@@ -71,10 +71,10 @@ def compute_logbins(binWidth, Range):
         bins for one dimension
     """
     logRange = (np.log10(Range[0]), np.log10(Range[1]))
-    return 10**np.arange(logRange[0], logRange[1], binWidth)
+    return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
-                    nBins=0, binWidth=(0.25, 0.1), **funcKwargs):
+                    nBins=0, binWidth_dex=(0.25, 0.1), **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -89,10 +89,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
         parameter for the y axis
     nBins : integer
         number of bins for each axis. Only relevant if a positive integer is
-        given, otherwise bins are defined via `binWidth`.
-    binWidth : float or sequence of scalars
+        given, otherwise bins are defined via `binWidth_dex`.
+    binWidth_dex : float or sequence of scalars
         width of each bin in dex for [xAxis, yAxis].
-        If `binWidth` is a scalar, it defines the bin width along both axes.
+        If `binWidth_dex` is a scalar, it defines the bin width along both axes.
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -131,11 +131,11 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
                             np.ceil(np.log10(yRange[1])), nBins)
     else:
         # define bins by their width
-        if not np.iterable(binWidth):
+        if not np.iterable(binWidth_dex):
             # if only one number is given, use along both dimensions
-            binWidth = (binWidth, binWidth)
-        xBins = compute_logbins(binWidth[0], xRange)
-        yBins = compute_logbins(binWidth[1], yRange)
+            binWidth_dex = (binWidth_dex, binWidth_dex)
+        xBins = compute_logbins(binWidth_dex[0], xRange)
+        yBins = compute_logbins(binWidth_dex[1], yRange)
 
 
 # DEBUGGING
