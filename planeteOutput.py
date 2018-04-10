@@ -270,9 +270,9 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     >>> a_Mars = 1.523662
     >>> test = pd.DataFrame({'a' : [a_Earth, a_Mars]})
     >>> get_orbitalPeriod(test, MstarRel)
-    >>>           a      period
-    >>> 0  1.000000  365.257762
-    >>> 1  1.523662  686.961516
+            a      period
+    0  1.000000  365.257762
+    1  1.523662  686.961516
     """
     # convert a from au to cm
     sma_cm = lambda sma_au : sma_au*au

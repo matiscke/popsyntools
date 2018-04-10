@@ -55,6 +55,7 @@ def normalize_rate(n_planet, n_star):
     norm_rate = 100*n_planet/n_star
     return norm_rate
 
+
 def compute_logbins(binWidth_dex, Range):
     """Compute the bin edges for a logarithmic grid.
 
@@ -69,9 +70,18 @@ def compute_logbins(binWidth_dex, Range):
     -------
     bins : array
         bins for one dimension
+
+    Example
+    -------
+    >>> binWidth_dex = 1.0
+    >>> Range = (10., 1000.)
+    >>> compute_logbins(binWidth_dex, Range)
+    array([   10.,   100.,  1000.])
     """
-    logRange = (np.log10(Range[0]), np.log10(Range[1]))
+    # add binWidth_dex to logrange to include last bin edge
+    logRange = (np.log10(Range[0]), np.log10(Range[1]) + binWidth_dex)
     return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
+
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r',
                     nBins=0, binWidth_dex=(0.25, 0.1), **funcKwargs):
