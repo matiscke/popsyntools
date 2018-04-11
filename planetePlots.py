@@ -85,7 +85,7 @@ def compute_logbins(binWidth_dex, Range):
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), smooth=True, normalize=True,
-                    **funcKwargs):
+                    discreteColors=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -108,6 +108,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         if True, apply Gaussian filter to the histogram
     normalize : Bool
         normalize occurrence to planets per 100 stars
+    discreteColors : Bool
+        use discrete color levels instead of a continuum colormap
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -164,6 +166,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         # normalize to 1/100stars
         Nsystems = len(survivedPlanets)
         h = h*100/Nsystems
+        cbarlabel = r"Planets per 100 Stars per $P-R_P$ interval"
+    else :
+        cbarlabel = r"Planets per $P-R_P$ interval"
 
     # choose 'inferno' as default colormap
     if not 'cmap' in funcKwargs.keys():
@@ -172,13 +177,26 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cmap = funcKwargs['cmap']
         del funcKwargs['cmap']
 
-    X, Y = np.meshgrid(xedges, yedges)
-    im = ax.pcolormesh(X, Y, h, cmap=cmap, **funcKwargs)
+    if discreteColors:
+        """use discrete levels for occurrence. numbers are from
+        Petigura et al. 2018
+        """
+        # levels = np.arange(-4, -1 + 1e-10, 0.25)
+        cbarticklabels = [0.01, 0.03, 0.1, 0.3, 1, 3,10]
+        cbarticks = np.log10(np.array(cbarticklabels) * 1e-2)
+        contourKwargs = dict(extend='min')
+        im = plt.contourf(xedges[:-1], yedges[:-1], h, cmap=cmap,
+                          **contourKwargs, **funcKwargs)
+    else:
+        cbarticks = None
+        X, Y = np.meshgrid(xedges, yedges)
+        im = ax.pcolormesh(X, Y, h, cmap=cmap, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
     plt.yscale('log')
-    cb = fig.colorbar(im)
+    cbar = fig.colorbar(im)
+    cbar.set_label(cbarlabel)
     plt.xlabel(xAxis)
     plt.ylabel(yAxis)
     return h, xedges, yedges, ax
