@@ -161,8 +161,15 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     Nsystems = len(survivedPlanets)
     h = h*100/Nsystems
 
+    # choose 'inferno' as default colormap
+    if not 'cmap' in funcKwargs.keys():
+        cmap = 'inferno'
+    else:
+        cmap = funcKwargs['cmap']
+        del funcKwargs['cmap']
+
     X, Y = np.meshgrid(xedges, yedges)
-    im = ax.pcolormesh(X, Y, h, **funcKwargs)
+    im = ax.pcolormesh(X, Y, h, cmap=cmap, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
