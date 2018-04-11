@@ -84,7 +84,8 @@ def compute_logbins(binWidth_dex, Range):
 
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
-                    binWidth_dex=(0.25, 0.1), smooth=True, **funcKwargs):
+                    binWidth_dex=(0.25, 0.1), smooth=True, normalize=True,
+                    **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -105,6 +106,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         If `binWidth_dex` is a scalar, it defines the bin width along both axes.
     smooth : Bool
         if True, apply Gaussian filter to the histogram
+    normalize : Bool
+        normalize occurrence to planets per 100 stars
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -157,9 +160,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         # smooth out the contours
         h = nd.gaussian_filter(h,(4,2))
 
-    # normalize to 1/100stars
-    Nsystems = len(survivedPlanets)
-    h = h*100/Nsystems
+    if normalize:
+        # normalize to 1/100stars
+        Nsystems = len(survivedPlanets)
+        h = h*100/Nsystems
 
     # choose 'inferno' as default colormap
     if not 'cmap' in funcKwargs.keys():
