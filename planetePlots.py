@@ -84,7 +84,7 @@ def compute_logbins(binWidth_dex, Range):
 
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
-                    binWidth_dex=(0.25, 0.1), smooth=True, normalize=True,
+                    binWidth_dex=(0.25, 0.1), smooth=False, normalize=True,
                     discreteColors=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
@@ -196,7 +196,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     plt.xscale('log')
     plt.yscale('log')
     cbar = fig.colorbar(im)
-    cbar.set_label(cbarlabel)
+    cbar.set_label(cbarlabel, labelpad=15)
     plt.xlabel(xAxis)
     plt.ylabel(yAxis)
     return h, xedges, yedges, ax
