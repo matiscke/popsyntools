@@ -3,7 +3,7 @@
 *.hdf5
 *.h5
 *.out
-*.ipynb
+# *.ipynb
 
 *Untitled*
 
@@ -11,6 +11,6 @@ outputs/*
 exostat/*
 localExec/*
 zubehoer/*
-notebooks/*
+# notebooks/*
 
 __pycache__/
