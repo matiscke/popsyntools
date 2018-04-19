@@ -278,8 +278,8 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     sma_cm = lambda sma_au : sma_au*au
 
     # Remove entries with negative semi-major axis
-    pop_posSma = population[population['a'] > 0.]
-
+    pop_posSma = population[population['a'] > 0.].copy()
+    
     Mstar = MstarRel*Msol
     KeplerConst = 4*np.pi**2/(G*Mstar)
     pop_posSma['period'] = np.sqrt(KeplerConst*sma_cm(pop_posSma['a'])**3)
