@@ -111,9 +111,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         normalize occurrence to planets per 100 stars
     discreteColors : Bool
         use discrete color levels instead of a continuum colormap
-    xRange : Tuple
+    xRange : sequence of scalars
         range of values to be considered in x direction
-    yRange : Tuple
+    yRange : sequence of scalars
         range of values to be considered in y direction
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
