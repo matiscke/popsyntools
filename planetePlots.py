@@ -86,7 +86,7 @@ def compute_logbins(binWidth_dex, Range):
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), smooth=False, normalize=True,
                     discreteColors=False, xRange=None, yRange=None,
-                    **funcKwargs):
+                    logColormap=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -115,6 +115,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         range of values to be considered in x direction
     yRange : sequence of scalars
         range of values to be considered in y direction
+    logColormap : Bool
+        use logarithmic (log10) mapping of colors to data values
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -188,6 +190,14 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cmap = funcKwargs['cmap']
         del funcKwargs['cmap']
 
+    if logColormap:
+        # logarithmic color mapping
+        import matplotlib.colors as colors
+        offset  = 0.001
+        colorNorm = colors.LogNorm(vmin = max(h.min(), offset), vmax = h.max())
+    else:
+        colorNorm = None
+
     if discreteColors:
         """use discrete levels for occurrence. numbers are from
         Petigura et al. 2018
@@ -201,7 +211,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     else:
         cbarticks = None
         X, Y = np.meshgrid(xedges, yedges)
-        im = ax.pcolormesh(X, Y, h, cmap=cmap, **funcKwargs)
+        im = ax.pcolormesh(X, Y, h, cmap=cmap, norm=colorNorm, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
