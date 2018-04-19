@@ -131,6 +131,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         axis with the plot
     """
 
+    # check existence of columns in the DataFrame
+    if not (xAxis in population and yAxis in population):
+        raise KeyError('population does not contain both columns for the histogram')
+
     try:
         # if DataFrame has a column 'status', use only survived planets
         survivedPlanets = population[population['status'] == 0]
