@@ -85,7 +85,8 @@ def compute_logbins(binWidth_dex, Range):
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), smooth=False, normalize=True,
-                    discreteColors=False, **funcKwargs):
+                    discreteColors=False, xRange=None, yRange=None,
+                    **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -110,6 +111,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         normalize occurrence to planets per 100 stars
     discreteColors : Bool
         use discrete color levels instead of a continuum colormap
+    xRange : Tuple
+        range of values to be considered in x direction
+    yRange : Tuple
+        range of values to be considered in y direction
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -125,7 +130,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     ax : matplotlib axis
         axis with the plot
     """
-    import scipy.ndimage as nd
 
     try:
         # if DataFrame has a column 'status', use only survived planets
@@ -138,8 +142,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         fig, ax = plt.subplots()
 
     # define the bins
-    xRange = (survivedPlanets[xAxis].min(), survivedPlanets[xAxis].max())
-    yRange = (survivedPlanets[yAxis].min(), survivedPlanets[yAxis].max())
+    if not xRange:
+        xRange = (survivedPlanets[xAxis].min(), survivedPlanets[xAxis].max())
+    if not yRange:
+        yRange = (survivedPlanets[yAxis].min(), survivedPlanets[yAxis].max())
     if nBins:
         # logarithmic bins of equal width
         xBins = np.logspace(np.floor(np.log10(xRange[0])),
@@ -160,6 +166,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     h = h.T
     if smooth:
         # smooth out the contours
+        import scipy.ndimage as nd
         h = nd.gaussian_filter(h,(4,2))
 
     if normalize:
