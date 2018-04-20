@@ -7,34 +7,8 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-# Set plot style
-sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',
-        rc={
-'text.usetex':True,
-'text.latex.unicode':True,
-'font.family' : 'sans-serif',
-'font.style'         : 'normal',
-'font.variant'        : 'normal',
-'font.weight'         : 'normal',
-'font.stretch'        : 'normal',
-'savefig.dpi'         : 400,
-'lines.linewidth'   : 1.0,
-'lines.markersize'      : 3.,
-'figure.subplot.left'    : 0.13,    # the left side of the subplots of the figure
-'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
-'figure.subplot.bottom'  : 0.13,   # the bottom of the subplots of the figure
-'figure.subplot.top'     : 0.96,    # the top of the subplots of the figure
-'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
-'axes.xmargin' : 0.02,             # default margin for autoscale
-'axes.ymargin' : 0.02,
-'legend.handletextpad' : 0.5,
-'legend.handlelength' : 0.75,
-'xtick.minor.size'     : 2.,
-'ytick.minor.size'     : 2.
-})
-sns.set_color_codes()
+import plotstyle
 
 
 def normalize_rate(n_planet, n_star):
@@ -84,8 +58,8 @@ def compute_logbins(binWidth_dex, Range):
 
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
-                    binWidth_dex=(0.25, 0.1), smooth=False, normalize=True,
-                    discreteColors=False, xRange=None, yRange=None,
+                    binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
+                    smooth=False, normalize=True, discreteColors=False,
                     logColormap=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
@@ -105,18 +79,19 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     binWidth_dex : float or sequence of scalars
         width of each bin in dex for [xAxis, yAxis].
         If `binWidth_dex` is a scalar, it defines the bin width along both axes.
+    xRange : sequence of scalars
+        range of values to be considered in x direction
+    yRange : sequence of scalars
+        range of values to be considered in y direction
     smooth : Bool
         if True, apply Gaussian filter to the histogram
     normalize : Bool
         normalize occurrence to planets per 100 stars
     discreteColors : Bool
         use discrete color levels instead of a continuum colormap
-    xRange : sequence of scalars
-        range of values to be considered in x direction
-    yRange : sequence of scalars
-        range of values to be considered in y direction
     logColormap : Bool
-        use logarithmic (log10) mapping of colors to data values
+        use logarithmic (log10) mapping of colors to data values. Has no effect
+        if discreteColors = True.
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -183,13 +158,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     else :
         cbarlabel = r"Planets per $P-R_P$ interval"
 
-    # choose 'inferno' as default colormap
-    if not 'cmap' in funcKwargs.keys():
-        cmap = 'inferno'
-    else:
-        cmap = funcKwargs['cmap']
-        del funcKwargs['cmap']
-
     if logColormap:
         # logarithmic color mapping
         import matplotlib.colors as colors
@@ -206,12 +174,12 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbarticklabels = [0.01, 0.03, 0.1, 0.3, 1, 3,10]
         cbarticks = np.log10(np.array(cbarticklabels) * 1e-2)
         contourKwargs = dict(extend='min')
-        im = plt.contourf(xedges[:-1], yedges[:-1], h, cmap=cmap,
-                          **contourKwargs, **funcKwargs)
+        im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs,
+                          **funcKwargs)
     else:
         cbarticks = None
         X, Y = np.meshgrid(xedges, yedges)
-        im = ax.pcolormesh(X, Y, h, cmap=cmap, norm=colorNorm, **funcKwargs)
+        im = ax.pcolormesh(X, Y, h, norm=colorNorm, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
