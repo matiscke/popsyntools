@@ -159,10 +159,11 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbarlabel = r"Planets per $P-R_P$ interval"
 
     if logColormap:
-        # logarithmic color mapping
+        # logarithmic color mapping. Use linear scale around zero.
         import matplotlib.colors as colors
-        offset  = 0.001
-        colorNorm = colors.LogNorm(vmin = max(h.min(), offset), vmax = h.max())
+        threshold  = 0.001
+        colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
+        linthresh=max(h.min(), threshold))
     else:
         colorNorm = None
 
