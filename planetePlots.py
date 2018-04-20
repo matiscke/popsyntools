@@ -145,6 +145,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
                         survivedPlanets[yAxis], bins=(xBins, yBins))
     h = h.T
+
     if smooth:
         # smooth out the contours
         import scipy.ndimage as nd
@@ -159,10 +160,11 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbarlabel = r"Planets per $P-R_P$ interval"
 
     if logColormap:
-        # logarithmic color mapping
+        # logarithmic color mapping. Mask out non-positive values.
         import matplotlib.colors as colors
-        offset  = 0.001
-        colorNorm = colors.LogNorm(vmin = max(h.min(), offset), vmax = h.max())
+        h[h <= 0] = np.nan
+        h = np.ma.masked_invalid(h)
+        colorNorm = colors.LogNorm(vmin = h.min(), vmax = h.max())
     else:
         colorNorm = None
 
