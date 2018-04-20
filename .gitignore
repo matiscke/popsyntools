@@ -4,6 +4,7 @@
 *.h5
 *.out
 # *.ipynb
+*.ipynb_checkpoints*
 
 *Untitled*
 
