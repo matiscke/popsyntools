@@ -119,8 +119,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         raise KeyError('population does not contain both columns for the histogram')
 
     # create new column with radius in R_Earth if not existent
-    if ((yAxis == 'r' or yAxis == 'r_rEarth') and not 'r_rEarth' in population):
-        population['r_rEarth'] = r_Jup2r_Earth(population.r)
+    if (yAxis == 'r' or yAxis == 'r_rEarth'):
+        if not 'r_rEarth' in population:
+            population['r_rEarth'] = r_Jup2r_Earth(population.r)
         yAxis = 'r_rEarth'
 
     try:
