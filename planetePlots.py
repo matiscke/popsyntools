@@ -31,7 +31,7 @@ def normalize_rate(n_planet, n_star):
 
 
 def compute_logbins(binWidth_dex, Range):
-    """Compute the bin edges for a logarithmic grid.
+    """ Compute the bin edges for a logarithmic grid.
 
     Parameters
     ----------
@@ -55,6 +55,12 @@ def compute_logbins(binWidth_dex, Range):
     # add binWidth_dex to logrange to include last bin edge
     logRange = (np.log10(Range[0]), np.log10(Range[1]) + binWidth_dex)
     return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
+
+
+def r_Jup2r_Earth(r):
+    """ Transform a radius given in Jupiter radii into Earth radii.
+    """
+    return r*10.973
 
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
@@ -111,6 +117,11 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     # check existence of columns in the DataFrame
     if not (xAxis in population and yAxis in population):
         raise KeyError('population does not contain both columns for the histogram')
+
+    # create new column with radius in R_Earth if not existent
+    if ((yAxis == 'r' or yAxis == 'r_rEarth') and not 'r_rEarth' in population):
+        population['r_rEarth'] = r_Jup2r_Earth(population.r)
+        yAxis = 'r_rEarth'
 
     try:
         # if DataFrame has a column 'status', use only survived planets
@@ -192,7 +203,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         ax.set_xlabel('Orbital Period [d]')
     else:
         plt.xlabel(xAxis)
-    if yAxis == 'r':
+    if yAxis == 'r_rEarth':
         ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
     else:
         plt.ylabel(yAxis)
