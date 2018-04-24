@@ -165,7 +165,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     if normalize:
         # normalize to 1/100stars
-        Nsystems = len(survivedPlanets)
+        Nsystems = survivedPlanets.systemNo.nunique()
+        print('Number of Systems: {}'.format(Nsystems))
         h = h*100/Nsystems
         cbarlabel = r"Planets per 100 Stars per $P-R_P$ interval"
     else :
