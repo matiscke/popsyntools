@@ -66,7 +66,7 @@ def r_Jup2r_Earth(r):
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
                     smooth=False, normalize=True, discreteColors=False,
-                    logColormap=False, **funcKwargs):
+                    logColormap=False, annotated=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -98,6 +98,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     logColormap : Bool
         use logarithmic (log10) mapping of colors to data values. Has no effect
         if discreteColors = True.
+    annotated : Bool
+        show the value of each bin in the histogram
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -180,6 +182,16 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         linthresh=max(h.min(), threshold))
     else:
         colorNorm = None
+
+    if annotated:
+        import seaborn as sns
+        ax = sns.heatmap(h, annot=True, fmt=".1f", xticklabels=xedges)
+        ax.invert_yaxis()
+
+        #get ticks right
+        ax.set(xticks=range(len(xedges)), xticklabels=xedges,
+               yticks=range(len(yedges)), yticklabels=yedges)
+        return h, xedges, yedges, ax
 
     if discreteColors:
         """use discrete levels for occurrence. numbers are from
