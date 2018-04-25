@@ -65,7 +65,7 @@ def r_Jup2r_Earth(r):
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
-                    smooth=False, normalize=True, discreteColors=False,
+                    style='hist', smooth=False, normalize=True, discreteColors=False,
                     logColormap=False, annotated=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
@@ -171,7 +171,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         print('Number of Systems: {}'.format(Nsystems))
         h = h*100/Nsystems
         cbarlabel = r"Planets per 100 Stars per $P-R_P$ interval"
-    else :
+    else:
         cbarlabel = r"Planets per $P-R_P$ interval"
 
     if logColormap:
@@ -183,9 +183,11 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     else:
         colorNorm = None
 
-    if annotated:
+    if style == 'annotated':
+        # plot a histogram with values written in the bins.
         import seaborn as sns
-        ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm)
+        ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm,
+                         cbar_kws = {'label' : cbarlabel})
         ax.invert_yaxis()
 
         # get axis ticks right
@@ -199,9 +201,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
         plt.yticks(rotation=0)
 
-        return h, xedges, yedges, ax
-
-    if discreteColors:
+    elif style == 'contour':
         """use discrete levels for occurrence. numbers are from
         Petigura et al. 2018
         """
@@ -211,16 +211,19 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         contourKwargs = dict(extend='min')
         im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs,
                           **funcKwargs)
+        if logColormap:
+            print("logarithmic shading not possible with contours.")
     else:
-        cbarticks = None
+        # plot a normal 2D histogram
         X, Y = np.meshgrid(xedges, yedges)
         im = ax.pcolormesh(X, Y, h, norm=colorNorm, **funcKwargs)
 
     # eyecandy
     plt.xscale('log')
     plt.yscale('log')
-    cbar = fig.colorbar(im)
-    cbar.set_label(cbarlabel, labelpad=15)
+    if not style == 'annotated':
+        cbar = fig.colorbar(im)
+        cbar.set_label(cbarlabel, labelpad=15)
     if xAxis == 'period':
         ax.set_xlabel('Orbital Period [d]')
     else:
