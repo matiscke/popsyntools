@@ -177,7 +177,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     if logColormap:
         # logarithmic color mapping. Use linear scale around zero.
         import matplotlib.colors as colors
-        threshold  = 0.001
+        threshold  = 0.01
         colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
         linthresh=max(h.min(), threshold))
     else:
@@ -185,7 +185,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     if annotated:
         import seaborn as sns
-        ax = sns.heatmap(h, annot=True, fmt=".1f", xticklabels=xedges)
+        ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm)
         ax.invert_yaxis()
 
         # get axis ticks right
@@ -193,7 +193,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         for dim, edges in enumerate([xedges, yedges]):
             ticks = [" " for i in range(len(edges))]
             keptTicks = edges[::int(len(edges)/10)]
-            ticks[::int(len(edges)/10)] = ['{:.1f}'.format(lbl) for lbl in keptTicks]
+            ticks[::int(len(edges)/10)] = ['{:.1f}'.format(t) for t in keptTicks]
             ticklabels[dim] = ticks
         ax.set(xticks=range(len(ticklabels[0])), xticklabels=ticklabels[0],
                yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
