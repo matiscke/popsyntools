@@ -188,9 +188,17 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         ax = sns.heatmap(h, annot=True, fmt=".1f", xticklabels=xedges)
         ax.invert_yaxis()
 
-        #get ticks right
-        ax.set(xticks=range(len(xedges)), xticklabels=xedges,
-               yticks=range(len(yedges)), yticklabels=yedges)
+        # get axis ticks right
+        ticklabels = [None, None]
+        for dim, edges in enumerate([xedges, yedges]):
+            ticks = [" " for i in range(len(edges))]
+            keptTicks = edges[::int(len(edges)/10)]
+            ticks[::int(len(edges)/10)] = ['{:.1f}'.format(lbl) for lbl in keptTicks]
+            ticklabels[dim] = ticks
+        ax.set(xticks=range(len(ticklabels[0])), xticklabels=ticklabels[0],
+               yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
+        plt.yticks(rotation=0)
+
         return h, xedges, yedges, ax
 
     if discreteColors:
