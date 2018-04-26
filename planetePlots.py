@@ -219,19 +219,20 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         im = ax.pcolormesh(X, Y, h, norm=colorNorm, **funcKwargs)
 
     # eyecandy
-    plt.xscale('log')
-    plt.yscale('log')
+
     if not style == 'annotated':
         cbar = fig.colorbar(im)
         cbar.set_label(cbarlabel, labelpad=15)
-    if xAxis == 'period':
-        ax.set_xlabel('Orbital Period [d]')
-    else:
-        plt.xlabel(xAxis)
-    if yAxis == 'r_rEarth':
-        ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
-    else:
-        plt.ylabel(yAxis)
+        plt.xscale('log')
+        plt.yscale('log')
+    # if xAxis == 'period':
+    #     ax.set_xlabel('Orbital Period [d]')
+    # else:
+    #     plt.xlabel(xAxis)
+    # if yAxis == 'r_rEarth':
+    #     ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
+    # else:
+    #     plt.ylabel(yAxis)
 
     return h, xedges, yedges, ax
 
