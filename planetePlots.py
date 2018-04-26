@@ -203,7 +203,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         except ValueError:
             pass
         plt.yticks(rotation=0)
-
     elif kind == 'contour':
         """use discrete levels for occurrence. numbers are from
         Petigura et al. 2018
@@ -212,8 +211,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbarticklabels = [0.01, 0.03, 0.1, 0.3, 1, 3,10]
         cbarticks = np.log10(np.array(cbarticklabels) * 1e-2)
         contourKwargs = dict(extend='min')
-        im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs,
-                          **funcKwargs)
+        im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs)
         if logColormap:
             print("logarithmic shading not possible with contours.")
     else:
@@ -227,14 +225,14 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbar.set_label(cbarlabel, labelpad=15)
         plt.xscale('log')
         plt.yscale('log')
-    if xAxis == 'period':
-        ax.set_xlabel('Orbital Period [d]')
-    else:
-        plt.xlabel(xAxis)
-    if yAxis == 'r_rEarth':
-        ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
-    else:
-        plt.ylabel(yAxis)
+    # if xAxis == 'period':
+    #     ax.set_xlabel('Orbital Period [d]')
+    # else:
+    #     plt.xlabel(xAxis)
+    # if yAxis == 'r_rEarth':
+    #     ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
+    # else:
+    #     plt.ylabel(yAxis)
 
     return h, xedges, yedges, ax
 
