@@ -104,7 +104,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
-
     Returns
     -------
     h : numpy array
@@ -188,18 +187,21 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         # plot a histogram with values written in the bins.
         import seaborn as sns
         ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm,
-                         cbar_kws = {'label' : cbarlabel})
+                         cbar_kws = {'label' : cbarlabel}, **funcKwargs)
         ax.invert_yaxis()
 
         # get axis ticks right
-        ticklabels = [None, None]
-        for dim, edges in enumerate([xedges, yedges]):
-            ticks = [" " for i in range(len(edges))]
-            keptTicks = edges[::int(len(edges)/10)]
-            ticks[::int(len(edges)/10)] = ['{:.1f}'.format(t) for t in keptTicks]
-            ticklabels[dim] = ticks
-        ax.set(xticks=range(len(ticklabels[0])), xticklabels=ticklabels[0],
-               yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
+        try:
+            ticklabels = [None, None]
+            for dim, edges in enumerate([xedges, yedges]):
+                ticks = [" " for i in range(len(edges))]
+                keptTicks = edges[::int(len(edges)/10)]
+                ticks[::int(len(edges)/10)] = ['{:.1f}'.format(t) for t in keptTicks]
+                ticklabels[dim] = ticks
+            ax.set(xticks=range(len(ticklabels[0])), xticklabels=ticklabels[0],
+                   yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
+        except ValueError:
+            pass
         plt.yticks(rotation=0)
 
     elif kind == 'contour':
