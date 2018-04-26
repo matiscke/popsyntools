@@ -65,8 +65,8 @@ def r_Jup2r_Earth(r):
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
-                    style='hist', smooth=False, normalize=True, discreteColors=False,
-                    logColormap=False, annotated=False, **funcKwargs):
+                    kind='hist', smooth=False, normalize=True,
+                    logColormap=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -89,17 +89,18 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         range of values to be considered in x direction
     yRange : sequence of scalars
         range of values to be considered in y direction
+    kind : string
+        the kind of plot to produce
+        - 'hist' : 2D histogram
+        - 'contour' : contour plot with discrete color levels
+        - 'annotated' : 2D histogram with values written in the bins
     smooth : Bool
         if True, apply Gaussian filter to the histogram
     normalize : Bool
         normalize occurrence to planets per 100 stars
-    discreteColors : Bool
-        use discrete color levels instead of a continuum colormap
     logColormap : Bool
         use logarithmic (log10) mapping of colors to data values. Has no effect
-        if discreteColors = True.
-    annotated : Bool
-        show the value of each bin in the histogram
+        on a contour plot.
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -183,7 +184,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     else:
         colorNorm = None
 
-    if style == 'annotated':
+    if kind == 'annotated':
         # plot a histogram with values written in the bins.
         import seaborn as sns
         ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm,
@@ -201,7 +202,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                yticks=range(len(ticklabels[1])), yticklabels=ticklabels[1])
         plt.yticks(rotation=0)
 
-    elif style == 'contour':
+    elif kind == 'contour':
         """use discrete levels for occurrence. numbers are from
         Petigura et al. 2018
         """
@@ -220,7 +221,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     # eyecandy
 
-    if not style == 'annotated':
+    if not kind == 'annotated':
         cbar = fig.colorbar(im)
         cbar.set_label(cbarlabel, labelpad=15)
         plt.xscale('log')
