@@ -64,6 +64,18 @@ def read_simlist(filename, varlen=17):
     return simlist
 
 
+def write_header(filename, colname, func, *funcArgs, **funcKwargs):
+    import os
+    filename += '.hdr'
+    # if filename in os.listdir():
+    headertext = 'Column "{}" filled with values from function {}'.format(colname,
+        str(func))
+
+
+    with open(filename) as f:
+        f.write(headertext)
+
+
 def grid(start, stop, size, nsamples=50, log=False):
     """ Return a one-dimensional grid of repeating, evenly distributed values.
 
@@ -139,9 +151,11 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
             simlist[colname] = func(*funcArgs, num=len(simlist), **funcKwargs)
         except:
             # list comprehension for functions returning single values
-            import numpy as np
             simlist[colname] = np.array([func(*funcArgs, **funcKwargs)
                                         for i in range(len(simlist))])
+
+    # # write reference to header
+    # write_header(filename, colname, func, *funcArgs, **funcKwargs)
     return simlist
 
 
