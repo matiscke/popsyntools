@@ -109,7 +109,7 @@ def replace_line(filename, pattern, replacement, newFile=None, backup=True):
     filename : string
         path to file
     pattern : string
-        pattern to search for in the line to replace
+        pattern to replace in the file
     replacement : string
         content of the new line
     newFile : string, optional
