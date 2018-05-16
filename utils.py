@@ -3,6 +3,7 @@
 Written by: Martin Schlecker
 schlecker@mpia.de
 """
+import numpy as np
 
 def get_M0(rc, Sigma0, expo, r0=5.2):
     """Compute the total disk mass from initial condition parameters.
@@ -131,3 +132,27 @@ def replace_line(filename, pattern, replacement, backup=True):
 
     remove(filename)
     move(abs_path, filename)
+
+
+def linearScale(x1, x2, y1, y2, size):
+    """ Return an array that scales linearly in [x1,x2] taking values in [y1,y2].
+
+    The function evaluates y=((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2 for a
+    linear grid x of length as specified by 'size'.
+
+    Parameters
+    ----------
+    x1 : float
+        min x value
+    x2 : float
+        max x value
+    y1 : float
+        min value in returned array
+    y2 : float
+        max value in returned array
+    size : int
+        length of returned array
+    """
+
+    x = np.linspace(x1, x2, size)
+    return ((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2
