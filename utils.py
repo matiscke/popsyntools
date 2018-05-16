@@ -134,25 +134,27 @@ def replace_line(filename, pattern, replacement, backup=True):
     move(abs_path, filename)
 
 
-def linearScale(x1, x2, y1, y2, size):
-    """ Return an array that scales linearly in [x1,x2] taking values in [y1,y2].
+def linearScale(x1, x2, y1, y2, x):
+    """ Evaluate y(x) of a linear function going through (x1,y1) and (x2,y2).
 
-    The function evaluates y=((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2 for a
-    linear grid x of length as specified by 'size'.
+    The function returns y = ((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2
 
     Parameters
     ----------
     x1 : float
-        min x value
+        first x value
     x2 : float
-        max x value
+        second x value
     y1 : float
-        min value in returned array
+        first y value
     y2 : float
-        max value in returned array
-    size : int
-        length of returned array
-    """
+        second y value
+    x : float
+        x value at which to evaluate the function
 
-    x = np.linspace(x1, x2, size)
+    Returns
+    -------
+    y : float
+        y(x) of above function
+    """
     return ((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2
