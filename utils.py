@@ -98,3 +98,34 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     # convert period from seconds to days
     pop_posSma['period'] = pop_posSma['period']/86400
     return pop_posSma
+
+
+def replace_line(filename, pattern, replacement):
+    """ Replace a single line in a file.
+
+    Parameters
+    ----------
+    filename : string
+        path to file
+    pattern : string
+        pattern to search for in the line to replace
+    replacement : string
+        content of the new line
+
+    Returns
+    -------
+    """
+    from tempfile import mkstemp
+    from shutil import move
+    from os import fdopen, remove
+
+    #Create temp file
+    fh, abs_path = mkstemp()
+    with fdopen(fh,'w') as new_file:
+        with open(filename) as old_file:
+            for line in old_file:
+                new_file.write(line.replace(pattern, replacement))
+    #Remove original file
+    remove(filename)
+    #Move new file
+    move(abs_path, filename)
