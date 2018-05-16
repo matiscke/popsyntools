@@ -101,7 +101,7 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     return pop_posSma
 
 
-def replace_line(filename, pattern, replacement, backup=True):
+def replace_line(filename, pattern, replacement, newFile=None, backup=True):
     """ Replace a single line in a file.
 
     Parameters
@@ -112,9 +112,11 @@ def replace_line(filename, pattern, replacement, backup=True):
         pattern to search for in the line to replace
     replacement : string
         content of the new line
-    backup : bool
+    newFile : string, optional
+        filename of changed file
+    backup : bool, optional
         create a backup file before overwriting. The backup file has the name
-        of the original file with '.bak' added.
+        of the original file with '.bak' added. Not active if newFile is given.
     """
     from tempfile import mkstemp
     from shutil import move, copy2
@@ -127,11 +129,14 @@ def replace_line(filename, pattern, replacement, backup=True):
         with open(filename) as old_file:
             for line in old_file:
                 new_file.write(line.replace(pattern, replacement))
-    if backup:
-        copy2(filename, filename + '.bak')
 
-    remove(filename)
-    move(abs_path, filename)
+    if not newFile:
+        newFile = filename
+        if backup:
+            copy2(filename, filename + '.bak')
+        remove(filename)
+
+    move(abs_path, newFile)
 
 
 def linearScale(x1, x2, y1, y2, x):
