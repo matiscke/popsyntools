@@ -4,6 +4,7 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 import numpy as np
+import pandas as pd
 
 def get_M0(rc, Sigma0, expo, r0=5.2):
     """Compute the total disk mass from initial condition parameters.
@@ -163,3 +164,38 @@ def linearScale(x1, x2, y1, y2, x):
         y(x) of above function
     """
     return ((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2
+
+
+def get_diskFractions(population, timeColumn='t', Ntimes=100):
+    """ Compute fractions of remaining disks from disk dispersal times.
+
+    For a list of disk dispersal times, the function evaluates for a grid of
+    times between zero and the maximum dispersal time how many disks are left.
+
+    Parameters
+    ----------
+    population : Pandas DataFrame
+        a data frame with a column containing the disk dispersal times
+    timeColumn : string
+        name of the column containing the dispersal times
+    Ntimes : integer
+        number of times at which to evaluate the disk fraction
+
+    Returns
+    -------
+    times : numpy array
+        times at which the disk fractions were evaluated
+    fractions : numpy array
+        fractions of remaining disks for each time
+
+    Example
+    -------
+    >>> disks = pd.DataFrame([3799270., 3495080., 7174510., 8329200., 4125000.],columns=['t'])
+    >>> get_diskFractions(disks, Ntimes=5)
+    (array([      0., 2082300., 4164600., 6246900., 8329200.]),
+     array([1. , 1. , 0.4, 0.4, 0. ]))
+    """
+    nDisks = len(population)
+    times = np.linspace(0., max(population[timeColumn]), Ntimes)
+    return times, np.array([len(population[population[timeColumn] > t])/nDisks
+        for t in times])
