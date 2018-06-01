@@ -9,10 +9,6 @@ import numpy as np
 import pandas as pd
 import tables
 
-# Define au, Msol, Gravitational Constant in cm, g, s
-au = 1.496e13
-Msol = 1.98855e33
-G = 6.6740831e-8
 
 def rename_tracksColumns(planetTracks):
     """Rename some of the columns of a planet tracks table.

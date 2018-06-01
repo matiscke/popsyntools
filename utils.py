@@ -6,6 +6,11 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 
+# Define au, Msol, Gravitational Constant in cm, g, s
+au = 1.496e13
+Msol = 1.98855e33
+G = 6.6740831e-8
+
 def get_M0(rc, Sigma0, expo, r0=5.2):
     """Compute the total disk mass from initial condition parameters.
 
