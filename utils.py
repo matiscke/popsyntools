@@ -88,7 +88,7 @@ def get_orbitalPeriod(population, MstarRel=0.1):
     >>> a_Mars = 1.523662
     >>> test = pd.DataFrame({'a' : [a_Earth, a_Mars]})
     >>> get_orbitalPeriod(test, MstarRel)
-            a      period
+              a      period
     0  1.000000  365.257762
     1  1.523662  686.961516
     """
@@ -195,10 +195,10 @@ def get_diskFractions(population, timeColumn='t', Ntimes=100):
 
     Example
     -------
-    >>> disks = pd.DataFrame([3799270., 3495080., 7174510., 8329200., 4125000.],columns=['t'])
+    >>> disks = pd.DataFrame([3.8e6, 3.5e6, 7e6, 9e5, 1.1e6],columns=['t'])
     >>> get_diskFractions(disks, Ntimes=5)
-    (array([      0., 2082300., 4164600., 6246900., 8329200.]),
-     array([1. , 1. , 0.4, 0.4, 0. ]))
+    (array([      0., 1750000., 3500000., 5250000., 7000000.]),
+    array([1. , 0.6, 0.4, 0.2, 0. ]))
     """
     nDisks = len(population)
     times = np.linspace(0., max(population[timeColumn]), Ntimes)
