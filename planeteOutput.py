@@ -120,7 +120,7 @@ def read_simFromFolder(foldername):
     return simulation
 
 
-def read_popHdf5(filename):
+def read_popHdf5(filename, hierarchical=False):
     """Reads a population from a hdf5 file.
 
     The output is a dictionary of pandas panels that correspond to a simulation
@@ -143,6 +143,15 @@ def read_popHdf5(filename):
     """
     # read hdf5 file with pytables
     tab = tables.open_file(filename)
+    for i, sim in enumerate(tab.walk_groups('/'), 1): # ignore i=0 (rootGroup)
+        print(sim)
+        for array in sim:
+            if "planet" in array.name:                # only planet tracks
+                df = pd.DataFrame(array.read())
+                df = rename_tracksColumns(df)
+                population = pd.concat(population, df)
+
+
     population = {}
     for i, sim in enumerate(tab.walk_groups('/')):
         if i != 0:
