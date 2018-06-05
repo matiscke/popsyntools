@@ -130,6 +130,9 @@ def read_popHdf5(filename, hierarchical=False):
     ----------
     filename : string
         filename of the HDF5 file containing the population data
+    hierarchical : bool
+        if True, return a tree structure of systems and planets. Otherwise, all
+        data is written into one data frame.
 
     Returns
     -------
@@ -142,7 +145,9 @@ def read_popHdf5(filename, hierarchical=False):
     >>> SIM1planet005tracks = population['SIM1']['planet_005',:]
     """
     if hierarchical:
+        # read into a hierarchical structure
         population = {}
+        tab = tables.open_file(filename)
         for i, sim in enumerate(tab.walk_groups('/')):
             if i != 0:
                 # ignore rootGroup
@@ -156,16 +161,20 @@ def read_popHdf5(filename, hierarchical=False):
                         dfcontainer[array.name] = df
                 population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
     else:
+        # read everything into one data frame
         import h5py
         f = h5py.File(filename, 'r')
         NoColumns = np.shape(f['SIM0001']['planet_001'])[1]
         population = pd.DataFrame(columns=range(NoColumns))
         for sim in f:
+            print(sim)
+            sim = f.get(sim)
             for array in sim:
+
                 if 'planet' in array:
                     population = pd.concat([population, pd.DataFrame(sim.get(array)[:])])
         population = rename_tracksColumns(population)
-             
+
     return population
 
 
