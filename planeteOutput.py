@@ -141,30 +141,31 @@ def read_popHdf5(filename, hierarchical=False):
     >>> population = read_popHdf5(filename)
     >>> SIM1planet005tracks = population['SIM1']['planet_005',:]
     """
-    # read hdf5 file with pytables
-    tab = tables.open_file(filename)
-    for i, sim in enumerate(tab.walk_groups('/'), 1): # ignore i=0 (rootGroup)
-        print(sim)
-        for array in sim:
-            if "planet" in array.name:                # only planet tracks
-                df = pd.DataFrame(array.read())
-                df = rename_tracksColumns(df)
-                population = pd.concat(population, df)
-
-
-    population = {}
-    for i, sim in enumerate(tab.walk_groups('/')):
-        if i != 0:
-            # ignore rootGroup
-            print(sim)
-            dfcontainer = {}
+    if hierarchical:
+        population = {}
+        for i, sim in enumerate(tab.walk_groups('/')):
+            if i != 0:
+                # ignore rootGroup
+                print(sim)
+                dfcontainer = {}
+                for array in sim:
+                    if "planet" in array.name:
+                        # only planet tracks
+                        df = pd.DataFrame(array.read())
+                        df = rename_tracksColumns(df)
+                        dfcontainer[array.name] = df
+                population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
+    else:
+        import h5py
+        f = h5py.File(filename, 'r')
+        NoColumns = np.shape(f['SIM0001']['planet_001'])[1]
+        population = pd.DataFrame(columns=range(NoColumns))
+        for sim in f:
             for array in sim:
-                if "planet" in array.name:
-                    # only planet tracks
-                    df = pd.DataFrame(array.read())
-                    df = rename_tracksColumns(df)
-                    dfcontainer[array.name] = df
-            population[sim._v_name] = pd.Panel.from_dict(dfcontainer)
+                if 'planet' in array:
+                    population = pd.concat([population, pd.DataFrame(sim.get(array)[:])])
+        population = rename_tracksColumns(population)
+             
     return population
 
 
