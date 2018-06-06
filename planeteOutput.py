@@ -120,7 +120,7 @@ def read_simFromFolder(foldername):
     return simulation
 
 
-def read_popHdf5(filename, hierarchical=False):
+def read_popHdf5(filename, hierarchical=False, nSample=None):
     """Reads a population from a hdf5 file.
 
     The output is a dictionary of pandas panels that correspond to a simulation
@@ -133,7 +133,10 @@ def read_popHdf5(filename, hierarchical=False):
     hierarchical : bool
         if True, return a tree structure of systems and planets. Otherwise, all
         data is written into one data frame.
-
+    nSample : integer
+        number of samples randomly drawn from the simulations in the file.
+        Recommended for large populations where it is not feasible to read
+        everything into one table.
     Returns
     -------
     population : dict
@@ -163,14 +166,20 @@ def read_popHdf5(filename, hierarchical=False):
     else:
         # read everything into one data frame
         import h5py
-        f = h5py.File(filename, 'r')
-        NoColumns = np.shape(f['SIM0001']['planet_001'])[1]
+        h5file = h5py.File(filename, 'r')
+        NoColumns = np.shape(h5file['SIM0001']['planet_001'])[1]
         population = pd.DataFrame(columns=range(NoColumns))
-        for sim in f:
-            print(sim)
-            sim = f.get(sim)
-            for array in sim:
 
+        if nSample:
+            sample = np.sort(np.random.choice([sim for sim in h5file], nSample,
+                          replace=False))
+        else:
+            sample = [sim for sim in h5file]
+
+        for sim in sample:
+            print(sim)
+            sim = h5file.get(sim)
+            for array in sim:
                 if 'planet' in array:
                     population = pd.concat([population, pd.DataFrame(sim.get(array)[:])])
         population = rename_tracksColumns(population)
