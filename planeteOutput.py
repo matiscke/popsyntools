@@ -226,3 +226,30 @@ def read_ref_red(ref_redFilename):
     tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
     tracks = rename_tracksColumns(tracks, ref_red=True)
     return tracks
+
+
+def join_dataframes(simlist, ref_red):
+    """ Join a simulation list with their resulting planet population.
+
+    Parameters
+    ----------
+    simlist : Pandas DataFrame
+        data frame containing the simulation list. Has to contain a column
+        'simName'.
+    ref_red : Pandas DataFrame
+        data frame created from a 'ref_red' file. Contains the parameters of
+        all systems of a population at a given time. Has to contain a column
+        'isystemorig'.
+
+    Returns
+    -------
+    jointDF : Pandas DataFrame
+        data frame including data from both input tables. Sorted by a joint
+        index from 'simName' and 'isystemorig' columns.
+    """
+    try:
+        simlist.simName = simlist.simName.astype('int')
+    except:
+        pass
+
+    return ref_red.set_index('isystemorig').join(simlist.set_index('simName'))
