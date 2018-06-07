@@ -10,17 +10,19 @@ import pandas as pd
 import tables
 
 
-def rename_tracksColumns(planetTracks):
+def rename_tracksColumns(planetTracks, ref_red=False):
     """Rename some of the columns of a planet tracks table.
 
     Parameters
     ----------
     planetTracks : Pandas DataFrame
         Table with the tracks of a single planet
+    ref_red : bool
+        rename additional columns for 'ref_red' files
 
     Returns
     -------
-    planetTracks : Pandas DataFrame
+    dfOut : Pandas DataFrame
         DataFrame with changed column names
     """
     colnames = {
@@ -82,9 +84,21 @@ def rename_tracksColumns(planetTracks):
      107: 'lcontenv',
      108: 'lcontsum',
      116: 'systemNo',
-     117: 'planetNo',
-     118: 'NoEmbryos'}
-    return planetTracks.rename(columns=colnames)
+     117: 'planetNo'}
+     # 118: 'NoEmbryos'}
+    dfOut = planetTracks.rename(columns=colnames)
+
+    if ref_red:
+        ref_redColumns = {
+        118: 'isystem',
+        119: 'iplanet',
+        120: 'isystemorig',
+        121: 'iplanetorig',
+        122: 'nplanets',
+        123: 'line'
+        }
+        dfOut = dfOut.rename(columns=ref_redColumns)
+    return dfOut
 
 
 def read_simFromFolder(foldername):
@@ -210,5 +224,5 @@ def read_ref_red(ref_redFilename):
     # >>>
     # """
     tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
-    tracks = rename_tracksColumns(tracks)
+    tracks = rename_tracksColumns(tracks, ref_red=True)
     return tracks
