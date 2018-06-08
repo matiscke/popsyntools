@@ -7,6 +7,7 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 import plotstyle
 
@@ -236,6 +237,71 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     return h, xedges, yedges, ax
 
+
+def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
+                           sim2name="Type 3"):
+    """ compare the surface density as a function of time of two simulations.
+
+    Parameters
+    ----------
+    disk1file : string
+        path to the 'disk_structure' file of disk 1
+    disk2file : string
+        path to the 'disk_structure' file of disk 2
+    sim1name : string
+        Name of simulation 1 for the legend
+    sim2name : string
+        Name of simulation 2 for the legend
+
+    Returns
+    -------
+    fig : matplotlib figure
+        figure with the plot
+    ax : array
+        matplotlib axes with the plot
+    """
+
+    disk1 = pd.read_csv(disk1file, delim_whitespace=True,
+                        header=None).rename(columns={9:'t', 1:'r', 2:'sigma'})
+    disk2 = pd.read_csv(disk2file, delim_whitespace=True,
+                        header=None).rename(columns={9:'t', 1:'r', 2:'sigma'})
+
+    T1 = [t for t in disk1.t.unique()]
+    T2 = [t for t in disk2.t.unique()]
+
+    # compute difference of surface density
+    disk1['sigDiff'] = disk2['sigma'] - disk1['sigma']
+
+    fig, ax = plt.subplots(2, sharex=True)
+    for t1 in T1:
+        ax[0].plot(disk1[disk1['t'] == t1]['r'], disk1[disk1['t'] == t1]['sigma'],
+                   c=cm.Blues(t1/.4/max(T1)), label='{:1.0E}'.format(t1))
+        ax[0].plot(disk2[disk2['t'] == t1]['r'], disk2[disk2['t'] == t1]['sigma'],
+                   c=cm.Greens(t1/.4/max(T1)))
+    ax[0].set_xscale('log')
+    ax[0].set_yscale('log')
+
+    # plot difference
+    for t1 in T1:
+        ax[1].plot(disk1[disk1['t'] == t1]['r'], disk1[disk1['t'] == t1]['sigDiff'],
+                   c=cm.Reds(t1/.4/max(T1)))
+
+    ax[1].set_xlabel('r [au]')
+    ax[0].set_ylabel('$\Sigma$ [$\mathrm{g}/\mathrm{cm}^2$]')
+    ax[1].set_ylabel('$\Delta \Sigma$ [$\mathrm{g}/\mathrm{cm}^2$]')
+
+    # custom legend
+    from matplotlib.lines import Line2D
+    custom_lines = [Line2D([0], [0], color=cm.Blues(0.5), lw=2),
+                    Line2D([0], [0], color=cm.Greens(0.5), lw=2),
+                    Line2D([0], [0], color=cm.Reds(0.5), lw=2)]
+    ax[0].legend(custom_lines[:2], ['$\Sigma$ ({})'.format(sim1name), '$\Sigma$ ({})'.format(sim2name)])
+    ax[1].legend(custom_lines[2:], ['$\Sigma$ ({}) - $\Sigma$ ({})'.format(sim2name, sim1name)])
+
+    return fig, ax
+
+
+################################################################################
 
 """ Plotting functions meant for single planet tracks.
 """
