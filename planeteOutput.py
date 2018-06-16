@@ -130,6 +130,7 @@ def read_simFromFolder(foldername):
             print('Reading {}...'.format(planetName))
             planetTracks = pd.read_csv(name, delim_whitespace=True, header=None)
             planetTracks = rename_tracksColumns(planetTracks)
+            planetTracks.name = planetName
             simulation[planetName] = planetTracks
     return simulation
 
