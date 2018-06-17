@@ -301,6 +301,103 @@ def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
     return fig, ax
 
 
+def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
+    """
+    plot evolutionary tracks of a multiplanet system.
+
+    The function plots semimajor axis as a function of time, displaying planet
+    radii as varying line widths and planet mass as color code. The today-values
+    of a real system can be added for comparison.
+
+    Parameters
+    ----------
+    simulation : dictionary
+        dictionary of pandas DataFrames, one for each planet, as returned by
+        planeteOutput.read_simFromFolder
+    truths : pandas DataFrame
+        DataFrame containing the planet parameters of a real system. Has to have
+        columns for Semimajor axis 'a', planet radius 'r', and planet mass 'm'.
+    lwRange : tuple
+        the range of line widths for the plot. Widths vary along the tracks
+        according to the current radius of a planet. The values given in this
+        parameter correspond to the minimum and maximum planet radius in the
+        whole simulation.
+
+    Returns
+    -------
+    fig : matplotlib figure
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    """
+    import matplotlib.colors as colors
+    from matplotlib.backend_bases import GraphicsContextBase, RendererBase
+
+    # dirty hack to get round line caps
+    class GC(GraphicsContextBase):
+        def __init__(self):
+            super().__init__()
+            self._capstyle = 'round'
+
+    def custom_new_gc(self):
+        return GC()
+    RendererBase.new_gc = types.MethodType(custom_new_gc, RendererBase)
+
+
+    from matplotlib.collections import LineCollection
+    fig, ax = plt.subplots()
+
+    # find max planet mass for color code, radius range for line width
+    maxM = max([max(simulation[df]['m']) for df in simulation])
+    print(maxM)
+    colorNorm = colors.LogNorm(0.01, maxM)
+    rRange = (min([min(simulation[df]['r']) for df in simulation]),
+              max([max(simulation[df]['r']) for df in simulation]))
+
+    def radius2linewidth(r):
+        return (r - rRange[0])/(rRange[1] - rRange[0])*(lwRange[1] - lwRange[0]) + lwRange[0]
+
+    for df in simulation:
+        planet = simulation[df]
+
+        # exclude planets that never grew
+        if max(planet['m']) < .2:
+            print('exclude {}: too small'.format(planet.name))
+            continue
+
+        # restrict data to times with planet status = 0
+        planet = planet[planet['status'] == 0]
+
+        t = planet['t'][::10]
+        a = planet['a'][::10]
+        m = planet['m'][::10]
+        r = planet['r'][::10]
+
+        # linearly transform line widths into radius range
+        lw = radius2linewidth(r)
+
+        # create a set of line segments
+        points = np.array([t, a]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        lc = LineCollection(segments, linewidths=lw, cmap='inferno_r', norm=colorNorm)
+        lc.set_array(m)
+        ax.add_collection(lc)
+
+    if not truths is None:
+        ax.scatter([max(t) + 1e6 for i in range(len(truths))], truths['a'], s=radius2linewidth(truths['r']),
+                   c=truths['m'], cmap='inferno_r', norm=colorNorm)
+
+    # add a colorbar
+    cbar = fig.colorbar(lc)
+    cbar.set_label('Planet Mass [$\mathrm{M_{Earth}}$]')
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('Time [yr]')
+    ax.set_ylabel('Semimajor Axis [au]')
+
+    return fig, ax
+
 ################################################################################
 
 """ Plotting functions meant for single planet tracks.
