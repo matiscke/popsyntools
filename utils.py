@@ -204,3 +204,20 @@ def get_diskFractions(population, timeColumn='t', Ntimes=100):
     times = np.linspace(0., max(population[timeColumn]), Ntimes)
     return times, np.array([len(population[population[timeColumn] > t])/nDisks
         for t in times])
+
+def get_Trappist1data():
+    """
+    return a table with the planet parameters of the TRAPPIST-1 system.
+
+    Masses, semimajor axes, and radii are from Grimm et al. 2018.
+
+    Returns
+    -------
+    df : pandas DataFrame
+        Data frame containing the planet parameters, indexed by planet names
+    """
+    T1data = {'name': ['b', 'c', 'd', 'e', 'f', 'g', 'h'],
+              'a': [0.01155, 0.01582, 0.02228, 0.02928, 0.03853, 0.04688, 0.06193],
+             'r': [1.12, 1.10, .766, .913, 1.05, 1.15, .775],
+             'm': [1.017,1.156,0.297, 0.772,0.934,1.148,0.331]}
+    return pd.DataFrame(T1data, index=T1data['name'])
