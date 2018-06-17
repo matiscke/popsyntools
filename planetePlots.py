@@ -330,6 +330,7 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
     ax : matplotlib axis
         axis with the plot
     """
+    import types
     import matplotlib.colors as colors
     from matplotlib.backend_bases import GraphicsContextBase, RendererBase
 

@@ -4,20 +4,19 @@
 import seaborn as sns
 
 # Set plot style
-sns.set(context='notebook', style='whitegrid', font_scale=1., palette='colorblind',
-        rc={
+sns.set(context='notebook', style='ticks', font_scale=1.3, palette='pastel',\
+    rc={
 'text.usetex':True,
 'text.latex.unicode':True,
 'font.family' : 'sans-serif',
+#'font.serif':'Computer Modern',
 'font.style'         : 'normal',
 'font.variant'        : 'normal',
 'font.weight'         : 'normal',
 'font.stretch'        : 'normal',
 'savefig.dpi'         : 400,
-'lines.linewidth'   : 1.0,
-'lines.markersize'      : 3.,
-'image.cmap'          : 'inferno',  # set default cmap to inferno
-'figure.subplot.left'    : 0.13,    # the left side of the subplots of the figure
+'lines.linewidth'     : 1.0,
+'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
 'figure.subplot.bottom'  : 0.13,   # the bottom of the subplots of the figure
 'figure.subplot.top'     : 0.96,    # the top of the subplots of the figure
