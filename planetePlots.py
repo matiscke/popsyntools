@@ -369,10 +369,10 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
         # restrict data to times with planet status = 0
         planet = planet[planet['status'] == 0]
 
-        t = planet['t'][::10]
-        a = planet['a'][::10]
-        m = planet['m'][::10]
-        r = planet['r'][::10]
+        t = planet['t'][::5]
+        a = planet['a'][::5]
+        m = planet['m'][::5]
+        r = planet['r'][::5]
 
         # linearly transform line widths into radius range
         lw = radius2linewidth(r)
