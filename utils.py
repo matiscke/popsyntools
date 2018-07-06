@@ -210,6 +210,8 @@ def get_Trappist1data():
     return a table with the planet parameters of the TRAPPIST-1 system.
 
     Masses, semimajor axes, and radii are from Grimm et al. 2018.
+    Ice mass fractions are computed by the internal structure model of the
+    COMPLETO code of Bern (2018).
 
     Returns
     -------
