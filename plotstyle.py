@@ -4,10 +4,10 @@
 import seaborn as sns
 
 # Set plot style
-sns.set(context='notebook', style='ticks', font_scale=1.3, palette='pastel',\
+sns.set(context='notebook', style='ticks', font_scale=1.0, palette='pastel',\
     rc={
-'text.usetex':True,
-'text.latex.unicode':True,
+# 'text.usetex':True,
+# 'text.latex.unicode':True,
 'font.family' : 'sans-serif',
 #'font.serif':'Computer Modern',
 'font.style'         : 'normal',
@@ -19,7 +19,7 @@ sns.set(context='notebook', style='ticks', font_scale=1.3, palette='pastel',\
 'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
 'figure.subplot.bottom'  : 0.13,   # the bottom of the subplots of the figure
-'figure.subplot.top'     : 0.96,    # the top of the subplots of the figure
+'figure.subplot.top'     : 0.95,    # the top of the subplots of the figure
 'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
 'axes.xmargin' : 0.02,             # default margin for autoscale
 'axes.ymargin' : 0.02,
