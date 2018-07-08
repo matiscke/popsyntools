@@ -166,10 +166,17 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         import scipy.ndimage as nd
         h = nd.gaussian_filter(h,(4,2))
 
+    # obtain number of systems
+    if 'isystem' in survivedPlanets:
+        Nsystems = survivedPlanets.isystem.nunique()
+    else:
+        print("""Column "isystem" missing - old ref_red file? Using column
+              "systemNo" instead. Please check correct normalization.""")
+        Nsystems = survivedPlanets.systemNo.nunique()
+    print('Number of Systems: {}'.format(Nsystems))
+
     if normalize:
         # normalize to 1/100stars
-        Nsystems = survivedPlanets.systemNo.nunique()
-        print('Number of Systems: {}'.format(Nsystems))
         h = h*100/Nsystems
         cbarlabel = r"Planets per 100 Stars per $P-R_P$ interval"
     else:
@@ -181,14 +188,16 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         threshold  = 0.01
         colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
         linthresh=max(h.min(), threshold))
+        cbar_kws = {'label' : cbarlabel, 'ticks' : [.01, .1, 1., 1e1, 1e2, 1e3]}
     else:
         colorNorm = None
+        cbar_kws = {'label' : cbarlabel}
 
     if kind == 'annotated':
         # plot a histogram with values written in the bins.
         import seaborn as sns
         ax = sns.heatmap(h, annot=True, fmt=".1f", norm=colorNorm,
-                         cbar_kws = {'label' : cbarlabel}, **funcKwargs)
+                         cbar_kws = cbar_kws, **funcKwargs)
         ax.invert_yaxis()
 
         # get axis ticks right
@@ -226,14 +235,14 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbar.set_label(cbarlabel, labelpad=15)
         plt.xscale('log')
         plt.yscale('log')
-    # if xAxis == 'period':
-    #     ax.set_xlabel('Orbital Period [d]')
-    # else:
-    #     plt.xlabel(xAxis)
-    # if yAxis == 'r_rEarth':
-    #     ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
-    # else:
-    #     plt.ylabel(yAxis)
+        if xAxis == 'period':
+            ax.set_xlabel('Orbital Period [d]')
+        else:
+            plt.xlabel(xAxis)
+        if yAxis == 'r_rEarth':
+            ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
+        else:
+            plt.ylabel(yAxis)
 
     return h, xedges, yedges, ax
 
