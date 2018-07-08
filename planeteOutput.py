@@ -11,7 +11,11 @@ import tables
 
 
 def rename_tracksColumns(planetTracks, ref_red=False):
-    """Rename some of the columns of a planet tracks table.
+    """Rename some of the columns of a planet tracks or ref_red table.
+
+    Newer versions of ref_red files (from ~May 2018) contain additional 
+    columns that are renamed if the number of columns exceeds the size of the
+    previous ref_reds.
 
     Parameters
     ----------
@@ -89,15 +93,17 @@ def rename_tracksColumns(planetTracks, ref_red=False):
     dfOut = planetTracks.rename(columns=colnames)
 
     if ref_red:
-        ref_redColumns = {
-        118: 'isystem',
-        119: 'iplanet',
-        120: 'isystemorig',
-        121: 'iplanetorig',
-        122: 'nplanets',
-        123: 'line'
-        }
-        dfOut = dfOut.rename(columns=ref_redColumns)
+        # check if it's a recent ref_red file and add additional columns
+        if len(dfOut.columns) > 120:
+            ref_redColumns = {
+            118: 'isystem',
+            119: 'iplanet',
+            120: 'isystemorig',
+            121: 'iplanetorig',
+            122: 'nplanets',
+            123: 'line'
+            }
+            dfOut = dfOut.rename(columns=ref_redColumns)
     return dfOut
 
 
