@@ -16,6 +16,11 @@ def categorize(population, Mgiant=300.):
         planet population
     Mgiant : float
         minimum mass for a planet to be considered a giant
+
+    Returns
+    -------
+    categories : dictionary
+        amount of planets in each category
     """
     Nplanets = len(population[population['status'] == 0])
     Nplanets_ejected = len(population[population['status'] == 2])
@@ -31,3 +36,7 @@ def categorize(population, Mgiant=300.):
     print('Number of planets more massive than M_Earth and ejected: {}'.format(NltEarth_ejected))
     print('Number of planets more massive than M_giant: {}'.format(Ngiants))
     print('Number of planets more massive than M_giant and ejected: {}'.format(Ngiants_ejected))
+
+    return {'Nplanets' : Nplanets, 'Nplanets_ejected' : Nplanets_ejected,
+            'NltEarth' : NltEarth, 'NltEarth_ejected' : NltEarth_ejected,
+            'Ngiants' : Ngiants, 'Ngiants_ejected' : Ngiants_ejected}
