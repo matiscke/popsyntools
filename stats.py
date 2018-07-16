@@ -7,6 +7,34 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 
+
+def filterPlanets(population, type):
+    """ return a population with planets of a certain type.
+
+    Parameters
+    ----------
+    population : pandas DataFrame
+        planet population
+    type : string
+        type of planet
+
+    Returns
+    -------
+    population_filtered : pandas DataFrame
+        filtered population
+    """
+    if not type == 'giants_ejected':
+        # first, keep only survived planets
+        population = population[population['status'] == 0]
+
+    if type == 'all':
+        population_filtered = population[population['m'] > 0.]
+    elif type == 'ltEarth':
+        population_filtered = population[population['m'] > 1.]
+
+    return population_filtered
+
+
 def categorize(population, Mgiant=300.):
     """ Sort planets into different categories.
 
