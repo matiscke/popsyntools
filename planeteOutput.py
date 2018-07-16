@@ -279,9 +279,28 @@ class population:
         elif ("hd5" in populationFile) or ("hdf5" in populationFile):
             self.data = read_popHdf5(populationFile)
         else:
-            print("not able to determine file type. Please import manually by using a suitable import function.")
+            print("""not able to determine file type. Please import manually by
+                    using a suitable import function.""")
 
     def categorize(self):
         """ Sort planets into different categories.
         """
         self.categories = stats.categorize(self.data)
+
+    def planetType(self, type):
+        """ Restrict population to a certain planet type.
+        """
+        self.data = stats.filterPlanets(self.data, type)
+
+    def get_typeStats(self):
+        """ Compute statistics for specific planet types.
+        """
+        types = ['all', 'ltEarth', 'Earth', 'SuperEarth']
+        typeStatsTable = {}
+
+        for type in types:
+            population_filtered = stats.filterPlanets(self.data, type)
+            statistics = stats.get_typeStats(self.data, population_filtered)
+            typeStatsTable[type] = statistics
+
+        self.typeStats = pd.DataFrame(typeStatsTable)
