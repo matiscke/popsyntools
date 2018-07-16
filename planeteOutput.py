@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import tables
 
+import stats
+
 
 def rename_tracksColumns(planetTracks, ref_red=False):
     """Rename some of the columns of a planet tracks or ref_red table.
@@ -261,15 +263,14 @@ def join_dataframes(simlist, ref_red):
 
     return ref_red.set_index('isystemorig').join(simlist.set_index('simName'))
 
-    
+
 class population:
     """ a planet population consisting of systems which in turn contain planets.
     """
     def __init__(self):
         self.data = None
-        return
 
-    def readData(populationFile):
+    def readData(self, populationFile):
         """ reads data into a pandas DataFrame.
         """
         if "ref_red" in populationFile:
@@ -278,3 +279,8 @@ class population:
             self.data = read_popHdf5(populationFile)
         else:
             print("not able to determine file type. Please import manually by using a suitable import function.")
+
+    def categorize(self):
+        """ Sort planets into different categories.
+        """
+        self.categories = stats.categorize(self.data)
