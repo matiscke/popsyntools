@@ -13,7 +13,7 @@ import tables
 def rename_tracksColumns(planetTracks, ref_red=False):
     """Rename some of the columns of a planet tracks or ref_red table.
 
-    Newer versions of ref_red files (from ~May 2018) contain additional 
+    Newer versions of ref_red files (from ~May 2018) contain additional
     columns that are renamed if the number of columns exceeds the size of the
     previous ref_reds.
 
@@ -260,3 +260,21 @@ def join_dataframes(simlist, ref_red):
         pass
 
     return ref_red.set_index('isystemorig').join(simlist.set_index('simName'))
+
+    
+class population:
+    """ a planet population consisting of systems which in turn contain planets.
+    """
+    def __init__(self):
+        self.data = None
+        return
+
+    def readData(populationFile):
+        """ reads data into a pandas DataFrame.
+        """
+        if "ref_red" in populationFile:
+            self.data = read_ref_red(populationFile)
+        elif ("hd5" in populationFile) or ("hdf5" in populationFile):
+            self.data = read_popHdf5(populationFile)
+        else:
+            print("not able to determine file type. Please import manually by using a suitable import function.")
