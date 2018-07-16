@@ -224,3 +224,23 @@ def get_Trappist1data():
              'm': [1.017,1.156,0.297, 0.772,0.934,1.148,0.331],
              'ice': [0.26,0.09,0.29,0.0,0.11,0.22,0.19]}
     return pd.DataFrame(T1data, index=T1data['name'])
+
+def convert_dgr2metallicity(population):
+    """ convert dust/gas ratio into metallicity, add it to the population
+
+    Assumes a metallicity distribution with a mean of 0.02 (see Mordasini et al.
+    (2009). Extrasolar planet population synthesis II. Statistical comparison
+    with observations, 1184, 1161–1184.)
+
+    Parameters
+    ----------
+    population : Pandas DataFrame
+        Table with the population. Has to contain a column 'dust2gas'.
+
+    Returns
+    -------
+    population: Pandas DataFrame
+        Table with additional column `metallicity'.
+    """
+    population['metallicity'] = np.log10(population['dust2gas']/0.02)
+    return population
