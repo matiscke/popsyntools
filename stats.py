@@ -7,6 +7,8 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 
+import utils
+
 
 def filterPlanets(population, type):
     """ return a population with planets of a certain type.
@@ -22,6 +24,14 @@ def filterPlanets(population, type):
     -------
     population_filtered : pandas DataFrame
         filtered population
+
+    Notes
+    -----
+    Supported planet types:
+    all
+    ltEarth
+    Earth
+    SuperEarth
     """
     if not type == 'giants_ejected':
         # first, keep only survived planets
@@ -31,6 +41,12 @@ def filterPlanets(population, type):
         population_filtered = population[population['m'] > 0.]
     elif type == 'ltEarth':
         population_filtered = population[population['m'] > 1.]
+    elif type == 'Earth':
+        population_filtered = population[(population['m'] > .5)
+            & (population['m'] <= 2.)]
+    elif type == 'SuperEarth':
+        population_filtered = population[(population['m'] > 2.)
+            & (population['m'] <= 10.)]
 
     return population_filtered
 
@@ -68,3 +84,49 @@ def categorize(population, Mgiant=300.):
     return {'Nplanets' : Nplanets, 'Nplanets_ejected' : Nplanets_ejected,
             'NltEarth' : NltEarth, 'NltEarth_ejected' : NltEarth_ejected,
             'Ngiants' : Ngiants, 'Ngiants_ejected' : Ngiants_ejected}
+
+
+def get_typeStats(population, population_filtered):
+    """ Compute statistics concerning a certain planet type.
+
+    Parameters
+    ----------
+    population : pandas DataFrame
+        full planet population
+    population_filtered : pandas DataFrame
+        population of a certain planet type; could be a population that was
+        filtered with the 'filterPlanets' function.
+
+    Returns
+    -------
+    stats : dictionary
+        the statistics for the planet type in question
+    """
+    stats = {}
+
+    # Number of planets of this type
+    stats['Nplanets'] = len(population_filtered)
+
+    # Number of systems with min. 1 planet of this type
+    stats['Nsystems'] = population_filtered.isystem.nunique()
+
+    # fraction of systems with min. 1 planet of this type
+    stats['fractionSystems'] = stats['Nsystems']/population.isystem.nunique()
+
+    # occurrence rate per star: mean number of planets of this type per system
+    stats['occurrence'] = stats['Nplanets']/len(population)
+
+    # multiplicity: mean number of planets of this type per system that contains
+    # this type
+    stats['multiplicity'] = stats['Nplanets']/len(population_filtered)
+
+    # metallicity of stars with min. 1 planet of this type: mean and std
+    population_filtered = utils.convert_dgr2metallicity(population_filtered)
+    stats['meanMetallicity'] = population_filtered.metallicity.mean()
+    stats['stdMetallicity'] = population_filtered.metallicity.std()
+
+    # eccentricity of planets of this type: mean and std
+    stats['meanEccentricity'] = population_filtered.e.mean()
+    stats['stdEccentricity'] = population_filtered.e.std()
+
+    return stats
