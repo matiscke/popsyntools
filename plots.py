@@ -322,7 +322,7 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
     ----------
     simulation : dictionary
         dictionary of pandas DataFrames, one for each planet, as returned by
-        planeteOutput.read_simFromFolder
+        output.read_simFromFolder
     truths : pandas DataFrame
         DataFrame containing the planet parameters of a real system. Has to have
         columns for Semimajor axis 'a', planet radius 'r', and planet mass 'm'.

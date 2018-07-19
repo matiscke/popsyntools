@@ -1,11 +1,11 @@
 # coding: utf-8
 refred = '/home/schlecker/phd/planete/outputs/J31/ref_red5e9.dat_J31_11220'
 
-population = planeteOutput.read_ref_red(refred)
-from planeteOutput import *
+population = output.read_ref_red(refred)
+from output import *
 refred = '/home/schlecker/phd/planete/outputs/J31/ref_red5e9.dat_J31_11220'
 
-population = planeteOutput.read_ref_red(refred)
+population = output.read_ref_red(refred)
 refred = '/home/schlecker/phd/planete/outputs/J31/ref_red5e9.dat_J31_11220'
 
 population = read_ref_red(refred)
