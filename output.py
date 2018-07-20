@@ -265,36 +265,37 @@ def join_dataframes(simlist, ref_red):
     return ref_red.set_index('isystemorig').join(simlist.set_index('simName'))
 
 
-class population:
-    """ a planet population consisting of systems which in turn contain planets.
-    """
-    def __init__(self):
-        self.data = None
+class population():
+    """ a planet population consisting of systems which in turn contain planets."""
+    def __init__(self, data=None, name=None):
+        if data:
+            self.data = self.readData(data)
+        else:
+            self.data = None
+        self.name = name
 
     def readData(self, populationFile):
-        """ reads data into a pandas DataFrame.
-        """
+        """ reads data into a pandas DataFrame."""
         if "ref_red" in populationFile:
             self.data = read_ref_red(populationFile)
+            return self.data
         elif ("hd5" in populationFile) or ("hdf5" in populationFile):
             self.data = read_popHdf5(populationFile)
+            return self.data
         else:
             print("""not able to determine file type. Please import manually by
                     using a suitable import function.""")
 
     def categorize(self):
-        """ Sort planets into different categories.
-        """
+        """ Sort planets into different categories."""
         self.categories = stats.categorize(self.data)
 
     def planetType(self, type):
-        """ Restrict population to a certain planet type.
-        """
+        """ Restrict population to a certain planet type."""
         self.data = stats.filterPlanets(self.data, type)
 
     def get_typeStats(self):
-        """ Compute statistics for specific planet types.
-        """
+        """ Compute statistics for specific planet types."""
         types = ['all', 'ltEarth', 'Earth', 'SuperEarth']
         typeStatsTable = {}
 
