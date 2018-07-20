@@ -4,7 +4,7 @@
 import seaborn as sns
 
 # Set plot style
-sns.set(context='notebook', style='ticks', font_scale=1.0, palette='pastel',\
+sns.set(context='notebook', style='ticks', font_scale=1.0, palette='colorblind',\
     rc={
 # 'text.usetex':True,
 # 'text.latex.unicode':True,
