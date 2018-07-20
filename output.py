@@ -265,10 +265,10 @@ def join_dataframes(simlist, ref_red):
     return ref_red.set_index('isystemorig').join(simlist.set_index('simName'))
 
 
-class population():
+class Population():
     """ a planet population consisting of systems which in turn contain planets."""
     def __init__(self, data=None, name=None):
-        if data:
+        if data is not None:
             self.data = self.readData(data)
         else:
             self.data = None
@@ -305,3 +305,4 @@ class population():
             typeStatsTable[type] = statistics
 
         self.typeStats = pd.DataFrame(typeStatsTable)
+        return self.typeStats
