@@ -7,10 +7,10 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 
-import utils
+import utils, config
 
 
-def categorize(population, Mgiant=300.):
+def print_categories(population, Mgiant=300.):
     """ Sort planets into different categories and print simple statistics.
 
     Parameters
@@ -43,6 +43,46 @@ def categorize(population, Mgiant=300.):
     return {'Nplanets' : Nplanets, 'Nplanets_ejected' : Nplanets_ejected,
             'NltEarth' : NltEarth, 'NltEarth_ejected' : NltEarth_ejected,
             'Ngiants' : Ngiants, 'Ngiants_ejected' : Ngiants_ejected}
+
+
+def categorizePlanets(population):
+    """ Label planets into different mass categories.
+
+    Parameters
+    ----------
+    population : pandas DataFrame
+        planet population
+
+    Returns
+    -------
+    population : pandas DataFrame
+        categorized population
+
+    Notes
+    -----
+    Supported planet types:
+    all
+    ltEarth
+    Earth
+    SuperEarth
+    """
+
+    lim = config.massLimits()
+    if not 'planetType' in population.columns:
+        population['planetType'] = ""
+
+    # keep only survived and ejected planets
+    subPop = population.loc[(population['status'] == 0) | (population['status'] == 2)]
+
+    for pType in lim:
+        # assign planet type according to mass limits
+        subPop.loc[(subPop['m'] > lim[pType][0]) &
+                   (subPop['m'] <= lim[pType][1])]['planetType'] = pType
+
+    # label ejected planets
+    population[population['status'] == 2]['planetType'] += '_ejected'
+
+    return population
 
 
 def filterPlanets(population, type):

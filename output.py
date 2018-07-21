@@ -286,9 +286,9 @@ class Population():
             print("""not able to determine file type. Please import manually by
                     using a suitable import function.""")
 
-    def categorize(self):
+    def print_categories(self):
         """ Sort planets into different categories."""
-        self.categories = stats.categorize(self.data)
+        self.categories = stats.print_categories(self.data)
 
     def planetType(self, type):
         """ Restrict population to a certain planet type."""
