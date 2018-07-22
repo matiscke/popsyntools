@@ -291,12 +291,12 @@ class Population():
         self.categories = stats.print_categories(self.data)
 
     def categorize(self):
-    """ Label planets into different mass categories."""
+        """ Label planets into different mass categories."""
         self.data = categorizePlanets(self.data)
 
-    def planetType(self, type):
+    def planetType(self, pType):
         """ Restrict population to a certain planet type."""
-        self.data = stats.filterPlanets(self.data, type)
+        self.data = stats.filterPlanets(self.data, pType)
 
     def get_typeStats(self):
         """ Compute statistics for specific planet types."""

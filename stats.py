@@ -70,7 +70,8 @@ def categorizePlanets(population):
 
     for pType in lim:
         # assign planet type according to mass limits
-        mask = mask_status & (population['m'] > lim[pType][0]) & (population['m'] <= lim[pType][1])
+        mask = (mask_status & (population['m'] > lim[pType][0])
+                           & (population['m'] <= lim[pType][1]))
         population.loc[mask, 'planetType'] = pType
 
     # label ejected planets
@@ -79,14 +80,16 @@ def categorizePlanets(population):
     return population
 
 
-def filterPlanets(population, type):
+def filterPlanets(population, pType):
     """ return a population with planets of a certain type.
+
+    Planet types and their mass limits are specified in config.py.
 
     Parameters
     ----------
     population : pandas DataFrame
         planet population
-    type : string
+    pType : string
         type of planet
 
     Returns
@@ -94,29 +97,18 @@ def filterPlanets(population, type):
     population_filtered : pandas DataFrame
         filtered population
 
-    Notes
-    -----
-    Supported planet types:
-    all
-    ltEarth
-    Earth
-    SuperEarth
     """
-    if not type == 'giants_ejected':
-        # first, keep only survived planets
-        population = population[population['status'] == 0]
+    import warnings
 
-    if type == 'all':
-        population_filtered = population[population['m'] > 0.]
-    elif type == 'ltEarth':
-        population_filtered = population[population['m'] > 1.]
-    elif type == 'Earth':
-        population_filtered = population[(population['m'] > .5)
-            & (population['m'] <= 2.)]
-    elif type == 'SuperEarth':
-        population_filtered = population[(population['m'] > 2.)
-            & (population['m'] <= 10.)]
+    lim = config.massLimits()
+    if not pType in lim:
+        warnings.warn("the given planet type '{}' is not known. Please choose "
+        "one of the following types or specify a new one in 'config.py': {}".format(
+            pType, [s for s in lim.keys()]))
+        return population
 
+    population = categorizePlanets(population)
+    population_filtered = population[population['planetType'] == pType]
     return population_filtered
 
 
