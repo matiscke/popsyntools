@@ -10,6 +10,7 @@ import pandas as pd
 import tables
 
 import stats
+import config
 
 
 def rename_tracksColumns(planetTracks, ref_red=False):
@@ -292,7 +293,7 @@ class Population():
 
     def categorize(self):
         """ Label planets into different mass categories."""
-        self.data = categorizePlanets(self.data)
+        self.data = stats.categorizePlanets(self.data)
 
     def planetType(self, pType):
         """ Restrict population to a certain planet type."""
@@ -300,10 +301,9 @@ class Population():
 
     def get_typeStats(self):
         """ Compute statistics for specific planet types."""
-        types = ['all', 'ltEarth', 'Earth', 'SuperEarth']
         typeStatsTable = {}
-
-        for type in types:
+        pType = config.massLimits()
+        for type in pType.keys():
             population_filtered = stats.filterPlanets(self.data, type)
             statistics = stats.get_typeStats(self.data, population_filtered)
             typeStatsTable[type] = statistics
