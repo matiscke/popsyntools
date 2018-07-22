@@ -48,6 +48,10 @@ def print_categories(population, Mgiant=300.):
 def categorizePlanets(population):
     """ Label planets into different mass categories.
 
+    Each planet is categorized according to its mass with limits specified in
+    config.py. The planet category (e.g. "Earth"; "Earth_ejected"; ...) is
+    written into a column "planetType", which is newly created if nonexistent.
+
     Parameters
     ----------
     population : pandas DataFrame
@@ -57,30 +61,20 @@ def categorizePlanets(population):
     -------
     population : pandas DataFrame
         categorized population
-
-    Notes
-    -----
-    Supported planet types:
-    all
-    ltEarth
-    Earth
-    SuperEarth
     """
 
     lim = config.massLimits()
-    if not 'planetType' in population.columns:
-        population['planetType'] = ""
 
     # keep only survived and ejected planets
-    subPop = population.loc[(population['status'] == 0) | (population['status'] == 2)]
+    mask_status = (population['status'] == 0) | (population['status'] == 2)
 
     for pType in lim:
         # assign planet type according to mass limits
-        subPop.loc[(subPop['m'] > lim[pType][0]) &
-                   (subPop['m'] <= lim[pType][1])]['planetType'] = pType
+        mask = mask_status & (population['m'] > lim[pType][0]) & (population['m'] <= lim[pType][1])
+        population.loc[mask, 'planetType'] = pType
 
     # label ejected planets
-    population[population['status'] == 2]['planetType'] += '_ejected'
+    population.loc[population['status'] == 2, 'planetType'] += '_ejected'
 
     return population
 
