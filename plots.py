@@ -408,6 +408,53 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
 
     return fig, ax
 
+
+def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
+                   'Neptune', 'SubGiant', 'Giant', 'BrownDwarf']):
+    """ Plot a categorical bar plot showing abundance of planet types.
+
+    Parameters
+    ----------
+    jointPop : pandas multiindex DataFrame
+        DataFrame with the host star mass as a multiindex.
+    ax : matplotlib axis
+        axis to draw the plot on
+    planetTypes : list or array
+        planet types to consider for the plot. The elements of this list must
+        exist in config.massLimits.
+
+    Returns
+    -------
+    fig : matplotlib figure
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if ax == None:
+        fig, ax = plt.subplots()
+
+    M = [np.float(Mstar[:3]) for Mstar, df in jointPop.groupby(level=0)]
+    xPos = [x for x in range(len(M))]
+    barWidth = .95
+
+    frequencies = []
+    for n, planetType in enumerate(planetTypes):
+        frequencies.append([len(subPop[subPop['planetType'] == planetType])
+                            for i, subPop in jointPop.groupby(level=0)])
+        if n == 0:
+            ax.bar(xPos, frequencies[n], edgecolor='white', width=barWidth,
+                   label=planetType)
+        else:
+            ax.bar(xPos, frequencies[n], bottom=np.sum(frequencies[:n], axis=0),
+                   edgecolor='white', width=barWidth, label=planetType)
+
+    plt.xticks(xPos, M)
+    plt.legend()
+    ax.set_xlabel('$M_{\star}$')
+    ax.set_ylabel('Number of planets')
+
+    return fig, ax
+
 ################################################################################
 
 """ Plotting functions meant for single planet tracks.

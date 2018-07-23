@@ -144,7 +144,11 @@ def get_typeStats(population, population_filtered):
 
     # multiplicity: mean number of planets of this type per system that contains
     # this type
-    stats['multiplicity'] = stats['Nplanets']/len(population_filtered)
+    Nfiltered = len(population_filtered)
+    if Nfiltered > 0:
+        stats['multiplicity'] = stats['Nplanets']/Nfiltered
+    else:
+        stats['multiplicity'] = 0
 
     # metallicity of stars with min. 1 planet of this type: mean and std
     population_filtered = utils.convert_dgr2metallicity(population_filtered)
