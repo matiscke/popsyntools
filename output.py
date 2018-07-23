@@ -163,8 +163,9 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
         everything into one table.
     Returns
     -------
-    population : dict
-        Dictionary of pandas panels
+    population : dict or pandas DataFrame
+        depending on the 'hierarchical' flag: Dictionary of pandas panels or
+        a single pandas DataFrame
 
     Example
     -------
@@ -274,8 +275,42 @@ class Population():
             self.data = None
         self.name = name
 
+    def __fileTypeWarning(self):
+        print("""not able to determine file type. Please import manually by
+                    using a suitable import function.""")
+
     def readData(self, populationFile):
-        """ reads data into a pandas DataFrame."""
+        """ reads data into a pandas DataFrame.
+
+        The method distinguishes between a single file and a list of files.
+        In the latter case, data of all files are combined into one multiindex
+        data frame, using parts of the filenames as level-0-index.
+
+        Parameters
+        ----------
+        populationFile : string or list
+            filename or list of filenames. The names should include 'hd5' or
+            'ref_red' in order to distinguish between those file types.
+
+        Returns
+        -------
+        data : pandas DataFrame
+            data frame containing the population
+        """
+        if isinstance(populationFile, list):
+            # create a multiindex data frame from multiple populations
+            populationsData = [read_ref_red(f) if 'ref_red' in f else read_popHdf5(f) for f in populationFile]
+            if not populationsData:
+                self.__fileTypeWarning()
+                return
+
+            # guess names from filenames. suitable for e.g. '...ref_red0.5Msol.dat'
+            populationsNames = [f[-11:-4] for f in populationFile]
+            jointDF = pd.concat([p for p in populationsData], axis=0,
+                                  keys=[name for name in populationsNames])
+            self.data = jointDF
+            return self.data
+
         if "ref_red" in populationFile:
             self.data = read_ref_red(populationFile)
             return self.data
@@ -283,8 +318,8 @@ class Population():
             self.data = read_popHdf5(populationFile)
             return self.data
         else:
-            print("""not able to determine file type. Please import manually by
-                    using a suitable import function.""")
+            # exception if file type could not be recognized
+            self.__fileTypeWarning()
 
     def categorize(self):
         """ Sort planets into different categories."""
