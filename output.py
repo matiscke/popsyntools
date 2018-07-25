@@ -8,6 +8,7 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 import tables
+import warnings
 
 import stats
 import config
@@ -277,8 +278,12 @@ class Population():
         self.name = name
 
     def __fileTypeWarning(self):
-        print("""not able to determine file type. Please import manually by
+        warnings.warn("""not able to determine file type. Please import manually by
                     using a suitable import function.""")
+
+    def __emptyDataWarning(self):
+        warnings.warn("""This population contains no data. Please read in data
+                       using the 'read_data' method.""")
 
     def read_data(self, populationFile, tDiskDispersal=False):
         """ reads data into a pandas DataFrame.
@@ -341,18 +346,30 @@ class Population():
 
     def print_categories(self):
         """ Sort planets into different categories."""
+        if self.data is None:
+            self.__emptyDataWarning()
+            return
         self.categories = stats.print_categories(self.data)
 
     def categorize(self):
         """ Label planets into different mass categories."""
+        if self.data is None:
+            self.__emptyDataWarning()
+            return
         self.data = stats.categorizePlanets(self.data)
 
     def planetType(self, pType):
         """ Restrict population to a certain planet type."""
+        if self.data is None:
+            self.__emptyDataWarning()
+            return
         self.data = stats.filterPlanets(self.data, pType)
 
     def get_typeStats(self):
         """ Compute statistics for specific planet types."""
+        if self.data is None:
+            self.__emptyDataWarning()
+            return
         typeStatsTable = {}
         pType = config.massLimits()
         for type in pType.keys():
