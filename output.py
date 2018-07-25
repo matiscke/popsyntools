@@ -269,9 +269,9 @@ def join_dataframes(simlist, ref_red):
 
 class Population():
     """ a planet population consisting of systems which in turn contain planets."""
-    def __init__(self, data=None, name=None):
-        if data is not None:
-            self.data = self.readData(data)
+    def __init__(self, dataFile=None, name=None):
+        if dataFile is not None:
+            self.data = self.read_data(dataFile)
         else:
             self.data = None
         self.name = name
@@ -280,7 +280,7 @@ class Population():
         print("""not able to determine file type. Please import manually by
                     using a suitable import function.""")
 
-    def readData(self, populationFile):
+    def read_data(self, populationFile, tDiskDispersal=False):
         """ reads data into a pandas DataFrame.
 
         The method distinguishes between a single file and a list of files.
@@ -292,6 +292,10 @@ class Population():
         populationFile : string or list
             filename or list of filenames. The names should include 'hd5' or
             'ref_red' in order to distinguish between those file types.
+
+        tDiskDispersal : boolean
+            flag for population data at the time of disk dispersal. If True, add
+            the data to a separate attribute 'Population.tDiskData'.
 
         Returns
         -------
@@ -309,18 +313,31 @@ class Population():
             populationsNames = [f[-11:-4] for f in populationFile]
             jointDF = pd.concat([p for p in populationsData], axis=0,
                                   keys=[name for name in populationsNames])
-            self.data = jointDF
-            return self.data
+            data = jointDF
 
-        if "ref_red" in populationFile:
-            self.data = read_ref_red(populationFile)
-            return self.data
+        elif "ref_red" in populationFile:
+            data = read_ref_red(populationFile)
         elif ("hd5" in populationFile) or ("hdf5" in populationFile):
-            self.data = read_popHdf5(populationFile)
-            return self.data
+            data = read_popHdf5(populationFile)
         else:
             # exception if file type could not be recognized
             self.__fileTypeWarning()
+            return
+
+        # distinguish between general data and disk dispersal time data
+        if tDiskDispersal:
+            self.tDiskData = data
+            return self.tDiskData
+        else:
+            self.data = data
+            return self.data
+
+    def read_tDiskData(self, tDiskFile):
+        """ Read data at disk dispersal time, e.g. a 'ref_redtdisk.dat' file.
+
+        The data is stored under a new attribute 'Population.tDiskData'.
+        """
+        self.read_data(tDiskFile, tDiskDispersal=True)
 
     def print_categories(self):
         """ Sort planets into different categories."""
