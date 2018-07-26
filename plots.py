@@ -68,7 +68,7 @@ def r_Jup2r_Earth(r):
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
                     zRange=None, kind='hist', smooth=False, normalize=True,
-                    logColormap=False, **funcKwargs):
+                    logColormap=False, showColorbar=True, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
     Parameters
@@ -106,6 +106,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     logColormap : Bool
         use logarithmic (log10) mapping of colors to data values. Has no effect
         on a contour plot.
+    showColorbar : Bool
+        option to hide the colorbar, e.g. if one bar for several subplots shall
+        be shown.
     **funcKwargs : keyword arguments
         kwargs to pass on to matplotlib
 
@@ -244,8 +247,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     # eyecandy
     if not kind == 'annotated':
-        cbar = plt.colorbar(im)
-        cbar.set_label(cbarlabel, labelpad=15)
+        if showColorbar:
+            cbar = plt.colorbar(im)
+            cbar.set_label(cbarlabel, labelpad=15)
         plt.xscale('log')
         plt.yscale('log')
         if xAxis == 'period':
@@ -257,7 +261,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         else:
             plt.ylabel(yAxis)
 
-    return h, xedges, yedges, ax
+    return h, xedges, yedges, ax, im
 
 
 def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
@@ -407,8 +411,9 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
                    c=truths['m'], cmap='inferno_r', norm=colorNorm)
 
     # add a colorbar
-    cbar = fig.colorbar(lc)
-    cbar.set_label('Planet Mass [$\mathrm{M_{Earth}}$]')
+    if showColorbar:
+        cbar = plt.colorbar(lc)
+        cbar.set_label('Planet Mass [$\mathrm{M_{Earth}}$]')
 
     ax.set_xscale('log')
     ax.set_yscale('log')
