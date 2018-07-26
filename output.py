@@ -344,6 +344,33 @@ class Population():
         """
         self.read_data(tDiskFile, tDiskDispersal=True)
 
+    def read_simlist(self, simlistFile):
+        """ read the list of initial parameters corresponding to the population.
+
+        Parameters
+        ----------
+        simlistFile : string or list
+            filename or list of filenames. If this is a list, the result will be
+            a multiindexed dataframe, with the 7 letters before the file ending
+            as an index.
+
+        Returns
+        -------
+        data : pandas DataFrame
+            data frame containing the simulation list
+        """
+        import make_list
+        if isinstance(simlistFile, list):
+            simlistsData = [make_list.read_simlist(f) for f in simlistFile]
+            # get index from filenames, e.g. 'simulation_list_0.3Msol.dat'
+            populationsNames = [f[-11:-4] for f in simlistFile]
+            jointDF = pd.concat([p for p in simlistsData], axis=0,
+                                  keys=[name for name in populationsNames])
+            self.simlist = jointDF
+        else:
+            self.simlist = make_list.read_simlist(simlistFile)
+        return self.simlist
+
     def print_categories(self):
         """ Sort planets into different categories."""
         if self.data is None:
