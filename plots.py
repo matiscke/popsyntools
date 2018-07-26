@@ -67,7 +67,7 @@ def r_Jup2r_Earth(r):
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
-                    kind='hist', smooth=False, normalize=True,
+                    zRange=None, kind='hist', smooth=False, normalize=True,
                     logColormap=False, **funcKwargs):
     """Plot an occurrence map in two parameters.
 
@@ -91,6 +91,9 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         range of values to be considered in x direction
     yRange : sequence of scalars
         range of values to be considered in y direction
+    zRange : sequence of scalars
+        range of values for the color code. It's first value (lower bound)
+        should be greater than zero for logarithmic color mapping.
     kind : string
         the kind of plot to produce
         - 'hist' : 2D histogram
@@ -187,11 +190,20 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         # logarithmic color mapping. Use linear scale around zero.
         import matplotlib.colors as colors
         threshold  = 0.01
-        colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
-        linthresh=max(h.min(), threshold))
+        if zRange is not None:
+            if zRange[0] > h.min() or zRange[1] < h.max():
+                import warnings
+                warnings.warn("""Values in the histogram exceed one or both bounds
+                given in 'zRange'. The visual representation of your data might
+                be corrupted!""")
+            colorNorm = colors.SymLogNorm(vmin=zRange[0], vmax=zRange[1],
+            linthresh=max(h.min(), threshold))
+        else:
+            colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
+            linthresh=max(h.min(), threshold))
         cbar_kws = {'label' : cbarlabel, 'ticks' : [.01, .1, 1., 1e1, 1e2, 1e3]}
     else:
-        colorNorm = None
+        colorNorm = zRange
         cbar_kws = {'label' : cbarlabel}
 
     if kind == 'annotated':
@@ -232,7 +244,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     # eyecandy
     if not kind == 'annotated':
-        cbar = fig.colorbar(im)
+        cbar = plt.colorbar(im)
         cbar.set_label(cbarlabel, labelpad=15)
         plt.xscale('log')
         plt.yscale('log')
