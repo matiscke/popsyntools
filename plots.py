@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 import plotstyle
+import utils
 
 
 def normalize_rate(n_planet, n_star):
@@ -455,10 +456,144 @@ def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
 
     return fig, ax
 
+
+def plot_diskFractions(diskFractions, ax=None, fractionLimits=(0.85, 0.01)):
+    """Plot fractions of remaining systems with disks as a function of time.
+
+    The fractions are fitted by an exponential function.
+
+    Parameters
+    ----------
+    diskFractions : tuple or dict
+        tuple containing arrays with times and corresponding disk fractions. If
+        several populations are to be plotted, diskFractions has to be a
+        dictionary containing a tuple for each population.
+    ax : matplotlib axis
+        axis to draw the plot on
+    fractionLimits : tuple
+        upper and lower bound for the range of disk fractions considered for the
+        fit
+
+    Returns
+    -------
+    fig : matplotlib figure
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    diskFractions : tuple or dict
+        updated array (fit results appended in the case of multiple populations)
+    tau : float or array
+        time constant(s) of disk lifetime
+    std_tau : float array
+        1 sigma error(s) of tau
+    """
+
+    def get_fitRangeMask(fractions, fractionLimits):
+        """create mask to constrain range for the fit."""
+        return np.ma.masked_inside(fractions, *fractionLimits)
+
+    if ax == None:
+        fig, ax = plt.subplots()
+
+    tau = []
+    std_tau = []
+    if isinstance(diskFractions, dict):
+        for Mstar, fractions in diskFractions.items():
+            # mask times and fit exponential function
+            fitRangeMask = get_fitRangeMask(fractions[1], fractionLimits)
+            fitParams = utils.fit_diskFractions(fractions[0][fitRangeMask.mask],
+                                                fractions[1][fitRangeMask.mask])
+            diskFractions[Mstar] += fitParams
+
+            tau.append(fitParams[0][1])
+            std_tau.append(np.sqrt(np.diag(fitParams[1]))[1])
+
+            # plot fractions
+            ax.scatter(fractions[0], fractions[1], marker='x',
+                       label=Mstar[:-4] + r'$\mathrm{M_\odot}$' +
+                       r', $\tau = {:1.1f}$ Myr'.format(tau[-1]/1e6))
+
+            # plot fits
+            ax.plot(fractions[0][fitRangeMask.mask],
+                    utils.exponential(fractions[0][fitRangeMask.mask],
+                    fitParams[0][0], fitParams[0][1], fitParams[0][2]))
+        plt.legend()
+
+    else:
+        fitRangeMask = get_fitRangeMask(diskFractions[1], fractionLimits)
+        fitParams = utils.fit_diskFractions(diskFractions[0][fitRangeMask.mask],
+                                            diskFractions[1][fitRangeMask.mask])
+        tau = fitParams[0][1]
+        std_tau = np.sqrt(np.diag(fitParams[1]))[1]
+
+        ax.scatter(diskFractions[0], diskFractions[1], marker='x')
+        ax.plot(diskFractions[0][fitRangeMask.mask],
+                utils.exponential(diskFractions[0][fitRangeMask.mask],
+                fitParams[0][0], fitParams[0][1], fitParams[0][2]))
+
+    ax.axhline(.5, ls='--', c='gray')
+    ax.set_xlabel('Time [yr]')
+    ax.set_ylabel('Disk Fraction')
+    return fig, ax, diskFractions, tau, std_tau
+
+
+def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1):
+    """Compare the time constants of several populations' disk lifetimes.
+
+    Parameters
+    ----------
+    Mstar : array
+        host star masses
+    tau : array
+        corresponding time constants
+    std_tau : array
+        1 sigma error of tau
+    ax : matplotlib axis object, optional
+        axis to plot on
+    nSigma : int, optional
+        number of standard deviations for confidence intervals
+
+    Returns
+    -------
+    fig : matplotlib figure
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    """
+    from scipy.optimize import curve_fit
+
+    if ax == None:
+        fig, ax = plt.subplots()
+
+    params, covariance = curve_fit(utils.linear, Mstar, tau, sigma=std_tau)
+    pErr = np.sqrt(np.diag(covariance))*nSigma
+
+    # prepare confidence intervals
+    pHi = params + pErr
+    pLo = params - pErr
+
+    fit = utils.linear(Mstar, *params)
+    fitHi = utils.linear(Mstar, *pHi)
+    fitLo = utils.linear(Mstar, *pLo)
+
+    (_, caps, _) = ax.errorbar(Mstar, tau, std_tau, lw=2, capsize=5, fmt='o', label=r'$\tau ( \mathrm{M_\star})$')
+    ax.plot(Mstar, fit, c='gray', label=r'$\tau = ({:1.1f}*\mathrm{{M_\star}} + {:1.1f}$) Myr'.format(*params/1e6))
+    ax.fill_between(Mstar, fitHi, fitLo, alpha=.2, label=r'$1\sigma$ confidence interval')
+
+    # dirty hack to recover errorbar caps
+    for cap in caps:
+        cap.set_markeredgewidth(1)
+
+    ax.set_xlabel(r'Host Star Mass $[M_\odot]$')
+    ax.set_ylabel(r'Time Constant $\tau$')
+    plt.legend()
+
+    return fig, ax
+
 ################################################################################
 
-""" Plotting functions meant for single planet tracks.
-"""
+""" Plotting functions meant for single planet tracks."""
+
 def plot_mass(tracks, ax):
     """plot a planet's total mass vs time"""
     ax.plot(tracks['t'],tracks['m'])
