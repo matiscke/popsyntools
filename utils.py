@@ -171,6 +171,17 @@ def linearScale(x1, x2, y1, y2, x):
     return ((x-x2)/(x1-x2))*y1+((x-x1)/(x2-x1))*y2
 
 
+def linear(x, a, b):
+    """Evaluate a two-parameter linear function."""
+    y = a*np.array(x) + b
+    return y
+
+
+def exponential(t, A, tau, C):
+    """Evaluate a three-parameter exponential function."""
+    return A*np.exp(-t/tau) + C
+
+
 def get_diskFractions(population, timeColumn='t', Ntimes=100):
     """ Compute fractions of remaining disks from disk dispersal times.
 
@@ -204,6 +215,42 @@ def get_diskFractions(population, timeColumn='t', Ntimes=100):
     times = np.linspace(0., max(population[timeColumn]), Ntimes)
     return times, np.array([len(population[population[timeColumn] > t])/nDisks
         for t in times])
+
+
+def fit_diskFractions(times, fractions, func=exponential,
+                      paramsBounds=([0.,1e3,-np.inf], [10.,1e9, np.inf])):
+    """ fit a three-parameter function to disk fractions.
+
+    Uses the non-linear least squares fit scipy.optimize.curve_fit.
+
+    Parameters
+    ----------
+    times : numpy array
+        times at which the disk fractions were evaluated
+    fractions : numpy array
+        fractions of remaining disks for each time
+    func : function handle
+        function to use for the fit
+    paramsBounds : tuple
+        list of lower (first element) and upper (second element) limits for
+        fit parameters
+
+    Returns
+    -------
+    params : array
+        list with the best-fit parameters
+    covariance : array
+        covariance matrix of the fit
+    """
+    from scipy.optimize import curve_fit
+
+    params, covariance = curve_fit(exponential, times, fractions, bounds=paramsBounds)
+    params_std = np.sqrt(np.diag(covariance))
+    print(params)
+    print('std of parameters: {}'.format(params_std))
+
+    return params, covariance
+
 
 def get_Trappist1data():
     """
