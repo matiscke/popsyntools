@@ -265,8 +265,6 @@ def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
 
     Returns
     -------
-    fig : matplotlib figure
-        figure with the plot
     ax : array
         matplotlib axes with the plot
     """
@@ -308,7 +306,7 @@ def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
     ax[0].legend(custom_lines[:2], ['$\Sigma$ ({})'.format(sim1name), '$\Sigma$ ({})'.format(sim2name)])
     ax[1].legend(custom_lines[2:], ['$\Sigma$ ({}) - $\Sigma$ ({})'.format(sim2name, sim1name)])
 
-    return fig, ax
+    return ax
 
 
 def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
@@ -335,8 +333,6 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
 
     Returns
     -------
-    fig : matplotlib figure
-        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -407,7 +403,7 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
     ax.set_xlabel('Time [yr]')
     ax.set_ylabel('Semimajor Axis [au]')
 
-    return fig, ax
+    return ax
 
 
 def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
@@ -426,8 +422,6 @@ def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
 
     Returns
     -------
-    fig : matplotlib figure
-        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -454,7 +448,7 @@ def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
     ax.set_xlabel('$M_{\star}$')
     ax.set_ylabel('Number of planets')
 
-    return fig, ax
+    return ax
 
 
 def plot_diskFractions(diskFractions, ax=None, fractionLimits=(0.85, 0.01)):
@@ -476,8 +470,6 @@ def plot_diskFractions(diskFractions, ax=None, fractionLimits=(0.85, 0.01)):
 
     Returns
     -------
-    fig : matplotlib figure
-        figure with the plot
     ax : matplotlib axis
         axis with the plot
     diskFractions : tuple or dict
@@ -534,10 +526,11 @@ def plot_diskFractions(diskFractions, ax=None, fractionLimits=(0.85, 0.01)):
     ax.axhline(.5, ls='--', c='gray')
     ax.set_xlabel('Time [yr]')
     ax.set_ylabel('Disk Fraction')
-    return fig, ax, diskFractions, tau, std_tau
+    return ax, diskFractions, tau, std_tau
 
 
-def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1):
+def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1,
+                                **funcKwargs):
     """Compare the time constants of several populations' disk lifetimes.
 
     Parameters
@@ -552,11 +545,11 @@ def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1):
         axis to plot on
     nSigma : int, optional
         number of standard deviations for confidence intervals
+    **funcKwargs : keyword arguments
+        kwargs to pass on to matplotlib
 
     Returns
     -------
-    fig : matplotlib figure
-        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -576,19 +569,23 @@ def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1):
     fitHi = utils.linear(Mstar, *pHi)
     fitLo = utils.linear(Mstar, *pLo)
 
-    (_, caps, _) = ax.errorbar(Mstar, tau, std_tau, lw=2, capsize=5, fmt='o', label=r'$\tau ( \mathrm{M_\star})$')
-    ax.plot(Mstar, fit, c='gray', label=r'$\tau = ({:1.1f}*\mathrm{{M_\star}} + {:1.1f}$) Myr'.format(*params/1e6))
-    ax.fill_between(Mstar, fitHi, fitLo, alpha=.2, label=r'$1\sigma$ confidence interval')
+    (_, caps, _) = ax.errorbar(Mstar, tau, std_tau, lw=2, capsize=3, fmt='o',
+                               ms=4, label=r'$\tau ( \mathrm{M_\star})$')
 
     # dirty hack to recover errorbar caps
     for cap in caps:
         cap.set_markeredgewidth(1)
 
+    ax.plot(Mstar, fit, c='gray', label=r'$\tau = ({:1.1f}*\mathrm{{M_\star}} + {:1.1f}$) Myr'.format(*params/1e6))
+    ax.fill_between(Mstar, fitHi, fitLo, alpha=.15,
+                    label=r'$1\sigma$ confidence interval', **funcKwargs)
+
+
     ax.set_xlabel(r'Host Star Mass $[M_\odot]$')
     ax.set_ylabel(r'Time Constant $\tau$')
-    plt.legend()
+    ax.legend()
 
-    return fig, ax
+    return ax
 
 ################################################################################
 
