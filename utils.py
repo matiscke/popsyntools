@@ -213,7 +213,7 @@ def get_diskFractions(population, timeColumn='t', Ntimes=100):
     """
     nDisks = len(population)
     times = np.linspace(0., max(population[timeColumn]), Ntimes)
-    return times, np.array([len(population[population[timeColumn] > t])/nDisks
+    return times, np.array([len(population[population[timeColumn] > t])/float(nDisks)
         for t in times])
 
 
@@ -277,7 +277,7 @@ def convert_dgr2metallicity(population):
 
     Assumes a metallicity distribution with a mean of 0.02 (see Mordasini et al.
     (2009). Extrasolar planet population synthesis II. Statistical comparison
-    with observations, 1184, 1161–1184.)
+    with observations, 1184, 1161,1184.)
 
     Parameters
     ----------

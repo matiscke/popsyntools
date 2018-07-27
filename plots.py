@@ -535,10 +535,11 @@ def plot_diskFractions(diskFractions, ax=None, fractionLimits=(0.85, 0.01)):
         tau = fitParams[0][1]
         std_tau = np.sqrt(np.diag(fitParams[1]))[1]
 
-        ax.scatter(diskFractions[0], diskFractions[1], marker='x')
+        ax.scatter(diskFractions[0], diskFractions[1], marker='x',label="J34: "+r'1 $\mathrm{M_\odot}$'+r', $\tau={:1.1f}$ Myr'.format(tau/1e6))
         ax.plot(diskFractions[0][fitRangeMask.mask],
                 utils.exponential(diskFractions[0][fitRangeMask.mask],
                 fitParams[0][0], fitParams[0][1], fitParams[0][2]))
+        plt.legend()
 
     ax.axhline(.5, ls='--', c='gray')
     ax.set_xlabel('Time [yr]')
