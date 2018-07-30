@@ -385,7 +385,7 @@ class Population():
             return
         self.data = stats.categorizePlanets(self.data)
 
-    def planetType(self, pType):
+    def select_planetType(self, pType):
         """ Restrict population to a certain planet type."""
         if self.data is None:
             self.__emptyDataWarning()

@@ -47,7 +47,7 @@ def read_simlist(filename, varlen=17):
     columns = [
             "CDnumber",
             "fgp",
-            "diskM",
+            "sigma0",
             "a_in",
             "a_out",
             "expo",
@@ -58,8 +58,8 @@ def read_simlist(filename, varlen=17):
     simlist = pd.DataFrame(simlist, columns=columns)
 
     # set the correct data types
-    simlist[['fgp','diskM','a_in','a_out','expo','windM',
-             'a_start','t_start']] = simlist[['fgp','diskM','a_in','a_out',
+    simlist[['fgp','sigma0','a_in','a_out','expo','windM',
+             'a_start','t_start']] = simlist[['fgp','sigma0','a_in','a_out',
              'expo','windM','a_start','t_start']].apply(pd.to_numeric)
     return simlist
 
@@ -182,7 +182,7 @@ def write_singleSim2File(fileHandle, singleSim):
 
     line = 'CD_' + var2str(singleSim['CDnumber'])\
     + 'FP_' + var2str(singleSim['fgp'])\
-    + 'SI_' + var2str(singleSim['diskM'])\
+    + 'SI_' + var2str(singleSim['sigma0'])\
     + 'AI_' + var2str(singleSim['a_in'])\
     + 'AO_' + var2str(singleSim['a_out'])\
     + 'EX_' + var2str(singleSim['expo'])\
