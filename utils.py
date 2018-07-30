@@ -11,15 +11,15 @@ au = 1.496e13
 Msol = 1.98855e33
 G = 6.6740831e-8
 
-def get_M0(rc, Sigma0, expo, r0=5.2):
+def get_M0(Sigma0, rc, expo, r0=5.2):
     """Compute the total disk mass from initial condition parameters.
 
     Parameters
     ----------
-    rc : float
-        characteristic radius [au]
     Sigma0 : float
         gas surface density at 5.2 au [g/cm^2]
+    rc : float
+        characteristic radius [au]
     expo : float
         Power law slope
     r0 : float
@@ -34,16 +34,16 @@ def get_M0(rc, Sigma0, expo, r0=5.2):
     return M0/Msol
 
 
-def get_Sigma0(rc, M0, expo, r0=5.2):
+def get_Sigma0(M0, rc, expo, r0=5.2):
     """Compute Sigma0, the gas surface density at the reference radius r0
     necessary for an initial total disk mass of M0.
 
     Parameters
     ----------
-    rc : float
-        characteristic radius [au]
     M0 : float
         total disk mass in solar masses
+    rc : float
+        characteristic radius [au]
     expo : float
         Power law slope
     r0 : float
@@ -244,7 +244,8 @@ def fit_diskFractions(times, fractions, func=exponential,
     """
     from scipy.optimize import curve_fit
 
-    params, covariance = curve_fit(exponential, times, fractions, bounds=paramsBounds)
+    params, covariance = curve_fit(exponential, times, fractions,
+                                   bounds=paramsBounds)
     params_std = np.sqrt(np.diag(covariance))
     print(params)
     print('std of parameters: {}'.format(params_std))
