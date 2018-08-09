@@ -604,6 +604,55 @@ def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1,
 
     return ax
 
+
+def plot_multiHistogram(dataFrame, columnNames, ax=None, **kwargs):
+    """ Plot multiple histograms from a dataFrame into the same axis.
+
+    The function produces histograms of either several columns of the same data
+    frame or of the same column for each level-0-index of a multiindex data
+    frame.
+
+    Parameters
+    ----------
+    dataFrame : pandas DataFrame
+        data frame containing column(s) stated in 'columnNames'
+    columnNames : str or list
+        name(s) of the column(s) to plot.
+        If this is a string, the same column is used for each level-0-index
+        (assuming a multiindex data frame).
+        If this is a list, histograms for each column name in it are produced.
+    ax : matplotlib axis object, optional
+        axis to plot on
+
+    Returns
+    -------
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if ax == None:
+        fig, ax = plt.subplots()
+
+    if not kwargs:
+        mplKwargs = {'alpha' : 0.6,
+                     'histtype' : 'stepfilled',
+                     'edgecolor' : 'black',
+                     'linewidth' : 1.2,
+                     'bins' : 50}
+    else:
+        mplKwargs = {}
+
+    if isinstance(columnNames, list):
+        # plot different columns of the same dataFrame
+        for name in columnNames:
+            ax.hist(dataFrame[name], label=name, **mplKwargs, **kwargs)
+
+    elif isinstance(columnNames, str):
+        # assume that dataFrame is multiindexed, iterate over outermost level
+        for label, subpopulation in dataFrame.groupby(level=0):
+           ax.hist(subpopulation[columnNames], label=label, **mplKwargs, **kwargs)
+    ax.legend()
+    return ax
+
 ################################################################################
 
 """ Plotting functions meant for single planet tracks."""
