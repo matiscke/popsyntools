@@ -229,6 +229,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         except ValueError:
             pass
         plt.yticks(rotation=0)
+        im = None
+
     elif kind == 'contour':
         """use discrete levels for occurrence. numbers are from
         Petigura et al. 2018
