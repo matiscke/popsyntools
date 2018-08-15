@@ -122,6 +122,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         bin edges along y axis
     ax : matplotlib axis
         axis with the plot
+    im : matplotlib AxesImage
+        image for kind='contour', None otherwise
     """
 
     # check existence of columns in the DataFrame
