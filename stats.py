@@ -45,7 +45,7 @@ def print_categories(population, Mgiant=300.):
             'Ngiants' : Ngiants, 'Ngiants_ejected' : Ngiants_ejected}
 
 
-def categorizePlanets(population):
+def categorizePlanets(population, ZhuWu18=False):
     """ Label planets into different mass categories.
 
     Each planet is categorized according to its mass with limits specified in
@@ -56,6 +56,8 @@ def categorizePlanets(population):
     ----------
     population : pandas DataFrame
         planet population
+    ZhuWu18 : Bool
+        Flag to consider limits for comparison with Zhu & Wu 2018
 
     Returns
     -------
@@ -63,15 +65,36 @@ def categorizePlanets(population):
         categorized population
     """
 
-    lim = config.massLimits()
+    massLim = config.massLimits(ZhuWu18)
+
+    if ZhuWu18:
+        # consider other criteria than mass, too
+        periodLim = config.periodLimits()
+        minRVamp = config.minRVamplitude()
 
     # keep only survived and ejected planets
     mask_status = (population['status'] == 0) | (population['status'] == 2)
 
-    for pType in lim:
+    for pType in massLim:
         # assign planet type according to mass limits
-        mask = (mask_status & (population['m'] > lim[pType][0])
-                           & (population['m'] <= lim[pType][1]))
+        mask = (mask_status & (population['m'] > massLim[pType][0])
+                            & (population['m'] <= massLim[pType][1]))
+
+        if ZhuWu18:
+            # consider other criteria than mass, too
+            while True:
+                try:
+                    mask = (mask & (population['period'] > periodLim[pType][0])
+                                 & (population['period'] <= periodLim[pType][1])
+                                 & (population['K'] > minRVamp[pType]))
+                except KeyError:
+                    # has RV semi-amplitude not been calculated yet?
+                    print("adding RV semi-amplitude using Mstar = 1.0 Msol.")
+                    population['K'] = utils.get_RVsemiamplitude(population['m'],
+                            population['period'], population['e'], Mstar=1.0)
+                    continue
+                break
+
         population.loc[mask, 'planetType'] = pType
 
     # label ejected planets
@@ -100,11 +123,11 @@ def filterPlanets(population, pType):
     """
     import warnings
 
-    lim = config.massLimits()
-    if not pType in lim:
+    massLim = config.massLimits()
+    if not pType in massLim:
         warnings.warn("the given planet type '{}' is not known. Please choose "
         "one of the following types or specify a new one in 'config.py': {}".format(
-            pType, [s for s in lim.keys()]))
+            pType, [s for s in massLim.keys()]))
         return population
 
     population = categorizePlanets(population)

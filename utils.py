@@ -292,3 +292,33 @@ def convert_dgr2metallicity(population):
     """
     population['metallicity'] = np.log10(population['dust2gas']/0.02)
     return population
+
+
+def get_RVsemiamplitude(Mp, P, e=0., Mstar=1.0):
+    """ Compute the radial velocity semi-amplitude K.
+
+    Uses the formula in Cumming et al. 1999 (Eqn. 1).
+
+    Parameters
+    ----------
+    Mp : scalar or array
+        planet mass in Mearth
+    P : scalar or array
+        orbital period in d
+    e : scalar or array
+        planet eccentricity
+    Mstar : scalar
+        mass of the host star in Msol
+
+    Returns
+    -------
+    K : scalar or array
+        RV semi-amplitude in m/s
+    """
+    # some conversions (into m/kg/s SI units)
+    Mearth = 5.9722e24
+    Msol = 1.9891e30
+    d = 86400
+    G = 6.67e-11
+
+    return (2*np.pi*G/(P*d))**(1/3)*Mp*Mearth/((Mstar*Msol + Mp*Mearth)**(2/3))*(1-e**2)**(-1/2)
