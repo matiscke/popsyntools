@@ -241,7 +241,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         cbarticklabels = [0.01, 0.03, 0.1, 0.3, 1, 3,10]
         cbarticks = np.log10(np.array(cbarticklabels) * 1e-2)
         contourKwargs = dict(extend='min')
-        im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs)
+        im = plt.contourf(xedges[:-1], yedges[:-1], h, **contourKwargs,
+                          **funcKwargs)
         if logColormap:
             print("logarithmic shading not possible with contours.")
     else:
