@@ -59,12 +59,6 @@ def compute_logbins(binWidth_dex, Range):
     return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
 
 
-def r_Jup2r_Earth(r):
-    """ Transform a radius given in Jupiter radii into Earth radii.
-    """
-    return r*10.973
-
-
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
                     zRange=None, kind='hist', smooth=False, normalize=True,
@@ -133,7 +127,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     # create new column with radius in R_Earth if not existent
     if (yAxis == 'r' or yAxis == 'r_rEarth'):
         if not 'r_rEarth' in population:
-            population['r_rEarth'] = r_Jup2r_Earth(population.r)
+            population['r_rEarth'] = utils.r_Jup2r_Earth(population.r)
         yAxis = 'r_rEarth'
 
     try:

@@ -322,3 +322,9 @@ def get_RVsemiamplitude(Mp, P, e=0., Mstar=1.0):
     G = 6.67e-11
 
     return (2*np.pi*G/(P*d))**(1/3)*Mp*Mearth/((Mstar*Msol + Mp*Mearth)**(2/3))*(1-e**2)**(-1/2)
+
+
+def r_Jup2r_Earth(r):
+    """ Transform a radius given in Jupiter radii into Earth radii."""
+    return r*10.973
+    
