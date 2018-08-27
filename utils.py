@@ -328,6 +328,7 @@ def r_Jup2r_Earth(r):
     """ Transform a radius given in Jupiter radii into Earth radii."""
     return r*10.973
 
+
 def get_msini(m):
     """ transform a given true m into m*sin(i) with random isotropic inclination i.
 
@@ -335,6 +336,9 @@ def get_msini(m):
     angles i follows sin(i) (where this is already normalized for 0 < i < pi/2).
     In order to easily draw x from a uniform distribution in [0,1), we transform
     the distribution to i = arccos(1 - x)
+
+    It is not very reasonable to draw the inclination randomly for individual
+    planets in the same system.
 
     Parameters
     ----------
@@ -348,3 +352,9 @@ def get_msini(m):
     """
     sini = np.sin(np.arccos(1 - np.random.random(len(m))))
     return m*sini
+
+
+def get_sini():
+    """ same as 'get_msini', but returns a single sin(i) ignoring the mass
+    """
+    return np.sin(np.arccos(1 - np.random.random())
