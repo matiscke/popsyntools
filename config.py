@@ -22,7 +22,7 @@ def massLimits(ZhuWu18=False):
 
     if ZhuWu18:
         massLimits = {
-        'SuperEarth'  : (2., 47.),
+        'SuperEarth'  : (2., 20.),
         'ColdJupiter' : (95., np.inf)
         }
     else:
@@ -50,7 +50,7 @@ def periodLimits():
 def minRVamplitude():
     """ Provide minimum RV amplitude 'K' (in m/s) for planet categories."""
     minRVamp = {
-    'SuperEarth'  : 2.,
-    'ColdJupiter' : 2.
+    'SuperEarth'  : 1.,
+    'ColdJupiter' : 1.
     }
     return minRVamp

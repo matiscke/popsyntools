@@ -327,4 +327,24 @@ def get_RVsemiamplitude(Mp, P, e=0., Mstar=1.0):
 def r_Jup2r_Earth(r):
     """ Transform a radius given in Jupiter radii into Earth radii."""
     return r*10.973
-    
+
+def get_msini(m):
+    """ transform a given true m into m*sin(i) with random isotropic inclination i.
+
+    Assuming isotropic orientation of orbits, the distribution of inclination
+    angles i follows sin(i) (where this is already normalized for 0 < i < pi/2).
+    In order to easily draw x from a uniform distribution in [0,1), we transform
+    the distribution to i = arccos(1 - x)
+
+    Parameters
+    ----------
+    m : scalar or array
+        planet mass
+
+    Returns
+    -------
+    msini : scalar or array
+        mass times a random (isotropic) sin(i)
+    """
+    sini = np.sin(np.arccos(1 - np.random.random(len(m))))
+    return m*sini
