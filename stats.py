@@ -76,9 +76,25 @@ def categorizePlanets(population, ZhuWu18=False):
     mask_status = (population['status'] == 0) | (population['status'] == 2)
 
     for pType in massLim:
+        if ZhuWu18:
+            # consider m*sin(i) (with random isotropic i) instead of m
+            while True:
+                try:
+                    masses = population['msini']
+                except KeyError:
+                    # apparently, there is no 'msini' column yet
+                    print("computing m*sin(i) with random, isotropic \
+                    inclination i. This will take a while.")
+                    population = utils.add_msini(population)
+                    masses = population['msini']
+                    continue
+                break
+        else:
+            masses = population['m']
+
         # assign planet type according to mass limits
-        mask = (mask_status & (population['m'] > massLim[pType][0])
-                            & (population['m'] <= massLim[pType][1]))
+        mask = (mask_status & (masses > massLim[pType][0])
+                            & (masses <= massLim[pType][1]))
 
         if ZhuWu18:
             # consider other criteria than mass, too

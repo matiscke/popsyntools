@@ -9,6 +9,8 @@ import numpy as np
 def massLimits(ZhuWu18=False):
     """ Provide mass limits for planet categories.
 
+    Planet masses are given in Earth masses.
+
     Parameters
     ----------
     ZhuWu18 : Bool

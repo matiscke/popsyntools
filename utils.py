@@ -354,7 +354,30 @@ def get_msini(m):
     return m*sini
 
 
-def get_sini():
+def get_sini(dummy=None):
     """ same as 'get_msini', but returns a single sin(i) ignoring the mass
     """
-    return np.sin(np.arccos(1 - np.random.random())
+    return np.sin(np.arccos(1 - np.random.random()))
+
+
+def add_msini(pop):
+    """ add a new column 'msini' from planet masses and random isotropic i.
+
+    This function goes through a population system by system and draws the same
+    random inclination for all planets in a given system. The sine of it is then
+    multiplied by each planet's mass and written to a column 'msini'.
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population
+
+    Returns
+    -------
+    pop : pandas DataFrame
+        planet population including a new column 'msini'
+    """
+    pop['msini'] = np.nan
+    for i in pop.isystem:
+        pop.loc[pop.isystem == i, 'msini'] = get_sini()*pop[pop.isystem == i]['m']
+    return pop
