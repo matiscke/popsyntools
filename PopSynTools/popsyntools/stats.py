@@ -7,7 +7,7 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 
-import utils, config
+from popsyntools import utils, config
 
 
 def print_categories(population, Mgiant=300.):

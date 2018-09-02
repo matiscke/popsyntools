@@ -10,8 +10,8 @@ import pandas as pd
 import tables
 import warnings
 
-import stats
-import config
+from popsyntools import stats
+from popsyntools import config
 
 
 def rename_tracksColumns(planetTracks, ref_red=False):

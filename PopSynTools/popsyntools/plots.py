@@ -9,8 +9,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-import plotstyle
-import utils
+from popsyntools import plotstyle
+from popsyntools import utils
 
 
 def normalize_rate(n_planet, n_star):
