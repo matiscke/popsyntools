@@ -281,7 +281,7 @@ def convert_dgr2metallicity(population):
 
     Assumes a metallicity distribution with a mean of 0.02 (see Mordasini et al.
     (2009). Extrasolar planet population synthesis II. Statistical comparison
-    with observations, 1184, 1161–1184.)
+    with observations, 1184, 1161-1184.)
 
     Parameters
     ----------
