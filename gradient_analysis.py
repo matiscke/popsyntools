@@ -7,12 +7,20 @@ import numpy as np
 whereActive=data['status']==0
 data_red=data.loc[whereActive]
 
+from utils import *
+t1=get_Trappist1data()
+
 
 # Thats where the pandas magic happens
 calc_gradient=data_red.sort_values(['isystem','a'])['isystem'] == data_red.sort_values(['isystem','a'])['isystem'].shift(-1) # check where the systems are the same after shift
 data_red['gradM']=data_red.sort_values(['isystem','a']).shift(-1)['m'] - data_red.sort_values(['isystem','a']).loc[calc_gradient]['m'] # take the actual difference
 data_red['gradIce']=data_red.sort_values(['isystem','a']).shift(-1)['115'] - data_red.sort_values(['isystem','a']).loc[calc_gradient]['115'] # 115 is ice mass fraction
 
+# Trappist is alreaedy sorted
+print(t1[:6])
+t1['gradM'] = t1.shift(-1)['m'] - t1[:6]['m']
+t1['gradIce'] = t1.shift(-1)['ice_dorn_2018_ucm'] - t1[:6]['ice_dorn_2018_ucm']
+print(t1)
 print(data_red[['a','iplanet','isystem','m','gradM','gradIce']].describe())
 
 print(data_red.loc[data_red['isystemorig']==138].sort_values('a')[['a','m','gradM','gradIce']])
@@ -82,18 +90,20 @@ print(pbroken,e)
 
 fig1=plt.figure(1)
 plt.semilogx()
-plt.scatter(xdata,ydata,alpha=0.2,label=r'$\nabla M$ data')
-xp = np.linspace(-4, 2, 200)
+plt.scatter(xdata,ydata,alpha=0.2,label=r'$\Delta M$ synthetic data')
+plt.scatter(t1[:6]['a'],t1[:6]['gradM'],marker='d',c='red',label=r'$\Delta M$ Trappist-1')
+xp = np.linspace(-4, 2, 300)
 plt.plot(10**(xp),p(xp), c='red', lw=3, zorder=10, label=r'fit for all data: $\propto 10^{{{:.2f}}}$'.format(fit[0][0]))
-plt.plot(10**(xp),plt0p1(xp), c='green', lw=3, zorder=10,label=r'fit on $a < 0.1$ au: $\propto 10^{{{:.2f}}}$'.format(fitlt0p1[0][0]))
-plt.plot(10**(xp),pmt0p1(xp), c='yellow', lw=3, zorder=10, label="fit on $a > 0.1$ au: $\propto 10^{{{:.2f}}}$".format(fitmt0p1[0][0]))
+plt.plot(10**(xp[:190]),plt0p1(xp[:190]), c='green', lw=3, zorder=10,label=r'fit on $a < 0.1$ au: $\propto 10^{{{:.2f}}}$'.format(fitlt0p1[0][0]))
+plt.plot(10**(xp[130:]),pmt0p1(xp[130:]), c='yellow', lw=3, zorder=10, label="fit on $a > 0.1$ au: $\propto 10^{{{:.2f}}}$".format(fitmt0p1[0][0]))
 plt.plot(10**(xp), piecewise_linear(xp, *pbroken), c='black',lw=3, zorder=10, label="fit: $\propto 10^{{{:.3f}}}$ for $a < {{{:.2f}}}$ au, else: $\propto 10^{{{:.3f}}}$".format(pbroken[2],10**(pbroken[0]),pbroken[3]))
 plt.legend()
 plt.xlabel("a (au)")
 plt.ylabel(r"Mass difference ($M_\oplus$)")
-plt.xlim([5*10**(-4),2*10**2])
-plt.ylim([-5,7])
-plt.savefig("J35_dm_analysis.pdf")
+plt.xlim([5*10**(-4),3*10**1])
+#plt.ylim([-5,7])
+plt.ylim([-2.5,3.5])
+plt.savefig("J35_dm_analysis_zoom.pdf")
 
 
 # Ice Gradient Analysis (care, array-names reused)
@@ -125,7 +135,8 @@ print("ice broken fit:",pbroken,e)
 
 fig2 = plt.figure(2)
 plt.semilogx()
-plt.scatter(xdata,ydata,alpha=0.2,label=r'$\nabla$ ice data')
+plt.scatter(xdata,ydata,alpha=0.2,label=r'$\Delta$ice synthetic data')
+plt.scatter(t1[:6]['a'],t1[:6]['gradIce'],marker='d',c='red',label=r'$\Delta$ice Trappist-1')
 xp = np.linspace(-4, 2, 200)
 #plt.plot(10**(xp),p(xp), c='red', lw=3, zorder=10, label=r'fit for all data: $\propto 10^{{{:.3f}}}$'.format(fit[0][0]))
 #plt.plot(10**(xp),plt0p1(xp), c='green', lw=3, zorder=10,label=r'fit on $a < 0.3$ au: $\propto 10^{{{:.3f}}}$'.format(fitlt0p1[0][0]))
@@ -134,7 +145,7 @@ plt.plot(10**(xp), piecewise_linear(xp, *pbroken), c='black',lw=3, zorder=10, la
 plt.legend()
 plt.xlabel("a (au)")
 plt.ylabel("Ice mass fraction difference")
-plt.xlim([5*10**(-4),2*10**2])
+plt.xlim([5*10**(-4),3*10**1])
 plt.ylim([-0.5,0.7])
 plt.savefig("J35_dice_analysis_l.pdf")
 
