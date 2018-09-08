@@ -25,7 +25,8 @@ def massLimits(ZhuWu18=False):
     if ZhuWu18:
         massLimits = {
         'SuperEarth'  : (2., 20.),
-        'ColdJupiter' : (95., np.inf)
+        'ColdJupiter' : (95., np.inf),
+        'HotJupiter'  : (95., np.inf)
         }
     else:
         massLimits = {
@@ -45,7 +46,8 @@ def periodLimits():
     """ Provide period limits (in days) for planet categories."""
     periodLim = {
     'SuperEarth'  : (0., 400.),
-    'ColdJupiter' : (400., np.inf)
+    'ColdJupiter' : (400., np.inf),
+    'HotJupiter'  : (0., 10.)
     }
     return periodLim
 
