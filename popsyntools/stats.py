@@ -66,6 +66,7 @@ def categorizePlanets(population, ZhuWu18=False):
     """
 
     massLim = config.massLimits(ZhuWu18)
+    population['planetType'] = np.nan
 
     if ZhuWu18:
         # consider other criteria than mass, too
