@@ -604,7 +604,7 @@ def plot_diskLifetimeComparison(Mstar, tau, std_tau, ax=None, nSigma=1,
     return ax
 
 
-def plot_multiHistogram(dataFrame, columnNames, ax=None, **kwargs):
+def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
     """ Plot multiple histograms from a dataFrame into the same axis.
 
     The function produces histograms of either several columns of the same data
@@ -622,6 +622,8 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, **kwargs):
         If this is a list, histograms for each column name in it are produced.
     ax : matplotlib axis object, optional
         axis to plot on
+    labels : list
+        list of labels for the legend
 
     Returns
     -------
@@ -642,8 +644,12 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, **kwargs):
 
     if isinstance(columnNames, list):
         # plot different columns of the same dataFrame
-        for name in columnNames:
-            ax.hist(dataFrame[name], label=name, **mplKwargs, **kwargs)
+        for i, name in enumerate(columnNames):
+            if labels == None:
+                kwargs['label'] = name
+            else:
+                kwargs['label'] = labels[i]
+            ax.hist(dataFrame[name], **mplKwargs, **kwargs)
 
     elif isinstance(columnNames, str):
         # assume that dataFrame is multiindexed, iterate over outermost level
