@@ -1,0 +1,3 @@
+[console_scripts]
+astropy-package-template-example = packagename.example_mod:main
+
