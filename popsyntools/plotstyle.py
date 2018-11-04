@@ -4,7 +4,7 @@
 import seaborn as sns
 
 # Set plot style
-sns.set(context='notebook', style='ticks', font_scale=1.0, palette='Set2',\
+sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
     rc={
 # 'text.usetex':True,
 # 'text.latex.unicode':True,
@@ -15,7 +15,7 @@ sns.set(context='notebook', style='ticks', font_scale=1.0, palette='Set2',\
 'font.weight'         : 'normal',
 'font.stretch'        : 'normal',
 'savefig.dpi'         : 400,
-'lines.linewidth'     : 1.0,
+'lines.linewidth'     : 2.0,
 'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
 'figure.subplot.bottom'  : 0.13,   # the bottom of the subplots of the figure

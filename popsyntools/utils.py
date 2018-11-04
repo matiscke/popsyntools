@@ -381,3 +381,14 @@ def add_msini(pop):
     for i in pop.isystem:
         pop.loc[pop.isystem == i, 'msini'] = get_sini()*pop[pop.isystem == i]['m']
     return pop
+
+
+def get_label(pType):
+    """ Translate planet types to nicely formatted labels (e.g. for figure legends)"""
+    dictionary = {
+    'SuperEarth' : 'Super Earth',
+    'ColdJupiter' : 'Cold Jupiter',
+    'all' : 'All',
+    'HotJupiter' : 'Hot Jupiter',
+    'ColdJupiter_ejected' : 'Ejected Cold Jupiter'}
+    return dictionary[pType]

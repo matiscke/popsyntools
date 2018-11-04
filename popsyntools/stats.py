@@ -200,3 +200,55 @@ def get_typeStats(population, population_filtered):
     stats['stdEccentricity'] = population_filtered.e.std()
 
     return stats
+
+
+def multiplicityFreq(subPop):
+    """ Obtain mean multiplicity and standard deviation of a (sub-)population
+    as well as the frequency of each multiplicity. Important: 'subPop' has to be
+    a subpopulation containing only one planet type (except you want to count
+    all planets)
+
+    Parameters
+    ----------
+    subPop : pandas DataFrame
+        sub-population containing only the planet type to count
+
+    Returns
+    -------
+    mean : float
+        mean multiplicity
+    std : float
+        standard deviation of multiplicity
+    NsystemsPerMult : list
+        number of systems for each multiplicity
+    Nsystems : integer
+        Number of unique systems in the sub-population
+    """
+    counts = subPop.groupby('isystem').planetType.count()
+    Nsystems = subPop.isystem.nunique()
+    # obtain number of systems with each multiplicity
+    NsystemsPerMult = []
+    for nPlanet in range(1, 8):
+        NsystemsPerMult.append(np.sum(subPop.groupby('isystem').planetType.count() == nPlanet))
+    return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems
+
+
+def get_multiplicities(pop, pTypes=None):
+    """Compute multiplicities for all distinct planet types in a population"""
+    systemMultiplicities = {}
+    if pTypes == None:
+        pTypes = pop.planetType.unique()
+    for pType in pTypes:
+        if (pd.isnull(pType)) | (pType == 'all'):
+            # select all systems including any considered planet type, but
+            # exclude ejected planets
+            subPop = pop[(pd.notnull(pop.planetType)) &
+                         (~pop['planetType'].str.contains('ejected', na=False))]
+            pType = 'all'
+        else:
+            subPop = pop[pop.planetType == pType]
+        meanMul, std, NsystemsPerMult, Nsystems = multiplicityFreq(subPop)
+        print("{}: mean multiplicity = {}; std = {}".format(pType, meanMul, std))
+        systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
+            utils.get_label(pType), meanMul, std]
+    return systemMultiplicities

@@ -658,6 +658,56 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
     ax.legend()
     return ax
 
+
+def plot_multiplicities(systemMultiplicities, ax=None, **kwargs):
+    """ Plot multiple histograms from a dataFrame into the same axis.
+
+    The function produces histograms of either several columns of the same data
+    frame or of the same column for each level-0-index of a multiindex data
+    frame.
+
+    Parameters
+    ----------
+    systemMultiplicities : dictionary
+        dictionary containing for each subpopulation of planet types:
+        dimension 0: list
+            number of systems with multiplicity i+1, where i is the list's index
+        dimension 1: int
+            number of systems in the subpopulation
+        dimension 2: str
+            label for the legend
+    ax : matplotlib axis object, optional
+        axis to plot on
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if not ax:
+        fig, ax = plt.subplots()
+    nPlanets = [i for i in range(1, 8)]
+    print('consistency check: sum of systems with all multiplicities (should be 100)')
+    customLabel = False
+    for key, arr in systemMultiplicities.items():
+        # normalize to "per 100 stars that contain this planet type"
+        norm_rate = 100*np.array(arr[0])/arr[1]
+        if 'label' in kwargs:
+            legendLabel = kwargs.get('label')
+            del kwargs['label']
+            customLabel = True
+        elif customLabel == False:
+            legendLabel = arr[2]
+        ax.plot(nPlanets, norm_rate, label=legendLabel, **kwargs)
+
+        print('{}: sum = {}'.format(key, sum(norm_rate)))
+    plt.legend()
+    ticks = plt.xticks(np.arange(min(nPlanets), max(nPlanets)+1, 1.0))
+    ax.set_xlabel('Number of Planets')
+    ax.set_ylabel('Frequency per 100 Systems')
+    return ax
+
 ################################################################################
 
 """ Plotting functions meant for single planet tracks."""
