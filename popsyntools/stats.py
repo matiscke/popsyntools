@@ -98,12 +98,21 @@ def categorizePlanets(population, ZhuWu18=False):
                             & (masses <= massLim[pType][1]))
 
         if ZhuWu18:
-            # consider other criteria than mass, too
+            """Besides mass limits, consider period and RV semi-amplitude.
+            We have to make sure that the ejected planets are not removed (they
+            will be flagged in another step), thus we don't apply the period
+            and RV limits for ejected planets.
+            """
             while True:
                 try:
-                    mask = (mask & (population['period'] > periodLim[pType][0])
+                    # mask_per_RV = ~(population['status'] == 0 & ((population['period'] > periodLim[pType][1]) & (population['period'] <= periodLim[pType][0]) | (population['K'] < minRVamp[pType])))
+
+                    mask_per_RV = (population['status'] == 2) | (
+                                   (population['period'] > periodLim[pType][0])
                                  & (population['period'] <= periodLim[pType][1])
                                  & (population['K'] > minRVamp[pType]))
+                    mask = mask & mask_per_RV
+
                 except KeyError:
                     # has RV semi-amplitude not been calculated yet?
                     print("adding RV semi-amplitude using Mstar = 1.0 Msol.")
@@ -202,7 +211,7 @@ def get_typeStats(population, population_filtered):
     return stats
 
 
-def multiplicityFreq(subPop):
+def multiplicityFreq(subPop, nMax):
     """ Obtain mean multiplicity and standard deviation of a (sub-)population
     as well as the frequency of each multiplicity. Important: 'subPop' has to be
     a subpopulation containing only one planet type (except you want to count
@@ -212,6 +221,8 @@ def multiplicityFreq(subPop):
     ----------
     subPop : pandas DataFrame
         sub-population containing only the planet type to count
+    nMax : int
+        maximum multiplicity considered
 
     Returns
     -------
@@ -228,26 +239,70 @@ def multiplicityFreq(subPop):
     Nsystems = subPop.isystem.nunique()
     # obtain number of systems with each multiplicity
     NsystemsPerMult = []
-    for nPlanet in range(1, 8):
+    for nPlanet in range(1, nMax+1):
         NsystemsPerMult.append(np.sum(subPop.groupby('isystem').planetType.count() == nPlanet))
+
+    print('median for {}: {}'.format(subPop.planetType.unique()[0], np.median(counts)))
+
+
     return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems
 
 
-def get_multiplicities(pop, pTypes=None):
-    """Compute multiplicities for all distinct planet types in a population"""
+def get_multiplicities(pop, pTypes=None, nMax=7):
+    """Compute multiplicities for all distinct planet types in a population.
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population
+    pTypes : list of strings
+        the planet types in column "planetType" that should be considered
+    nMax : int
+        maximum multiplicity considered
+
+    Returns
+    -------
+    systemMultiplicities : dict
+        contains for each planet type:
+            [0]: list
+                No. of systems per multiplicity
+            [1]: int
+                No. of systems
+            [2]: str
+                label
+            [3]: float
+                mean multiplicity
+            [4]: float
+                standard deviation of multiplicity
+    """
     systemMultiplicities = {}
     if pTypes == None:
         pTypes = pop.planetType.unique()
     for pType in pTypes:
-        if (pd.isnull(pType)) | (pType == 'all'):
+        if (pd.isnull(pType)) | (pType == 'allTypes'):
             # select all systems including any considered planet type, but
             # exclude ejected planets
             subPop = pop[(pd.notnull(pop.planetType)) &
                          (~pop['planetType'].str.contains('ejected', na=False))]
-            pType = 'all'
+        elif pType.lower() == 'all':
+            # consider all survived planets more massive than 0.5 M_Earth and
+            # with K > Kmin(SE)
+            popAll = pop.copy()
+            popAll['planetType'] = np.nan
+
+            minRVamp = config.minRVamplitude()
+            massLim = config.massLimits()
+            masses = popAll['msini']
+
+            mask_status = popAll['status'] == 0
+            mask = (mask_status & (masses > massLim['Earth'][0])
+                                & (masses <= np.inf))
+            mask = (mask & (popAll['K'] > minRVamp['SuperEarth']))
+            popAll.loc[mask, 'planetType'] = 'all'
+            subPop = popAll[popAll.planetType == 'all']
         else:
             subPop = pop[pop.planetType == pType]
-        meanMul, std, NsystemsPerMult, Nsystems = multiplicityFreq(subPop)
+        meanMul, std, NsystemsPerMult, Nsystems = multiplicityFreq(subPop, nMax)
         print("{}: mean multiplicity = {}; std = {}".format(pType, meanMul, std))
         systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
             utils.get_label(pType), meanMul, std]
