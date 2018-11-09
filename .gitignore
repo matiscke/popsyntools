@@ -8,10 +8,6 @@
 
 *Untitled*
 
-outputs/*
-exostat/*
-localExec/*
-zubehoer/*
-# notebooks/*
+popsyntools.egg-info/*
 
 __pycache__/
