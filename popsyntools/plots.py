@@ -687,10 +687,11 @@ def plot_multiplicities(systemMultiplicities, ax=None, **kwargs):
     """
     if not ax:
         fig, ax = plt.subplots()
-    nPlanets = [i for i in range(1, 8)]
-    print('consistency check: sum of systems with all multiplicities (should be 100)')
+    print("""consistency check: sum of systems with all multiplicities (should be
+            100 if sufficiently high multiplicity is considered)""")
     customLabel = False
     for key, arr in systemMultiplicities.items():
+        nPlanets = [i+1 for i in range(len(arr[0]))]
         # normalize to "per 100 stars that contain this planet type"
         norm_rate = 100*np.array(arr[0])/arr[1]
         if 'label' in kwargs:
@@ -699,8 +700,10 @@ def plot_multiplicities(systemMultiplicities, ax=None, **kwargs):
             customLabel = True
         elif customLabel == False:
             legendLabel = arr[2]
-        ax.plot(nPlanets, norm_rate, label=legendLabel, **kwargs)
-
+        if key == 'all':
+            ax.plot(nPlanets, norm_rate, label=legendLabel, color='k', **kwargs)
+        else:
+            ax.plot(nPlanets, norm_rate, label=legendLabel, **kwargs)
         print('{}: sum = {}'.format(key, sum(norm_rate)))
     plt.legend()
     ticks = plt.xticks(np.arange(min(nPlanets), max(nPlanets)+1, 1.0))
