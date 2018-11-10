@@ -259,7 +259,7 @@ def get_Trappist1data():
 
     Masses, semimajor axes, and radii are from Grimm et al. 2018.
     Ice mass fractions are computed by the internal structure model of the
-    COMPLETO code of Bern (2018) or as indicated.
+    COMPLETO code of Bern (2018).
 
     Returns
     -------
@@ -268,12 +268,9 @@ def get_Trappist1data():
     """
     T1data = {'name': ['b', 'c', 'd', 'e', 'f', 'g', 'h'],
               'a': [0.01155, 0.01582, 0.02228, 0.02928, 0.03853, 0.04688, 0.06193],
-             'a_delrez_2018': [0.01150, 0.01576, 0.02219, 0.02916, 0.03836, 0.0467, 0.0617],
-             'r': [1.12, 1.10, .766, .913, 1.05, 1.15, .775], # Grimm, 2018, Table 4
-             'r_delrez_2018': [1.127, 1.100, 0.788, 0.915, 1.052, 1.154, 0.777],
-             'm': [1.017,1.156,0.297, 0.772,0.934,1.148,0.331], # Grimm, 2018
-             'ice': [0.26,0.09,0.29,0.0,0.11,0.22,0.19],
-             'ice_dorn_2018_ucm': [.16, .06, .14, .02, .07, .13, .11]}
+             'r': [1.12, 1.10, .766, .913, 1.05, 1.15, .775],
+             'm': [1.017,1.156,0.297, 0.772,0.934,1.148,0.331],
+             'ice': [0.26,0.09,0.29,0.0,0.11,0.22,0.19]}
     return pd.DataFrame(T1data, index=T1data['name'])
 
 def convert_dgr2metallicity(population):
@@ -394,6 +391,9 @@ def get_label(pType):
     'ColdJupiter' : 'Cold Jupiter',
     'ColdJupiter_ejected' : 'Ejected Cold Jupiter',
     'HotJupiter' : 'Hot Jupiter',
+    'HotJupiter_ejected' : 'Ejected Hot Jupiter',
+    'WarmJupiter' : 'Warm Jupiter',
+    'WarmJupiter_ejected' : 'Ejected Warm Jupiter',
     'all' : 'All',
     'allTypes' : 'All'}
     return dictionary[pType]

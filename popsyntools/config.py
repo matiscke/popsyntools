@@ -26,7 +26,8 @@ def massLimits(ZhuWu18=False):
         massLimits = {
         'SuperEarth'  : (2., 20.),
         'ColdJupiter' : (95., np.inf),
-        'HotJupiter'  : (95., np.inf)
+        'HotJupiter'  : (95., np.inf),
+        'WarmJupiter' : (95., np.inf)
         }
     else:
         massLimits = {
@@ -47,7 +48,8 @@ def periodLimits():
     periodLim = {
     'SuperEarth'  : (0., 400.),
     'ColdJupiter' : (400., np.inf),
-    'HotJupiter'  : (0., 10.)
+    'HotJupiter'  : (0., 10.),
+    'WarmJupiter' : (10., 400.)
     }
     return periodLim
 
@@ -56,6 +58,7 @@ def minRVamplitude():
     minRVamp = {
     'SuperEarth'  : 2.,
     'ColdJupiter' : 2.,
-    'HotJupiter'  : 2.
+    'HotJupiter'  : 2.,
+    'WarmJupiter' : 2.
     }
     return minRVamp

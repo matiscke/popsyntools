@@ -303,7 +303,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
         else:
             subPop = pop[pop.planetType == pType]
         meanMul, std, NsystemsPerMult, Nsystems = multiplicityFreq(subPop, nMax)
-        print("{}: mean multiplicity = {}; std = {}".format(pType, meanMul, std))
+        print("{}: mean multiplicity = {:1.2f}; std = {:1.2f}".format(pType, meanMul, std))
         systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
             utils.get_label(pType), meanMul, std]
     return systemMultiplicities
