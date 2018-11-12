@@ -17,8 +17,8 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'savefig.dpi'         : 400,
 'lines.linewidth'     : 2.0,
 'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
+'figure.subplot.bottom'  : 0.14,   # the bottom of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
-'figure.subplot.bottom'  : 0.13,   # the bottom of the subplots of the figure
 'figure.subplot.top'     : 0.95,    # the top of the subplots of the figure
 'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
 'axes.xmargin' : 0.02,             # default margin for autoscale
