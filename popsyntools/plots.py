@@ -659,7 +659,50 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
     return ax
 
 
-def plot_multiplicities(systemMultiplicities, ax=None, **kwargs):
+def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
+    """ Plot a histogram and its empirical distribution function.
+
+    Parameters
+    ----------
+    data : array, list, or series object
+        the data for the statistics
+    axes : tuple
+        contains two Matplotlib axis objects
+    axvlines : list
+        list of x coordinates at which to plot vertical lines across both axes
+    cdfbins : list or array
+        bin edges to use for the cumulative histogram
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    ax : tuple or list
+        contains two Matplotlib axis objects
+    """
+    if axes is None:
+        fig, axes = plt.subplots(2, sharex=True, figsize=[6.4, 4.8])
+
+    # plot histogram in first axis
+    n, bins, patches = axes[0].hist(data, **kwargs)
+    if 'bins' in kwargs:
+        del kwargs['bins']
+
+    # plot vertical lines across all axes
+    if isinstance(axvlines, list):
+        for x in axvlines:
+            [a.axvline(x, ls='--', color='gray') for a in axes]
+
+    if cdfbins is None:
+        # use bins of normal histogram
+        cdfbins = bins
+    axes[1].hist(data, cumulative=True, histtype='step', bins=cdfbins, **kwargs)
+
+    # fix collision of tick labels
+    axes[1].get_yticklabels()[-1].set_visible(False)
+    return axes
+
+
+def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     """ Plot multiple histograms from a dataFrame into the same axis.
 
     The function produces histograms of either several columns of the same data
@@ -705,7 +748,8 @@ def plot_multiplicities(systemMultiplicities, ax=None, **kwargs):
         else:
             ax.plot(nPlanets, norm_rate, label=legendLabel, **kwargs)
         print('{}: sum = {}'.format(key, sum(norm_rate)))
-    plt.legend()
+    if legend:
+        plt.legend()
     ticks = plt.xticks(np.arange(min(nPlanets), max(nPlanets)+1, 1.0))
     ax.set_xlabel('Number of Planets')
     ax.set_ylabel('Frequency per 100 Systems')

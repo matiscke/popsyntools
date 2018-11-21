@@ -245,7 +245,7 @@ def multiplicityFreq(subPop, nMax):
     print('median for {}: {}'.format(subPop.planetType.unique()[0], np.median(counts)))
 
 
-    return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems
+    return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems, counts
 
 
 def get_multiplicities(pop, pTypes=None, nMax=7):
@@ -302,7 +302,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
             subPop = popAll[popAll.planetType == 'all']
         else:
             subPop = pop[pop.planetType == pType]
-        meanMul, std, NsystemsPerMult, Nsystems = multiplicityFreq(subPop, nMax)
+        meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop, nMax)
         print("{}: mean multiplicity = {:1.2f}; std = {:1.2f}".format(pType, meanMul, std))
         systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
             utils.get_label(pType), meanMul, std]
