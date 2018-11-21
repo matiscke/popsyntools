@@ -697,8 +697,11 @@ def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
         cdfbins = bins
     axes[1].hist(data, cumulative=True, histtype='step', bins=cdfbins, **kwargs)
 
-    # fix collision of tick labels
+    # fix collision of tick labels and write y labels
     axes[1].get_yticklabels()[-1].set_visible(False)
+    axes[0].set_ylabel('Probability Density')
+    axes[1].set_ylabel('Cumulative Fraction')
+    axes[1].set_ylim(0,1)
     return axes
 
 
