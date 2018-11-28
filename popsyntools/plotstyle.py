@@ -1,6 +1,7 @@
 """ Config file with my personal preference of default matplotlibrc settings.
 """
-
+from matplotlib import rcParams
+from cycler import cycler
 import seaborn as sns
 
 # Set plot style
@@ -16,6 +17,7 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'font.stretch'        : 'normal',
 'savefig.dpi'         : 400,
 'lines.linewidth'     : 2.0,
+'figure.facecolor'      : 'white',
 'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
 'figure.subplot.bottom'  : 0.14,   # the bottom of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
@@ -36,7 +38,5 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 sns.set_color_codes()
 
 # 'fivethirtyeight' colors
-from matplotlib import rcParams
-from cycler import cycler
 rcParams['axes.prop_cycle'] = cycler(color=['#008fd5', '#fc4f30', '#e5ae38',
     '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249'])
