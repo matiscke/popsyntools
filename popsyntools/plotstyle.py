@@ -26,7 +26,17 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'legend.handletextpad' : 0.5,
 'legend.handlelength' : 0.75,
 'xtick.minor.size'     : 2.,
-'ytick.minor.size'     : 2.
+'ytick.minor.size'     : 2.,
+
+# histograms
+'hist.bins' : 20,
+'patch.edgecolor' : 'black',
 })
 
 sns.set_color_codes()
+
+# 'fivethirtyeight' colors
+from matplotlib import rcParams
+from cycler import cycler
+rcParams['axes.prop_cycle'] = cycler(color=['#008fd5', '#fc4f30', '#e5ae38',
+    '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249'])
