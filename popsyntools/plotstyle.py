@@ -19,7 +19,7 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'lines.linewidth'     : 2.0,
 'figure.facecolor'      : 'white',
 'figure.subplot.left'    : 0.14,    # the left side of the subplots of the figure
-'figure.subplot.bottom'  : 0.14,   # the bottom of the subplots of the figure
+'figure.subplot.bottom'  : 0.18,   # the bottom of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
 'figure.subplot.top'     : 0.95,    # the top of the subplots of the figure
 'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
@@ -29,7 +29,7 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'legend.handlelength' : 0.75,
 'xtick.minor.size'     : 2.,
 'ytick.minor.size'     : 2.,
-
+'image.cmap'   : 'inferno',
 # histograms
 'hist.bins' : 20,
 'patch.edgecolor' : 'black',

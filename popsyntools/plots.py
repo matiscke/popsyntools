@@ -6,6 +6,7 @@ schlecker@mpia.de
 """
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
@@ -757,6 +758,50 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     ax.set_xlabel('Number of Planets')
     ax.set_ylabel('Frequency per 100 Systems')
     return ax
+
+def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel='',
+                           **kwargs):
+    """ Produce a scatter plot with color code and color bar.
+
+    Parameters
+    ----------
+    x : iterable
+        x values
+    y : iterable
+        y values
+    z : iterable
+        values for color code
+    fig : matplotlib figure object, optional
+        figure to plot on
+    ax : matplotlib axis object, optional
+        axis to plot on
+    diverging : bool
+        use a diverging color palette
+    cbarlabel : str
+        label for the color bar
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if not ax:
+        fig, ax = plt.subplots()
+    if diverging == True:
+        from matplotlib.colors import Normalize
+        # norm = Normalize(vmin=min(z), vmax=max(z))
+        cmap = sns.diverging_palette(h_neg=250, h_pos=9., s=99, l=50,
+                                 n=19, center="dark", as_cmap=True)
+    else:
+        norm = None
+        cmap = 'inferno'
+
+    sc = ax.scatter(x, y, c=z, cmap=cmap, edgecolors='white',# norm=norm,
+                    linewidth=.5, **kwargs)
+    cbar = fig.colorbar(sc, label=cbarlabel)
+    return fig, ax
+
 
 ################################################################################
 
