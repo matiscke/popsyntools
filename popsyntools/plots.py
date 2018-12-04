@@ -684,7 +684,8 @@ def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
         fig, axes = plt.subplots(2, sharex=True, figsize=[6.4, 4.8])
 
     # plot histogram in first axis
-    n, bins, patches = axes[0].hist(data, **kwargs)
+    n, bins, patches = axes[0].hist(data, histtype='stepfilled',
+                                    edgecolor='black', lw=1.2, **kwargs)
     if 'bins' in kwargs:
         del kwargs['bins']
 
@@ -696,7 +697,7 @@ def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
     if cdfbins is None:
         # use bins of normal histogram
         cdfbins = bins
-    axes[1].hist(data, cumulative=True, histtype='step', bins=cdfbins, **kwargs)
+    axes[1].hist(data, cumulative=True, histtype='step',bins=cdfbins, lw=2, **kwargs)
 
     # fix collision of tick labels and write y labels
     axes[1].get_yticklabels()[-1].set_visible(False)
