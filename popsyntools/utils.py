@@ -397,3 +397,17 @@ def get_label(pType):
     'all' : 'All',
     'allTypes' : 'All'}
     return dictionary[pType]
+
+
+def get_semiMinorAxis(a, e):
+    """ Compute semi-minor axis from semi-major axis a and eccentricity e."""
+    return a*np.sqrt(1 - e**2)
+
+
+def get_ApoPeri(a, e):
+    """ Compute orbital radius at apoapsis and periapsis from semi-major axis a
+    and eccentricity e.
+    """
+    r_per = (1-e)*a
+    r_apo = (1+e)*a
+    return r_per, r_apo
