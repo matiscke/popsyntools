@@ -17,11 +17,12 @@ sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
 'font.stretch'        : 'normal',
 'savefig.dpi'         : 400,
 'lines.linewidth'     : 2.0,
+'figure.figsize'   : [6.4, 4.8],         # figure size in inches
 'figure.facecolor'      : 'white',
 'figure.subplot.left'    : 0.17,    # the left side of the subplots of the figure
 'figure.subplot.bottom'  : 0.18,   # the bottom of the subplots of the figure
 'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
-'figure.subplot.top'     : 0.95,    # the top of the subplots of the figure
+'figure.subplot.top'     : 0.93,    # the top of the subplots of the figure
 'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
 'axes.xmargin' : 0.02,             # default margin for autoscale
 'axes.ymargin' : 0.02,

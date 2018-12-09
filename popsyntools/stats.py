@@ -241,10 +241,7 @@ def multiplicityFreq(subPop, nMax):
     NsystemsPerMult = []
     for nPlanet in range(1, nMax+1):
         NsystemsPerMult.append(np.sum(subPop.groupby('isystem').planetType.count() == nPlanet))
-
-    print('median for {}: {}'.format(subPop.planetType.unique()[0], np.median(counts)))
-
-
+    # print('median for {}: {}'.format(subPop.planetType.unique()[0], np.median(counts)))
     return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems, counts
 
 
@@ -256,7 +253,9 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
     pop : pandas DataFrame
         planet population
     pTypes : list of strings
-        the planet types in column "planetType" that should be considered
+        the planet types in column "planetType" that should be considered. If
+        this is 'all', survived planets of .5 Earth masses and higher that pass
+        the detection limit are considered.
     nMax : int
         maximum multiplicity considered
 
@@ -288,8 +287,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
             # consider all survived planets more massive than 0.5 M_Earth and
             # with K > Kmin(SE)
             popAll = pop.copy()
-            popAll['planetType'] = np.nan
-
+            popAll['planetType'] = None     # should this be 'NaN' instead?
             minRVamp = config.minRVamplitude()
             massLim = config.massLimits()
             masses = popAll['msini']
