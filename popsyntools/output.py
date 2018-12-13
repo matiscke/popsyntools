@@ -92,6 +92,11 @@ def rename_tracksColumns(planetTracks, ref_red=False):
      107: 'lcontenv',
      108: 'lcontsum',
      109: 'dust2gas',
+     110: 'sigma0',
+     111: 'expo',
+     112: 'aCore',
+     113: 'aStart',
+     114: 'mWind',
      116: 'systemNo',
      117: 'planetNo'}
      # 118: 'NoEmbryos'}
