@@ -56,7 +56,7 @@ def get_Sigma0(M0, rc, expo, r0=5.2):
     """
     return (r0*au)**(-expo)*(rc*au)**(-2+expo)*(2-expo)*M0*Msol/(2*np.pi)
 
-def get_Msolid(Sigma0, rc, expo, fgp, r0=5.2):
+def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2):
     """ Compute solid disk mass in Earth masses using disk initial conditions.
 
     Parameters
@@ -67,8 +67,8 @@ def get_Msolid(Sigma0, rc, expo, fgp, r0=5.2):
         characteristic radius [au]
     expo : float
         Power law slope
-    fgp : float
-        gas-to-dust ratio. Careful: this is gas/dust, not the other way around!
+    dgr : float
+        dust-to-gas ratio.
     r0 : float
         reference radius [au], in general 5.2 au
 
@@ -79,8 +79,8 @@ def get_Msolid(Sigma0, rc, expo, fgp, r0=5.2):
     """
     M0 = get_M0(Sigma0, rc, expo, r0=5.2)
 
-    # divide by gas-to-dust ratio and transfer from Solar masses to Earth masses.
-    return M0*332948.6/fgp
+    # multiply by gas-to-dust ratio and transfer from Solar masses to Earth masses
+    return M0*332948.6*dgr
 
 
 def get_orbitalPeriod(population, MstarRel=0.1):
