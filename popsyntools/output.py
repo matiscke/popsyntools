@@ -24,7 +24,8 @@ def rename_tracksColumns(planetTracks, ref_red=False):
     Parameters
     ----------
     planetTracks : Pandas DataFrame
-        Table with the tracks of a single planet
+        Table with the tracks of a single planet, or a 'ref_red' file with the
+        whole population
     ref_red : bool
         rename additional columns for 'ref_red' files
 
