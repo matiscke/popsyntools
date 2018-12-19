@@ -182,7 +182,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     if normalize:
         # normalize to 1/100stars
         h = h*100/Nsystems
-        cbarlabel = r"Planets per 100 Stars per $P-R_P$ interval"
+        cbarlabel = r"Planets per 100 Stars per $P-R_\mathrm{p}$ interval"
     else:
         cbarlabel = r"Planets per $P-R_P$ interval"
 
@@ -257,7 +257,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         else:
             plt.xlabel(xAxis)
         if yAxis == 'r_rEarth':
-            ax.set_ylabel('Planet Size [$\mathrm{R_{Earth}}$]')
+            ax.set_ylabel('Planet Size [$\mathrm{R_\oplus}$]')
         else:
             plt.ylabel(yAxis)
 
