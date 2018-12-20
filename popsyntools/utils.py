@@ -12,7 +12,7 @@ Msol = 1.98855e33
 G = 6.6740831e-8
 
 def get_M0(Sigma0, rc, expo, r0=5.2):
-    """Compute the total disk mass from initial condition parameters.
+    """Compute the total gas disk mass from initial condition parameters.
 
     Parameters
     ----------

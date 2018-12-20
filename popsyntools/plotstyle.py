@@ -44,12 +44,19 @@ def styleplots():
     rcParams['axes.prop_cycle'] = cycler(color=['#008fd5', '#fc4f30', '#e5ae38',
         '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249'])
 
-def histKwargs():
+def histKwargs(overrideDict=None):
+    """get custom keyword arguments for matplotlib histograms.
+
+    Values can be overwritten by specifying a dictionary 'overrideDict'.
+    """
     histKwargs = {'alpha' : 0.6,
                      'histtype' : 'stepfilled',
                      'edgecolor' : 'black',
                      'linewidth' : 1.2,
                   }
+    if overrideDict is not None:
+        for key, val in zip(overrideDict.keys(), overrideDict.values()):
+            histKwargs[key] = val
     return histKwargs
 
 styleplots()
