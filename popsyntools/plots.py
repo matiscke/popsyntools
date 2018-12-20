@@ -762,6 +762,7 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     ax.set_ylabel('Frequency per 100 Systems')
     return ax
 
+
 def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel='',
                            **kwargs):
     """ Produce a scatter plot with color code and color bar.
@@ -806,42 +807,66 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
     return fig, ax
 
 
-################################################################################
+def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
+    """ Plot a map showing mutual correlations between population columns.
 
-""" Plotting functions meant for single planet tracks."""
+    Uses the parameter-less Spearman Rank Coefficient as a measure for
+    correlation. The coefficient ranges from -1 to +1, where a positive
+    (negative) coefficient denotes a positive (negative) rank correlation
+    between two variables and $\rho = 0 $ corresponds to no correlation.
 
-def plot_mass(tracks, ax):
-    """plot a planet's total mass vs time"""
-    ax.plot(tracks['t'],tracks['m'])
-    ax.set_xlabel('time [yr]')
-    ax.set_ylabel('mass [$m_{Earth}$]')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    return ax
+    Parameters
+    ----------
+    pop : Pandas dataframe
+        planet population
+    columns : list
+        list of column names to use for the map
+    fig : matplotlib figure object, optional
+        figure to plot on
+    ax : matplotlib axis object, optional
+        axis to plot on
+    **kwargs : keyword arguments to pass to matplotlib
 
-def plot_coreMass(tracks, ax):
-    """plot core mass vs time"""
-    ax.plot(tracks['t'],tracks['mCore'])
-    ax.set_xlabel('time [yr]')
-    ax.set_ylabel('core mass [$m_{Earth}$]')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    return ax
+    Returns
+    -------
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if ax == None:
+        fig, ax = plt.subplots()
 
-def plot_radius(tracks, ax):
-    """plot radius vs time"""
-    ax.plot(tracks['t'],tracks['r'])
-    ax.set_xlabel('time [yr]')
-    ax.set_ylabel('radius [Jupiter radii]')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    return ax
+    # Compute the correlation matrix
+    corr = pop[columns].corr(method='spearman')
 
-def plot_lum(tracks, ax):
-    """ plot luminosity vs time"""
-    ax.plot(tracks['t'], tracks['L'])
-    ax.set_xlabel('time [yr]')
-    ax.set_ylabel('Luminosity [?]')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    return ax
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Use Spearman, because it doesn't make assumptions on distributions
+    # and works for both continuous and discrete variables
+    ax.set_position([0.02, 0.08, 0.97, .99])
+    cbar_ax = fig.add_axes([0.8, 0.084, 0.04, 0.86])
+    hm = sns.heatmap(round(corr,2), mask=mask, square=True, annot=True, ax=ax,
+                     fmt='.2f', linewidths=3, cbar_kws={"shrink": .8,
+                     'fraction':0.15, 'pad': -.05, 'aspect':18,
+                     'label' : 'Spearman Rank Coefficient'}, center=0,
+                     cmap='seismic_r', annot_kws={'fontsize':13},
+                     cbar_ax=cbar_ax, **kwargs)
+
+    # plot eyecandy
+    colLabels = utils.columnLabels()
+    hm.tick_params(axis=u'both', which=u'both',length=0)
+    labels = hm.get_xticklabels()
+    labels = [colLabels[l.get_text()] for l in labels]
+    labels[-1] = ''
+    hm.set_xticklabels(labels)
+    labels = hm.get_yticklabels()
+    labels = [colLabels[l.get_text()] for l in labels]
+    labels[0] = ''
+    l = hm.set_yticklabels(labels)
+
+    ax.figure.axes[-1].yaxis.label.set_size(18)
+    ax.figure.axes[0].tick_params(labelsize=16, labelrotation=0)
+    ax.figure.axes[-1].tick_params(labelsize=16)
+    ax.figure.axes[-1].yaxis.labelpad = 20
+    return fig, ax
