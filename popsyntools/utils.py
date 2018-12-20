@@ -56,7 +56,7 @@ def get_Sigma0(M0, rc, expo, r0=5.2):
     """
     return (r0*au)**(-expo)*(rc*au)**(-2+expo)*(2-expo)*M0*Msol/(2*np.pi)
 
-def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2):
+def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
     """ Compute solid disk mass in Earth masses using disk initial conditions.
 
     Parameters
@@ -69,15 +69,21 @@ def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2):
         Power law slope
     dgr : float
         dust-to-gas ratio.
-    r0 : float
+    r0 : float, optional
         reference radius [au], in general 5.2 au
-
+    condensationFactor : float, optional
+        compensates for solid material inside the ice line which is not
+        completely condensed. The default value was derived by comparison with
+        the planetesimal disk mass 'mdiskp' at early simulation times.
     Returns
     -------
     Msolid : float
         total solid disk mass in Earth masses
     """
     M0 = get_M0(Sigma0, rc, expo, r0=5.2)
+
+    # correct for not fully condensed material within ice line
+    M0 *= condensationFactor
 
     # multiply by gas-to-dust ratio and transfer from Solar masses to Earth masses
     return M0*332948.6*dgr
