@@ -444,3 +444,21 @@ def get_ApoPeri(a, e):
     r_per = (1-e)*a
     r_apo = (1+e)*a
     return r_per, r_apo
+
+
+def columnLabels():
+    colLabels = {
+    'Msolid' : '$M_\mathrm{solid}$',
+    'Mgas0'  : '$M_\mathrm{gas}$',
+    'sigma0' : '$\Sigma_0$',
+    'dust2gas'    : '$\zeta_\mathrm{d,g}$',
+    'metallicity' : '[Fe/H]',
+    'aCore'  : '$R_\mathrm{disk}$',
+    'mWind'  : '$\dot{M}_\mathrm{wind}$',
+    'expo'   : '$\gamma$',
+    'nSE'    : '$n_\mathrm{SE}$',
+    'nCJ'    : '$n_\mathrm{CJ}$',
+    'multiplicity' : '$n_\mathrm{tot}$',
+    'tdisk' : '$t_\mathrm{disk}$'
+    }
+    return colLabels
