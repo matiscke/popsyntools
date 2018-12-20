@@ -245,7 +245,7 @@ def multiplicityFreq(subPop, nMax):
     return np.mean(counts), np.std(counts), NsystemsPerMult, Nsystems, counts
 
 
-def get_multiplicities(pop, pTypes=None, nMax=7):
+def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
     """Compute multiplicities for all distinct planet types in a population.
 
     Parameters
@@ -300,8 +300,11 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
             subPop = popAll[popAll.planetType == 'all']
         else:
             subPop = pop[pop.planetType == pType]
-        meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop, nMax)
-        print("{}: mean multiplicity = {:1.2f}; std = {:1.2f}".format(pType, meanMul, std))
+        meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop,
+            nMax)
+        if verbose:
+            print("{}: mean multiplicity = {:1.2f}; std = {:1.2f}".format(pType,
+                meanMul, std))
         systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
             utils.get_label(pType), meanMul, std]
     return systemMultiplicities
@@ -313,7 +316,8 @@ def add_multiplicity(pop):
     Considers 'all' planets based on criteria in stats.get_multiplicities().
     """
     for i in pop.isystem.unique():
-        m = get_multiplicities(pop[pop.isystem == i], ['all'])['all'][3]
+        m = get_multiplicities(pop[pop.isystem == i], ['all'],
+                               verbose=False)['all'][3]
         pop.loc[pop.isystem == i, 'multiplicity'] = m if not np.isnan(m) else 0
     return pop
 
