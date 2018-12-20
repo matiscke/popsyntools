@@ -305,3 +305,29 @@ def get_multiplicities(pop, pTypes=None, nMax=7):
         systemMultiplicities[pType] = [NsystemsPerMult, Nsystems,
             utils.get_label(pType), meanMul, std]
     return systemMultiplicities
+
+
+def add_multiplicity(pop):
+    """ add a column with planet multiplicity per system.
+
+    Considers 'all' planets based on criteria in stats.get_multiplicities().
+    """
+    for i in pop.isystem.unique():
+        m = get_multiplicities(pop[pop.isystem == i], ['all'])['all'][3]
+        pop.loc[pop.isystem == i, 'multiplicity'] = m if not np.isnan(m) else 0
+    return pop
+
+
+def add_pTypeFrequency(pop):
+    """ add a column with frequency per system of specific planet types.
+
+    Realized planet types:
+    'SuperEarth' => 'nSE'
+    'ColdJupiter' => 'nCJ'
+    """
+    planetTypes = ['SuperEarth', 'ColdJupiter']
+    for col, pt in zip(['nSE', 'nCJ'], planetTypes):
+        for val in pop.isystem.unique():
+            pop.loc[pop.isystem == val, col] = len(pop[(pop.planetType == pt)
+                                                       & (pop.isystem == val)])
+    return pop
