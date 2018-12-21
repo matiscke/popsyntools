@@ -335,3 +335,23 @@ def add_pTypeFrequency(pop):
             pop.loc[pop.isystem == val, col] = len(pop[(pop.planetType == pt)
                                                        & (pop.isystem == val)])
     return pop
+
+def occurrenceTable(pop, onCol='Msolid'):
+    """ create a table with occurrence rates depending on an initial parameter.
+
+    One line per system. This version is specialized on Super Earths and Cold
+    Jupiters.
+    """
+    isystem = []
+    diskParam = []
+    nSE = []
+    nCJ = []
+    for i, group in pop.groupby(onCol):
+        isystem.append(int(group.isystem.unique()[0]))
+        diskParam.append(group.median()[onCol])
+        nSE.append(len(group[group.planetType == 'SuperEarth']))
+        nCJ.append(len(group[group.planetType == 'ColdJupiter']))
+
+    occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ},
+                       index=isystem)
+    return occ
