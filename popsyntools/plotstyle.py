@@ -40,9 +40,12 @@ def styleplots():
 
     sns.set_color_codes()
 
-    # 'fivethirtyeight' colors
-    rcParams['axes.prop_cycle'] = cycler(color=['#008fd5', '#fc4f30', '#e5ae38',
-        '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249'])
+
+def get_colorPalette():
+    """ return a custom made color palette."""
+    return ['#008fd5', '#fc4f30', '#e5ae38',
+        '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249']
+
 
 def histKwargs(overrideDict=None):
     """get custom keyword arguments for matplotlib histograms.
@@ -59,4 +62,6 @@ def histKwargs(overrideDict=None):
             histKwargs[key] = val
     return histKwargs
 
+
 styleplots()
+rcParams['axes.prop_cycle'] = cycler(color=get_colorPalette())
