@@ -787,6 +787,8 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
 
     Returns
     -------
+    fig : matplotlib figure object
+        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -829,6 +831,8 @@ def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
 
     Returns
     -------
+    fig : matplotlib figure object
+        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -870,4 +874,55 @@ def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
     ax.figure.axes[0].tick_params(labelsize=16, labelrotation=0)
     ax.figure.axes[-1].tick_params(labelsize=16)
     ax.figure.axes[-1].yaxis.labelpad = 20
+    return fig, ax
+
+
+def plot_rollingMean(df, columns, labels, onCol, winSize=100,
+                     errFun=utils.sqrtOfMean, fig=None, ax=None):
+    """ plot a rolling mean with confidence intervals.
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        data frame containing column(s) with data for the rolling mean
+    columns : list
+        list of column names to use
+    labels : list
+        list with labels for the legend. Must have the same size as 'columns'.
+    onCol : str
+        name of the column along which the window moves
+    winSize : int, optional
+        size of the sliding window
+    errFun : function handle
+        function to apply on 'rolling' object for computation of uncertainties.
+        Example: 'errFun=np.std'
+    fig : matplotlib figure object, optional
+        figure to plot on
+    ax : matplotlib axis object, optional
+        axis to plot on
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    """
+    if ax == None:
+        fig, ax = plt.subplots()
+
+    # apply rolling mean along axis specified in 'onCol'
+    roll = df.rolling(winSize, center=True, on=onCol).mean()
+    for col, label in zip(columns, labels):
+        ax.plot(roll[onCol], roll[col], label=label)
+
+    # plot confidence intervals (clip them below zero)
+    roll_err = df.rolling(winSize, center=True, on=onCol).apply(errFun)
+    for col in columns:
+        conf_low = np.clip(roll[col] - roll_err[col], a_min=0, a_max=None)
+        ax.fill_between(roll_err[onCol], conf_low, roll[col] + roll_err[col],
+        alpha=.15)
+
+    ax.legend()
     return fig, ax
