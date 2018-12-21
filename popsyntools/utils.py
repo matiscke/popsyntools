@@ -462,3 +462,7 @@ def columnLabels():
     'tdisk' : '$t_\mathrm{disk}$'
     }
     return colLabels
+
+def sqrtOfMean(arr):
+    """ computes the square-root of the arithmetic mean of an array."""
+    return np.sqrt(np.mean(arr))
