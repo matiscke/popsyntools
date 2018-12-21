@@ -846,12 +846,13 @@ def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
     # and works for both continuous and discrete variables
     ax.set_position([0.02, 0.08, 0.97, .99])
     cbar_ax = fig.add_axes([0.8, 0.084, 0.04, 0.86])
+    mplKwargs = dict(cmap='seismic_r', annot_kws={'fontsize':13}, center=0,
+                     cbar_ax=cbar_ax)
     hm = sns.heatmap(round(corr,2), mask=mask, square=True, annot=True, ax=ax,
                      fmt='.2f', linewidths=3, cbar_kws={"shrink": .8,
                      'fraction':0.15, 'pad': -.05, 'aspect':18,
-                     'label' : 'Spearman Rank Coefficient'}, center=0,
-                     cmap='seismic_r', annot_kws={'fontsize':13},
-                     cbar_ax=cbar_ax, **kwargs)
+                     'label' : 'Spearman Rank Coefficient'},
+                     **dict(mplKwargs, **kwargs))
 
     # plot eyecandy
     colLabels = utils.columnLabels()
