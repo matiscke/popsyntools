@@ -466,3 +466,21 @@ def columnLabels():
 def sqrtOfMean(arr):
     """ computes the square-root of the arithmetic mean of an array."""
     return np.sqrt(np.mean(arr))
+
+def normalize_rate(n_planet, n_star):
+    """ normalize the occurrence rate to planets per 100 stars.
+
+    Parameters
+    ----------
+    n_planet : int
+        number of planets
+    n_star : int
+        number of stars
+
+    Returns
+    -------
+    norm_rate : float
+        normalized occurrence rate
+    """
+    norm_rate = 100*n_planet/n_star
+    return norm_rate

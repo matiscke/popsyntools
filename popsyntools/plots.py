@@ -14,25 +14,6 @@ from popsyntools import plotstyle
 from popsyntools import utils
 
 
-def normalize_rate(n_planet, n_star):
-    """ normalize the occurrence rate to planets per 100 stars.
-
-    Parameters
-    ----------
-    n_planet : int
-        number of planets
-    n_star : int
-        number of stars
-
-    Returns
-    -------
-    norm_rate : float
-        normalized occurrence rate
-    """
-    norm_rate = 100*n_planet/n_star
-    return norm_rate
-
-
 def compute_logbins(binWidth_dex, Range):
     """ Compute the bin edges for a logarithmic grid.
 
@@ -181,7 +162,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     if normalize:
         # normalize to 1/100stars
-        h = h*100/Nsystems
+        h = utils.normalize_rate(h, Nsystems)
         cbarlabel = r"Planets per 100 Stars per $P-R_\mathrm{p}$ interval"
     else:
         cbarlabel = r"Planets per $P-R_P$ interval"
