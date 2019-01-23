@@ -65,7 +65,7 @@ def categorizePlanets(population, ZhuWu18=False):
     population : pandas DataFrame
         categorized population
     """
-
+    print('CAUTION: VERSION FOR ALL PLANETS (NOT ONLY STATUS 0)')
     massLim = config.massLimits(ZhuWu18)
     population['planetType'] = np.nan
 
