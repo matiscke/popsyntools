@@ -388,3 +388,28 @@ def finalFate(system, iplanet, iplanetOrig=None):
         system.loc[system.iplanet == iplanetOrig, 'finalFate'] = iplanet
         return system
     return finalFate(system, -int(planet.status), iplanetOrig)
+
+
+def get_finalFate(pop):
+    """
+    track down final planet fate of accreted planets for the whole population.
+
+    Uses function 'finalFate()' to add the final fate of each planet (See
+    docstring of that function).
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population
+
+    Returns
+    -------
+    pop : pandas DataFrame
+        planet population
+    """
+
+    for i, system in pop.groupby('isystem'):
+        for iplanet in system.iplanet:
+            system = finalFate(system, iplanet)
+        pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate']
+    return pop
