@@ -355,3 +355,36 @@ def occurrenceTable(pop, onCol='Msolid'):
     occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ},
                        index=isystem)
     return occ
+
+
+def finalFate(system, iplanet, iplanetOrig=None):
+    """
+    track the final fate of a planet that was accreted.
+
+    goes iteratively through the accretion cascade until the planet that was
+    *not* accreted anymore is found. The index of this final planet is returned.
+    This function calls itself recursively.
+
+    Parameters
+    ----------
+    system : pandas DataFrame
+        frame containing only the planets of a single system
+    iplanet : int
+        index of the current planet
+    iplanetOrig : int
+        index of the planet in question, remains the same during recursive
+        function calls.
+
+    Returns
+    -------
+    system : pandas DataFrame
+        frame containing only the planets of a single system
+    """
+    if iplanetOrig == None:
+        # first call from outside, store the original planet index
+        iplanetOrig = iplanet
+    planet = system[system.iplanet == iplanet]
+    if not (planet.status < 0).any():
+        system.loc[system.iplanet == iplanetOrig, 'finalFate'] = iplanet
+        return system
+    return finalFate(system, -int(planet.status), iplanetOrig)
