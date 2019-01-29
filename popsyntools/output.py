@@ -374,7 +374,6 @@ class Population():
             self.simlist = jointDF
         else:
             self.simlist = make_list.read_simlist(simlistFile)
-        return self.simlist
 
     def print_categories(self):
         """ Sort planets into different categories."""
