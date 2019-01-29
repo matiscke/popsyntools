@@ -12,7 +12,7 @@ import warnings
 
 from popsyntools import stats
 from popsyntools import config
-
+from popsyntools import make_list
 
 def rename_tracksColumns(planetTracks, ref_red=False):
     """Rename some of the columns of a planet tracks or ref_red table.
@@ -365,7 +365,6 @@ class Population():
         data : pandas DataFrame
             data frame containing the simulation list
         """
-        import make_list
         if isinstance(simlistFile, list):
             simlistsData = [make_list.read_simlist(f) for f in simlistFile]
             # get index from filenames, e.g. 'simulation_list_0.3Msol.dat'
