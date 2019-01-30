@@ -784,7 +784,7 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
         norm = None
         cmap = 'inferno'
 
-    sc = ax.scatter(x, y, c=z, cmap=cmap, edgecolors='white',# norm=norm,
+    sc = ax.scatter(x, y, c=z, cmap=cmap, edgecolors='black',# norm=norm,
                     linewidth=.5, **kwargs)
     cbar = fig.colorbar(sc, label=cbarlabel)
     return fig, ax
