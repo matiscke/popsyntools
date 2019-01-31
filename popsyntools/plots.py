@@ -391,11 +391,8 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
         ax.scatter([max(t) + 1e6 for i in range(len(truths))], truths['a'], s=radius2linewidth(truths['r']),
                    c=truths['m'], cmap='inferno_r', norm=colorNorm)
 
-    # add a colorbar
-    if showColorbar:
-        cbar = plt.colorbar(lc)
-        cbar.set_label('Planet Mass [$\mathrm{M_{Earth}}$]')
-
+    cbar = plt.colorbar(lc)
+    cbar.set_label('Planet Mass [$\mathrm{M_{Earth}}$]')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('Time [yr]')
