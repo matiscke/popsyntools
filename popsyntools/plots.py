@@ -306,7 +306,8 @@ def compare_surfaceDensity(disk1file, disk2file, sim1name="Type 2",
     return ax
 
 
-def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
+def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.),
+                      avgFactor=5):
     """
     plot evolutionary tracks of a multiplanet system.
 
@@ -327,6 +328,9 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
         according to the current radius of a planet. The values given in this
         parameter correspond to the minimum and maximum planet radius in the
         whole simulation.
+    avgFactor : int
+        window size of the running mean that is applied to the arrays.
+        Represents number of timesteps included in each point to plot.
 
     Returns
     -------
@@ -372,10 +376,14 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.)):
         # restrict data to times with planet status = 0
         planet = planet[planet['status'] == 0]
 
-        t = planet['t'][::5]
-        a = planet['a'][::5]
-        m = planet['m'][::5]
-        r = planet['r'][::5]
+        # apply running mean on data
+        def runningMean(array, avgFactor):
+            return np.convolve(array, np.ones((avgFactor,))/avgFactor,
+                               mode='valid')
+        t = runningMean(planet['t'], avgFactor)
+        a = runningMean(planet['a'], avgFactor)
+        m = runningMean(planet['m'], avgFactor)
+        r = runningMean(planet['r'], avgFactor)
 
         # linearly transform line widths into radius range
         lw = radius2linewidth(r)
