@@ -334,6 +334,8 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.),
 
     Returns
     -------
+    fig : matplotlib figure object
+        figure with the plot
     ax : matplotlib axis
         axis with the plot
     """
@@ -406,7 +408,7 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.),
     ax.set_xlabel('Time [yr]')
     ax.set_ylabel('Semimajor Axis [au]')
 
-    return ax
+    return fig, ax
 
 
 def plot_planetTypeBar(jointPop, ax=None, planetTypes = ['Earth', 'SuperEarth',
