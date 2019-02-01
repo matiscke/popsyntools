@@ -408,6 +408,9 @@ def get_finalFate(pop):
         planet population
     """
 
+    # disable performance-killing calls of gc.collect()
+    pd.set_option('mode.chained_assignment', None)
+
     for i, system in pop.groupby('isystem'):
         for iplanet in system.iplanet:
             system = finalFate(system, iplanet)
