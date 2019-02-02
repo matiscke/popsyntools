@@ -416,3 +416,39 @@ def get_finalFate(pop):
             system = finalFate(system, iplanet)
         pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate']
     return pop
+
+
+def crossCheck_finalFate(pop, planetType):
+    """
+    Determine which accreted planets ended up in a certain planet type.
+
+    Looks up column 'finalFate' (see function 'get_finalFate') and checks if the
+    corresponding planet belongs to the type specified in 'planetType'.
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population. Has to have a column 'finalFate' with indices of the
+        final accretors.
+    planetType : str
+        planet type in question; has to occur in column 'planetType'
+
+    Returns
+    -------
+    pop : pandas DataFrame
+        planet population with additional boolean column named according to
+        'accBy' + planetType.
+
+    Example
+    -------
+    >>> pop = stats.crossCheck_finalFate(pop, 'ColdJupiter')
+    >>> pop.accByColdJupiter.value_counts()[True]
+    """
+    def crossCheck(system):
+        iAccretor = system[system.planetType == planetType].iplanet
+        system.loc[system.finalFate.isin(iAccretor),
+                   'accBy' + planetType] = True
+        return system
+
+    pop = pop.groupby('isystem').apply(crossCheck)
+    return pop
