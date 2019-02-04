@@ -445,9 +445,10 @@ def crossCheck_finalFate(pop, planetType):
     >>> pop.accByColdJupiter.value_counts()[True]
     """
     def crossCheck(system):
+        accreted = system[system.status < 0]
         iAccretor = system[system.planetType == planetType].iplanet
-        system.loc[system.finalFate.isin(iAccretor),
-                   'accBy' + planetType] = True
+        idx = accreted.loc[accreted.finalFate.isin(iAccretor)].index
+        system.loc[system.index.isin(idx), 'accBy' + planetType] = True
         return system
 
     pop = pop.groupby('isystem').apply(crossCheck)
