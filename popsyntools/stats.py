@@ -336,6 +336,7 @@ def add_pTypeFrequency(pop):
                                                        & (pop.isystem == val)])
     return pop
 
+
 def occurrenceTable(pop, onCol='Msolid'):
     """ create a table with occurrence rates depending on an initial parameter.
 
@@ -355,3 +356,28 @@ def occurrenceTable(pop, onCol='Msolid'):
     occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ},
                        index=isystem)
     return occ
+
+
+def print_statusFractions(pop):
+    """
+    Prints a table showing fractions of different stati in a population.
+
+    Uses the column "status" in "pop" to show how many planets have survived,
+    got accreted, were ejected, etc.
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population
+
+    Returns
+    -------
+    None
+    """
+    Nplanets_pop = len(pop)
+    statusCounts = pop.status.value_counts()
+    print("Fractions:\nsurvived: {:.2f}".format(statusCounts[0.0]/Nplanets_pop))
+    print("ejected: {:.2f}".format(statusCounts[2.0]/Nplanets_pop))
+    print("accreted by star: {:.2f}".format(statusCounts[3.0]/Nplanets_pop))
+    accretedCounts = statusCounts[statusCounts.keys() < 0]
+    print("accreted by planet: {:.2f}".format(accretedCounts.sum()/Nplanets_pop))
