@@ -365,6 +365,7 @@ class Population():
         data : pandas DataFrame
             data frame containing the simulation list
         """
+        from popsyntools import make_list
         if isinstance(simlistFile, list):
             simlistsData = [make_list.read_simlist(f) for f in simlistFile]
             # get index from filenames, e.g. 'simulation_list_0.3Msol.dat'
