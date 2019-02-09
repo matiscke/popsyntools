@@ -945,6 +945,7 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
         mplKwargs = {}
 
     for ax, param in zip(axs, columns):
-        ax.hist(simlist[param], label=param, density=True, **mplKwargs)
-        ax.set_xlabel(param)
+        ax.hist(simlist[param], label=utils.columnLabels()[param], density=True,
+                **mplKwargs)
+        ax.set_xlabel(utils.columnLabels()[param])
     return fig, axs

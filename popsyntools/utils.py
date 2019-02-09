@@ -454,6 +454,7 @@ def columnLabels():
     'dust2gas'    : '$\zeta_\mathrm{d,g}$',
     'metallicity' : '[Fe/H]',
     'aCore'  : '$R_\mathrm{disk}$',
+    'a_out'  : '$R_\mathrm{disk}$',
     'mWind'  : '$\dot{M}_\mathrm{wind}$',
     'expo'   : '$\gamma$',
     'nSE'    : '$n_\mathrm{SE}$',
@@ -463,9 +464,11 @@ def columnLabels():
     }
     return colLabels
 
+
 def sqrtOfMean(arr):
     """ computes the square-root of the arithmetic mean of an array."""
     return np.sqrt(np.mean(arr))
+
 
 def normalize_rate(n_planet, n_star):
     """ normalize the occurrence rate to planets per 100 stars.

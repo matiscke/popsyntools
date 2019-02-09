@@ -51,16 +51,16 @@ def read_simlist(filename, varlen=17):
             "a_in",
             "a_out",
             "expo",
-            "windM",
+            "mWind",
             "simName",
             "a_start",
             "t_start"]
     simlist = pd.DataFrame(simlist, columns=columns)
 
     # set the correct data types
-    simlist[['fgp','sigma0','a_in','a_out','expo','windM',
+    simlist[['fgp','sigma0','a_in','a_out','expo','mWind',
              'a_start','t_start']] = simlist[['fgp','sigma0','a_in','a_out',
-             'expo','windM','a_start','t_start']].apply(pd.to_numeric)
+             'expo','mWind','a_start','t_start']].apply(pd.to_numeric)
     return simlist
 
 
@@ -186,7 +186,7 @@ def write_singleSim2File(fileHandle, singleSim):
     + 'AI_' + var2str(singleSim['a_in'])\
     + 'AO_' + var2str(singleSim['a_out'])\
     + 'EX_' + var2str(singleSim['expo'])\
-    + 'MW_' + var2str(singleSim['windM'])\
+    + 'MW_' + var2str(singleSim['mWind'])\
     + 'SIM' + var2str(singleSim['simName'])\
     + 'AS_' + var2str(singleSim['a_start'])\
     + 'ST_' + var2str(singleSim['t_start'])
