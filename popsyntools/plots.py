@@ -613,6 +613,8 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
         axis to plot on
     labels : list
         list of labels for the legend
+    **kwargs : dict
+        additional keyword arguments to pass to matplotlib
 
     Returns
     -------
@@ -623,11 +625,7 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
         fig, ax = plt.subplots()
 
     if not kwargs:
-        mplKwargs = {'alpha' : 0.6,
-                     'histtype' : 'stepfilled',
-                     'edgecolor' : 'black',
-                     'linewidth' : 1.2,
-                     'bins' : 50}
+        mplKwargs = plotstyle.histKwargs({'bins' : 50})
     else:
         mplKwargs = {}
 
@@ -914,3 +912,39 @@ def plot_rollingMean(df, columns, labels, onCol, winSize=100,
 
     ax.legend()
     return fig, ax
+
+
+def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
+    """
+    Plot histograms of initial disk conditions.
+
+    Parameters
+    ----------
+    simlist : pandas DataFrame
+        simulation list
+    columns : list
+        list containing column names in simlist to plot
+    axs : list (opional)
+        list containing axis objects
+    **kwargs : dict
+        additional keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    axs : list
+        list of subaxes
+    """
+    if axs == None:
+        fig, axs = plt.subplots(1, 5, figsize=[20, 3], sharex=False)
+
+    if not kwargs:
+        mplKwargs = plotstyle.histKwargs({'bins' : 30})
+    else:
+        mplKwargs = {}
+
+    for ax, param in zip(axs, columns):
+        ax.hist(simlist[param], label=param, density=True, **mplKwargs)
+        ax.set_xlabel(param)
+    return fig, axs
