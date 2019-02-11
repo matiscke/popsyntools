@@ -447,15 +447,16 @@ def get_ApoPeri(a, e):
 
 
 def columnLabels():
+    """ Get Latex-formatted labels for some quantities."""
     colLabels = {
-    'Msolid' : '$M_\mathrm{solid}$',
-    'Mgas0'  : '$M_\mathrm{gas}$',
-    'sigma0' : '$\Sigma_0$',
+    'Msolid' : '$M_\mathrm{solid}\, [\mathrm{M_\oplus}]$',
+    'Mgas0'  : '$M_\mathrm{gas}\, [\mathrm{M_\odot}]$',
+    'sigma0' : '$\Sigma_0\, [\mathrm{g \, cm^{-2}}]$',
     'dust2gas'    : '$\zeta_\mathrm{d,g}$',
     'metallicity' : '[Fe/H]',
-    'aCore'  : '$R_\mathrm{disk}$',
-    'a_out'  : '$R_\mathrm{disk}$',
-    'mWind'  : '$\dot{M}_\mathrm{wind}$',
+    'aCore'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
+    'a_out'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
+    'mWind'  : '$\dot{M}_\mathrm{wind}\, [\mathrm{M_\odot \, yr^{-1}}]$',
     'expo'   : '$\gamma$',
     'nSE'    : '$n_\mathrm{SE}$',
     'nCJ'    : '$n_\mathrm{CJ}$',
