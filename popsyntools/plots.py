@@ -937,15 +937,15 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
         list of subaxes
     """
     if axs == None:
-        fig, axs = plt.subplots(1, 5, figsize=[20, 3], sharex=False)
+        fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
-    if not kwargs:
-        mplKwargs = plotstyle.histKwargs({'bins' : 30})
-    else:
-        mplKwargs = {}
+    mplKwargs = plotstyle.histKwargs(kwargs)
+    mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
         ax.hist(simlist[param], label=utils.columnLabels()[param], density=True,
                 **mplKwargs)
         ax.set_xlabel(utils.columnLabels()[param])
+        ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
+                            useMathText=True)
     return fig, axs
