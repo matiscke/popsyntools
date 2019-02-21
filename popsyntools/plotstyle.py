@@ -7,9 +7,9 @@ import seaborn as sns
 
 def styleplots():
     # Set plot style
-    sns.set(context='notebook', style='ticks', font_scale=1.2, palette='Set2',\
+    sns.set(context='notebook', style='ticks', font_scale=1.,\
         rc={
-    # 'text.usetex':True,
+    'text.usetex':False,
     # 'text.latex.unicode':True,
     'font.family' : 'sans-serif',
     #'font.serif':'Computer Modern',
@@ -17,6 +17,16 @@ def styleplots():
     'font.variant'        : 'normal',
     'font.weight'         : 'normal',
     'font.stretch'        : 'normal',
+    # Use 11pt font in plots, to match 11pt font in A&A documents
+    "font.size": 11,
+    "axes.labelsize": 11,
+    'legend.fontsize': 8,
+    'legend.handletextpad' : 0.5,
+    'legend.handlelength' : 0.75,
+    'xtick.labelsize' :8,
+    'ytick.labelsize' :8,
+    'xtick.minor.size'     : 2.,
+    'ytick.minor.size'     : 2.,
     'savefig.dpi'         : 400,
     'lines.linewidth'     : 2.0,
     'figure.figsize'   : [6.4, 4.8],         # figure size in inches
@@ -28,10 +38,6 @@ def styleplots():
     'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
     'axes.xmargin' : 0.02,             # default margin for autoscale
     'axes.ymargin' : 0.02,
-    'legend.handletextpad' : 0.5,
-    'legend.handlelength' : 0.75,
-    'xtick.minor.size'     : 2.,
-    'ytick.minor.size'     : 2.,
     'image.cmap'   : 'inferno',
     # histograms
     'hist.bins' : 20,
@@ -61,6 +67,52 @@ def histKwargs(overrideDict=None):
         for key, val in zip(overrideDict.keys(), overrideDict.values()):
             histKwargs[key] = val
     return histKwargs
+
+
+def set_size(width, fraction=1, subplot=[1,1]):
+    """ Set aesthetic figure dimensions to avoid scaling in latex.
+
+    Parameters
+    ----------
+    width: float
+        Width in pts
+    fraction: float
+        Fraction of the width which you wish the figure to occupy
+
+    Returns
+    -------
+    fig_dim: tuple
+        Dimensions of figure in inches
+
+    Credits
+    -------
+    Adapted from https://jwalton.info/Embed-Publication-Matplotlib-Latex/
+    """
+
+    if width == 'aa':
+        width_pt = 256.07
+    elif width == 'aaDouble':
+        width_pt = 523.53
+    else:
+        width_pt = width
+
+    # Width of figure
+    fig_width_pt = width_pt * fraction
+
+    # Convert from pt to inches
+    inches_per_pt = 1 / 72.27
+
+    # Golden ratio to set aesthetic figure height
+    golden_ratio = (5**.5 - 1) / 2
+
+    # Figure width in inches
+    fig_width_in = fig_width_pt * inches_per_pt
+
+    # Figure height in inches
+    fig_height_in = fig_width_in * golden_ratio * (subplot[0] / subplot[1])
+    fig_dim = (fig_width_in, fig_height_in)
+
+    return fig_dim
 
 
 styleplots()
