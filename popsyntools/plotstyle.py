@@ -17,9 +17,9 @@ def styleplots():
     'font.variant'        : 'normal',
     'font.weight'         : 'normal',
     'font.stretch'        : 'normal',
-    # Use 11pt font in plots, to match 11pt font in A&A documents
-    "font.size": 11,
-    "axes.labelsize": 11,
+    # Use font size to match font in A&A documents
+    "font.size": 9,
+    "axes.labelsize": 8,
     'legend.fontsize': 8,
     'legend.handletextpad' : 0.5,
     'legend.handlelength' : 0.75,
@@ -31,10 +31,10 @@ def styleplots():
     'lines.linewidth'     : 2.0,
     'figure.figsize'   : [6.4, 4.8],         # figure size in inches
     'figure.facecolor'      : 'white',
-    'figure.subplot.left'    : 0.17,    # the left side of the subplots of the figure
-    'figure.subplot.bottom'  : 0.18,   # the bottom of the subplots of the figure
-    'figure.subplot.right'   : 0.96,   # the right side of the subplots of the figure
-    'figure.subplot.top'     : 0.93,    # the top of the subplots of the figure
+    'figure.subplot.left'    : 0.16,    # the left side of the subplots of the figure
+    'figure.subplot.bottom'  : 0.21,   # the bottom of the subplots of the figure
+    'figure.subplot.right'   : 0.98,   # the right side of the subplots of the figure
+    'figure.subplot.top'     : 0.97,    # the top of the subplots of the figure
     'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
     'axes.xmargin' : 0.02,             # default margin for autoscale
     'axes.ymargin' : 0.02,
@@ -74,8 +74,10 @@ def set_size(width, fraction=1, subplot=[1,1]):
 
     Parameters
     ----------
-    width: float
-        Width in pts
+    width: float or string
+        either width in pts or one of the following strings:
+        'aa' : A&A column width
+        'aaDouble' : A&A total text width
     fraction: float
         Fraction of the width which you wish the figure to occupy
 

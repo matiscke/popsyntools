@@ -163,7 +163,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     if normalize:
         # normalize to 1/100stars
         h = utils.normalize_rate(h, Nsystems)
-        cbarlabel = r"Planets per 100 Stars per $P-R_\mathrm{p}$ interval"
+        cbarlabel = r"Planets per 100 Stars"# per $P-R_\mathrm{p}$ interval"
     else:
         cbarlabel = r"Planets per $P-R_P$ interval"
 
@@ -229,8 +229,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     # eyecandy
     if not kind == 'annotated':
         if showColorbar:
-            cbar = plt.colorbar(im)
-            cbar.set_label(cbarlabel, labelpad=15)
+            cbar = plt.colorbar(im, pad = 0.04)
+            cbar.set_label(cbarlabel, labelpad=5)
         plt.xscale('log')
         plt.yscale('log')
         if xAxis == 'period':
