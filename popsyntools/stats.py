@@ -456,18 +456,34 @@ def crossCheck_finalFate(pop, planetType):
     return pop
 
 
-def print_statusFractions(pop):
+def print_statusFractions(pop, excludeSurvivors=False):
     """
     Prints a table showing fractions of different stati in a population.
 
     Uses the column "status" in "pop" to show how many planets have survived,
     got accreted, were ejected, etc.
-    None
     """
+    if excludeSurvivors:
+        # consider only planets that have not survived
+        print('Fractions of non-surviving planets:')
+        pop = pop.copy()[pop.status != 0]
     Nplanets_pop = len(pop)
     statusCounts = pop.status.value_counts()
-    print("Fractions:\nsurvived: {:.2f}".format(statusCounts[0.0]/Nplanets_pop))
-    print("ejected: {:.2f}".format(statusCounts[2.0]/Nplanets_pop))
-    print("accreted by star: {:.2f}".format(statusCounts[3.0]/Nplanets_pop))
-    accretedCounts = statusCounts[statusCounts.keys() < 0]
-    print("accreted by planet: {:.2f}".format(accretedCounts.sum()/Nplanets_pop))
+
+    try:
+        print("Fractions:\nsurvived: {:.2f}".format(statusCounts[0.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        print("ejected: {:.2f}".format(statusCounts[2.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        print("accreted by star: {:.2f}".format(statusCounts[3.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        accretedCounts = statusCounts[statusCounts.keys() < 0]
+        print("accreted by planet: {:.2f}".format(accretedCounts.sum()/Nplanets_pop))
+    except KeyError:
+        pass
