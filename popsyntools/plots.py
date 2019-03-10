@@ -914,7 +914,7 @@ def plot_rollingMean(df, columns, labels, onCol, winSize=100,
     return fig, ax
 
 
-def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
+def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
     """
     Plot histograms of initial disk conditions.
 
@@ -924,6 +924,8 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
         simulation list
     columns : list
         list containing column names in simlist to plot
+    fig : matplotlib figure object, optional
+        figure to plot on
     axs : list (opional)
         list containing axis objects
     **kwargs : dict
@@ -936,7 +938,7 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
     axs : list
         list of subaxes
     """
-    if axs == None:
+    if axs is None:
         fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
     mplKwargs = plotstyle.histKwargs(kwargs)
