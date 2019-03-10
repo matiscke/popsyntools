@@ -27,6 +27,9 @@ def styleplots():
     'ytick.labelsize' :8,
     'xtick.minor.size'     : 2.,
     'ytick.minor.size'     : 2.,
+    'xtick.major.pad'      : 2.,    ## distance to major tick label in points
+    'ytick.major.pad'      : 2.,    ## distance to major tick label in points
+    'ytick.major.size'     : 4.,   ## major tick size in points'
     'savefig.dpi'         : 400,
     'lines.linewidth'     : 2.0,
     'figure.figsize'   : [6.4, 4.8],         # figure size in inches
@@ -69,7 +72,7 @@ def histKwargs(overrideDict=None):
     return histKwargs
 
 
-def set_size(width, fraction=1, subplot=[1,1]):
+def set_size(width='aa', subplot=[1,1], scale=1):
     """ Set aesthetic figure dimensions to avoid scaling in latex.
 
     Parameters
@@ -78,8 +81,10 @@ def set_size(width, fraction=1, subplot=[1,1]):
         either width in pts or one of the following strings:
         'aa' : A&A column width
         'aaDouble' : A&A total text width
-    fraction: float
-        Fraction of the width which you wish the figure to occupy
+    subplot : list
+        subplot dimensions in [rows, columns]
+    scale: float
+        fraction of the width which you wish the figure to occupy
 
     Returns
     -------
@@ -99,7 +104,7 @@ def set_size(width, fraction=1, subplot=[1,1]):
         width_pt = width
 
     # Width of figure
-    fig_width_pt = width_pt * fraction
+    fig_width_pt = width_pt * scale
 
     # Convert from pt to inches
     inches_per_pt = 1 / 72.27
@@ -112,7 +117,7 @@ def set_size(width, fraction=1, subplot=[1,1]):
 
     # Figure height in inches
     fig_height_in = fig_width_in * golden_ratio * (subplot[0] / subplot[1])
-    fig_dim = (fig_width_in, fig_height_in)
+    fig_dim = [fig_width_in, fig_height_in]
 
     return fig_dim
 
