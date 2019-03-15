@@ -945,9 +945,29 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
     mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
-        ax.hist(simlist[param], label=utils.columnLabels()[param], density=True,
+        ax.hist(simlist[param], density=True,
                 **mplKwargs)
         ax.set_xlabel(utils.columnLabels()[param])
         ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
                             useMathText=True)
     return fig, axs
+
+
+def plot_smaMassMetallicity(pop, fig=None, ax=None):
+    """Plot mass-sma-metallicity scatter including orbital range."""
+    if ax == None:
+        fig, ax = plt.subplots()
+    fig, ax = plot_scatterColorCoded(np.array(pop.a), np.array(pop.m),
+                                     np.array(pop.metallicity), fig=fig, ax=ax,
+                                     cbarlabel='Host Star Metallicity [Fe/H]',
+                                     vmin=-.6, vmax=.6, zorder=100)
+    ax.set_xlabel('Semi-major Axis [au]')
+    ax.set_ylabel('Planet Mass [$\mathrm{M_{\oplus}}$]')
+
+    # overlay orbital radius range
+    pop.r_per, pop.r_apo = utils.get_ApoPeri(pop.a.values, pop.e.values)
+    per2apoLines = [pop.a - pop.r_per, pop.r_apo - pop.a]
+
+    ax.errorbar(np.array(pop.a), np.array(pop.m), xerr=per2apoLines,
+                fmt='none', c='gray', lw=1., alpha=.5)
+    return fig, ax
