@@ -119,7 +119,7 @@ def rename_tracksColumns(planetTracks, ref_red=False):
 
 
 def read_simFromFolder(foldername):
-    """Read a simulation from a folder and return it as a pandas DataFrame.
+    """Read a simulation from a folder and return it as a dict of DataFrames.
 
     Parameters
     ----------
@@ -163,8 +163,9 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
     filename : string
         filename of the HDF5 file containing the population data
     hierarchical : bool
-        if True, return a tree structure of systems and planets. Otherwise, all
-        data is written into one data frame.
+        if True, return a tree structure of systems and planets. Note that this
+        will break in the near future since pandas panels are deprecated.
+        If hierarchical is False, all data is written into one data frame.
     nSample : integer
         number of samples randomly drawn from the simulations in the file.
         Recommended for large populations where it is not feasible to read
@@ -172,8 +173,8 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
     Returns
     -------
     population : dict or pandas DataFrame
-        depending on the 'hierarchical' flag: Dictionary of pandas panels or
-        a single pandas DataFrame
+        if 'hierarchical' is True: dictionary of pandas panels.
+        Otherwise: a single pandas DataFrame
 
     Example
     -------
