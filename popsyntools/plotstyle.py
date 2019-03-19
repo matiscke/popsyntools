@@ -17,6 +17,20 @@ def styleplots():
     'font.variant'        : 'normal',
     'font.weight'         : 'normal',
     'font.stretch'        : 'normal',
+    # Use font size to match font in A&A documents
+    "font.size": 9,
+    "axes.labelsize": 8,
+    'axes.titlesize': 8,
+    'legend.fontsize': 8,
+    'legend.handletextpad' : 0.5,
+    'legend.handlelength' : 0.75,
+    'xtick.labelsize' :8,
+    'ytick.labelsize' :8,
+    'xtick.minor.size'     : 2.,
+    'ytick.minor.size'     : 2.,
+    'xtick.major.pad'      : 2.,    ## distance to major tick label in points
+    'ytick.major.pad'      : 2.,    ## distance to major tick label in points
+    'ytick.major.size'     : 4.,   ## major tick size in points'
     'savefig.dpi'         : 400,
     'lines.linewidth'     : 2.0,
     'figure.figsize'   : [6.4, 4.8],         # figure size in inches
