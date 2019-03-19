@@ -4,6 +4,7 @@ from the planet formation Code 'Planete' by the Bern planet formation group.
 Written by: Martin Schlecker
 schlecker@mpia.de
 """
+import astropy
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -623,11 +624,7 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
     """
     if ax == None:
         fig, ax = plt.subplots()
-
-    if not kwargs:
-        mplKwargs = plotstyle.histKwargs({'bins' : 50})
-    else:
-        mplKwargs = {}
+    mplKwargs = plotstyle.histKwargs(kwargs)
 
     if isinstance(columnNames, list):
         # plot different columns of the same dataFrame
@@ -636,12 +633,21 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
                 kwargs['label'] = name
             else:
                 kwargs['label'] = labels[i]
-            ax.hist(dataFrame[name], **mplKwargs, **kwargs)
+
+            if not 'bins' in mplKwargs.keys():
+                # compute ideal bin width
+                mplKwargs['bins'] = astropy.stats.knuth_bin_width(dataFrame[name],
+                                        return_bins=True)[1]
+            ax.hist(dataFrame[name], **mplKwargs)
 
     elif isinstance(columnNames, str):
+        if not 'bins' in mplKwargs.keys():
+            # compute ideal bin width
+            mplKwargs['bins'] = astropy.stats.knuth_bin_width(dataFrame[columnNames],
+                                        return_bins=True)[1]
         # assume that dataFrame is multiindexed, iterate over outermost level
         for label, subpopulation in dataFrame.groupby(level=0):
-           ax.hist(subpopulation[columnNames], label=label, **mplKwargs, **kwargs)
+           ax.hist(subpopulation[columnNames], label=label, **mplKwargs)
     ax.legend()
     return ax
 
@@ -949,3 +955,22 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
         ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
                             useMathText=True)
     return fig, axs
+
+
+def plot_smaMassMetallicity(pop, fig=None, ax=None):
+    """Plot mass-sma-metallicity scatter including orbital range."""
+    if ax == None:
+        fig, ax = plt.subplots()
+    fig, ax = plot_scatterColorCoded(np.array(pop.a), np.array(pop.m),
+                                     np.array(pop.metallicity), fig=fig, ax=ax,
+                                     cbarlabel='Host Star Metallicity [Fe/H]',
+                                     vmin=-.6, vmax=.6, zorder=100)
+    ax.set_xlabel('Semi-major Axis [au]')
+    ax.set_ylabel('Planet Mass [$\mathrm{M_{\oplus}}$]')
+
+    # overlay orbital radius range
+    pop.r_per, pop.r_apo = utils.get_ApoPeri(pop.a.values, pop.e.values)
+    per2apoLines = [pop.a - pop.r_per, pop.r_apo - pop.a]
+    ax.errorbar(np.array(pop.a), np.array(pop.m), xerr=per2apoLines,
+                fmt='none', c='gray', lw=1., alpha=.5)
+    return fig, ax
