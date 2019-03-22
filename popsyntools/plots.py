@@ -164,7 +164,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     if normalize:
         # normalize to 1/100stars
         h = utils.normalize_rate(h, Nsystems)
-        cbarlabel = r"Planets per 100 Stars per $P-R_\mathrm{p}$ interval"
+        cbarlabel = r"Planets per 100 Stars"# per $P-R_\mathrm{p}$ interval"
     else:
         cbarlabel = r"Planets per $P-R_P$ interval"
 
@@ -230,8 +230,8 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     # eyecandy
     if not kind == 'annotated':
         if showColorbar:
-            cbar = plt.colorbar(im)
-            cbar.set_label(cbarlabel, labelpad=15)
+            cbar = plt.colorbar(im, pad = 0.04)
+            cbar.set_label(cbarlabel, labelpad=5)
         plt.xscale('log')
         plt.yscale('log')
         if xAxis == 'period':
@@ -920,7 +920,7 @@ def plot_rollingMean(df, columns, labels, onCol, winSize=100,
     return fig, ax
 
 
-def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
+def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
     """
     Plot histograms of initial disk conditions.
 
@@ -930,6 +930,8 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
         simulation list
     columns : list
         list containing column names in simlist to plot
+    fig : matplotlib figure object, optional
+        figure to plot on
     axs : list (opional)
         list containing axis objects
     **kwargs : dict
@@ -942,14 +944,14 @@ def plot_initialConditionHist(simlist, columns, axs=None, **kwargs):
     axs : list
         list of subaxes
     """
-    if axs == None:
+    if axs is None:
         fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
     mplKwargs = plotstyle.histKwargs(kwargs)
     mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
-        ax.hist(simlist[param], label=utils.columnLabels()[param], density=True,
+        ax.hist(simlist[param], density=True,
                 **mplKwargs)
         ax.set_xlabel(utils.columnLabels()[param])
         ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
@@ -971,6 +973,10 @@ def plot_smaMassMetallicity(pop, fig=None, ax=None):
     # overlay orbital radius range
     pop.r_per, pop.r_apo = utils.get_ApoPeri(pop.a.values, pop.e.values)
     per2apoLines = [pop.a - pop.r_per, pop.r_apo - pop.a]
+<<<<<<< HEAD
+=======
+
+>>>>>>> noColLabelTest
     ax.errorbar(np.array(pop.a), np.array(pop.m), xerr=per2apoLines,
                 fmt='none', c='gray', lw=1., alpha=.5)
     return fig, ax
