@@ -973,10 +973,6 @@ def plot_smaMassMetallicity(pop, fig=None, ax=None):
     # overlay orbital radius range
     pop.r_per, pop.r_apo = utils.get_ApoPeri(pop.a.values, pop.e.values)
     per2apoLines = [pop.a - pop.r_per, pop.r_apo - pop.a]
-<<<<<<< HEAD
-=======
-
->>>>>>> noColLabelTest
     ax.errorbar(np.array(pop.a), np.array(pop.m), xerr=per2apoLines,
                 fmt='none', c='gray', lw=1., alpha=.5)
     return fig, ax

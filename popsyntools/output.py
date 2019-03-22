@@ -248,7 +248,7 @@ def read_ref_red(ref_redFilename):
     return tracks
 
 
-def join_dataframes(simlist, ref_red):
+def join_rrSimlist(simlist, ref_red):
     """ Join a simulation list with their resulting planet population.
 
     Parameters
@@ -312,7 +312,8 @@ class Population():
         Returns
         -------
         data : pandas DataFrame
-            data frame containing the population
+            data frame containing the population. If populationFile is a list,
+            an outer index will be created from the file names.
         """
         if isinstance(populationFile, list):
             # create a multiindex data frame from multiple populations
@@ -325,6 +326,20 @@ class Population():
             populationsNames = [f[-11:-4] for f in populationFile]
             jointDF = pd.concat([p for p in populationsData], axis=0,
                                   keys=[name for name in populationsNames])
+
+            """check if list consists (only) of ref_reds at different times, e.g.
+            ['ref_red3e9.dat', 'ref_red6e7.dat', 'ref_red5e6.dat']"""
+            try:
+                jointDF.index.set_levels([float(time[-3:]) for time in
+                    jointDF.index.levels[0]], level=0, inplace=True)
+                jointDF.index.names = ['time', 'planet']
+                jointDF.sort_index(inplace=True)
+
+            except ValueError:
+                warnings.warn("One or several files are probably not \
+ref_reds at different times. Make sure to remove 'special' \
+ref_reds such as 'ref_redtdisk.dat'.")
+                pass
             data = jointDF
 
         elif "ref_red" in populationFile:

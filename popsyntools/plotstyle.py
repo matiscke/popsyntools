@@ -20,10 +20,7 @@ def styleplots():
     # Use font size to match font in A&A documents
     "font.size": 9,
     "axes.labelsize": 8,
-<<<<<<< HEAD
     'axes.titlesize': 8,
-=======
->>>>>>> noColLabelTest
     'legend.fontsize': 8,
     'legend.handletextpad' : 0.5,
     'legend.handlelength' : 0.75,
