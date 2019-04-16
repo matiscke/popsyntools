@@ -4,6 +4,7 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 #%%
+import warnings
 import numpy as np
 import pandas as pd
 
@@ -275,9 +276,12 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
                 standard deviation of multiplicity
     """
     systemMultiplicities = {}
-    if pTypes == None:
-        pTypes = pop.planetType.unique()
-    for pType in pTypes:
+    if pTypes is None:
+        pTypes = [pt for pt in pop.planetType.unique() if pt is not np.nan]
+    elif not isinstance(pTypes, list):
+        warnings.warn('"pTypes" must be a list of strings')
+        return None
+    for pType in list(pTypes):
         if (pd.isnull(pType)) | (pType == 'allTypes'):
             # select all systems including any considered planet type, but
             # exclude ejected planets
