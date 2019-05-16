@@ -5,6 +5,7 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 import astropy
+import warnings
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -139,8 +140,14 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         if not np.iterable(binWidth_dex):
             # if only one number is given, use along both dimensions
             binWidth_dex = (binWidth_dex, binWidth_dex)
-        xBins = compute_logbins(binWidth_dex[0], xRange)
-        yBins = compute_logbins(binWidth_dex[1], yRange)
+        try:
+            xBins = compute_logbins(binWidth_dex[0], xRange)
+            yBins = compute_logbins(binWidth_dex[1], yRange)
+        except ValueError:
+            warnings.warn("""ValueError, probably a division by zero in log10.
+                          Please check the input data if you want to plot on
+                          logarithmic axes.""")
+            return
 
     # create 2D histogram
     h, xedges, yedges = np.histogram2d(survivedPlanets[xAxis],
@@ -174,7 +181,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         threshold  = 0.01
         if zRange is not None:
             if zRange[0] > h.min() or zRange[1] < h.max():
-                import warnings
                 warnings.warn("""Values in the histogram exceed one or both bounds
                 given in 'zRange'. The visual representation of your data might
                 be corrupted!""")

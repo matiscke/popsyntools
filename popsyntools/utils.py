@@ -456,12 +456,13 @@ def columnLabels():
     'metallicity' : '[Fe/H]',
     'aCore'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
     'a_out'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
-    'mWind'  : '$\dot{M}_\mathrm{wind}\, [\mathrm{M_\odot \, yr^{-1}}]$',
     'expo'   : '$\gamma$',
     'nSE'    : '$n_\mathrm{SE}$',
     'nCJ'    : '$n_\mathrm{CJ}$',
     'multiplicity' : '$n_\mathrm{tot}$',
-    'tdisk' : '$t_\mathrm{disk}$'
+    'tdisk' : '$t_\mathrm{disk}$',
+    'mWind'  : '$\dot{M}_\mathrm{wind}\, [\mathrm{M_\odot \, yr^{-1}}]$',
+    'L_X'    : '$L_\mathrm{X}\, [10^{30}\mathrm{erg \, s^{-1}}]$'
     }
     return colLabels
 
