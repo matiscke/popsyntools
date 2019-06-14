@@ -88,6 +88,30 @@ def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
     # multiply by gas-to-dust ratio and transfer from Solar masses to Earth masses
     return M0*332948.6*dgr
 
+def get_sma(period_d, MstarRel=0.1):
+    """ Compute semi-major axis from the orbital period and Mstar.
+
+    Parameters
+    ----------
+    period_d : float
+        orbital period in d
+    MstarRel : float
+        Mass of the stellar host in solar Masses
+
+    Returns
+    -------
+    sma : float
+        semi-major axis in au
+    """
+    Mstar = MstarRel*Msol
+    KeplerConst = 4*np.pi**2/(G*Mstar)
+
+    # convert period from d to s and sma from cm to au
+    period_s = lambda period_d : period_d*86400
+    sma_au = lambda sma_cm : sma_cm/au
+
+    sma_cm = np.cbrt(period_s(period_d)**2/KeplerConst)
+    return sma_au(sma_cm)
 
 def get_orbitalPeriod(population, MstarRel=0.1):
     """ Compute the orbital period P from the semi-major axis a and Mstar.
