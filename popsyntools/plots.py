@@ -157,7 +157,7 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
     if smooth:
         # smooth out the contours
         import scipy.ndimage as nd
-        h = nd.gaussian_filter(h,(4,2))
+        h = nd.gaussian_filter(h,1)
 
     # obtain number of systems
     if 'isystem' in survivedPlanets:
