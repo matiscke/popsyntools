@@ -33,6 +33,18 @@ def rename_tracksColumns(planetTracks, ref_red=False):
     -------
     dfOut : Pandas DataFrame
         DataFrame with changed column names
+
+    Notes
+    -----
+    There has been an additional inconsistency for 2019+ populations. An
+    additional renaming of the following columns might be necessary:
+    transCol = {115:'fracIce', 'systemNo':'fracIron', 'planetNo':'MP_taurad',
+            'isystem':'MP_Energies4', 'iplanet':'MP_Energies5',
+            'isystemorig':'fpg', 'iplanetorig':'sigma0',
+            'nplanets':'expo','line':'aCore', 124:'Mwind',
+            125:'isystem', 126:'iplanet', 127:'isystemorig',
+            128:'iplanetorig', 129:'nplanets', 130:'line'}
+    dfOut.rename(index=str, columns=transCol)
     """
     colnames = {
      0: 'n',
@@ -243,8 +255,11 @@ def read_ref_red(ref_redFilename):
     # >>> tracks = read_ref_red(ref_redFilename)
     # >>>
     # """
-    tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
-    tracks = rename_tracksColumns(tracks, ref_red=True)
+    if 'csv' in ref_redFilename:
+        tracks = pd.read_csv(ref_redFilename)
+    else:
+        tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
+        tracks = rename_tracksColumns(tracks, ref_red=True)
     return tracks
 
 
