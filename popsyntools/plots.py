@@ -954,7 +954,7 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
         fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
     mplKwargs = plotstyle.histKwargs(kwargs)
-    mplKwargs['bins'] = 30
+    # mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
         ax.hist(simlist[param], density=True,
