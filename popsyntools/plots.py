@@ -982,3 +982,44 @@ def plot_smaMassMetallicity(pop, fig=None, ax=None):
     ax.errorbar(np.array(pop.a), np.array(pop.m), xerr=per2apoLines,
                 fmt='none', c='gray', lw=1., alpha=.5)
     return fig, ax
+
+
+def plot_clusterScatter(pop, clusters, fig=None, ax=None, **kwargs):
+    """ Make scatter plot of planets with colors defined by cluster affiliation.
+
+    Parameters
+    ----------
+    pop : Pandas dataframe
+        data frame containing a planet population. Must have boolean columns for
+        each of the species in 'clusters'.
+    clusters : list
+        list of column names to use for cluster assignment.
+    fig : matplotlib figure object, optional
+        figure to plot on
+    ax : matplotlib axis object, optional
+        axis to plot on
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    ax : matplotlib axis
+        axis with the plot
+    """
+
+    def rename_clusters(cluster):
+        transl = {'HotRockies':'Hot Rockies','ColdStragglers':'Cold Stragglers',
+                'WarmNeptunes':'Warm Neptunes', 'USPs':'USPs','Giants':'Giants'}
+        return transl[cluster]
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=plotstyle.set_size('aa', scale=1.25))
+    for cluster in clusters:
+        ax.plot(pop[pop[cluster]].a, pop[pop[cluster]].m, 'o', ms=1,
+                label=rename_clusters(cluster), **kwargs)
+    plt.loglog()
+    ax.set_xlabel('Semi-major Axis [au]')
+    ax.set_ylabel('Mass [M$_\oplus$]')
+    plt.legend()
+    return fig, ax
