@@ -984,7 +984,7 @@ def plot_smaMassMetallicity(pop, fig=None, ax=None):
     return fig, ax
 
 
-def plot_clusterScatter(pop, clusters, fig=None, ax=None, **kwargs):
+def plot_clusterScatter(pop, clusters, x='a', y='m', fig=None, ax=None, **kwargs):
     """ Make scatter plot of planets with colors defined by cluster affiliation.
 
     Parameters
@@ -994,6 +994,10 @@ def plot_clusterScatter(pop, clusters, fig=None, ax=None, **kwargs):
         each of the species in 'clusters'.
     clusters : list
         list of column names to use for cluster assignment.
+    x : str
+        column name of x variable
+    y : str
+        column name of y variable
     fig : matplotlib figure object, optional
         figure to plot on
     ax : matplotlib axis object, optional
@@ -1016,10 +1020,12 @@ def plot_clusterScatter(pop, clusters, fig=None, ax=None, **kwargs):
     if ax is None:
         fig, ax = plt.subplots(figsize=plotstyle.set_size('aa', scale=1.25))
     for cluster in clusters:
-        ax.plot(pop[pop[cluster]].a, pop[pop[cluster]].m, 'o', ms=1,
+        ax.plot(pop[pop[cluster]][x], pop[pop[cluster]][y], 'o', ms=1,
                 label=rename_clusters(cluster), **kwargs)
     plt.loglog()
-    ax.set_xlabel('Semi-major Axis [au]')
-    ax.set_ylabel('Mass [M$_\oplus$]')
+    if x == 'a':
+        ax.set_xlabel('Semi-major Axis [au]')
+    if y == 'm':
+        ax.set_ylabel('Mass [M$_\oplus$]')
     plt.legend()
     return fig, ax
