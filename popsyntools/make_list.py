@@ -27,40 +27,66 @@ def read_simlist(filename, varlen=17):
         simulation list as a dataframe
     """
 
-    simlist = []
-    with open(filename) as f:
-        # get line length without escape characters and reset iterator
-        lineLen = len(f.readline().rstrip('\n'))
-        f.seek(0)
-        for line in f:
-            """read line by line with new parameter every varlen characters.
-            In each parameter, the first 3 characters are omitted (they
-            contain parameter designations such as "EX_").
-            """
-            simParams = [line[i+3:i+varlen] for i in range(0, lineLen, varlen)]
-            simlist.append(simParams)
+    try:
+        # old simlist format (roughly until summer 2019)
+        simlist = []
+        with open(filename) as f:
+            # get line length without escape characters and reset iterator
+            lineLen = len(f.readline().rstrip('\n'))
+            f.seek(0)
+            for line in f:
+                """read line by line with new parameter every varlen characters.
+                In each parameter, the first 3 characters are omitted (they
+                contain parameter designations such as "EX_").
+                """
+                simParams = [line[i+3:i+varlen] for i in range(0, lineLen, varlen)]
+                simlist.append(simParams)
 
-    # drop last row (contains only "END")
-    simlist = simlist[:-1]
+        # drop last row (contains only "END")
+        simlist = simlist[:-1]
 
-    # turn list into a pandas DataFrame
-    columns = [
-            "CDnumber",
-            "fgp",
-            "sigma0",
-            "a_in",
-            "a_out",
-            "expo",
-            "mWind",
-            "simName",
-            "a_start",
-            "t_start"]
-    simlist = pd.DataFrame(simlist, columns=columns)
+        # turn list into a pandas DataFrame
+        columns = [
+                "CDnumber",
+                "fgp",
+                "sigma0",
+                "a_in",
+                "a_out",
+                "expo",
+                "mWind",
+                "simName",
+                "a_start",
+                "t_start"]
+        simlist = pd.DataFrame(simlist, columns=columns)
 
-    # set the correct data types
-    simlist[['fgp','sigma0','a_in','a_out','expo','mWind',
-             'a_start','t_start']] = simlist[['fgp','sigma0','a_in','a_out',
-             'expo','mWind','a_start','t_start']].apply(pd.to_numeric)
+        # set the correct data types
+        simlist[['fgp','sigma0','a_in','a_out','expo','mWind',
+                 'a_start','t_start']] = simlist[['fgp','sigma0','a_in','a_out',
+                 'expo','mWind','a_start','t_start']].apply(pd.to_numeric)
+
+    except AssertionError:
+        # new format (from early "NG" populations on (summer 2019))
+        simlist = []
+        with open(filename) as f:
+            for line in f:
+                line_split = line.split()
+                line = [item.split('=')[1] for item in line_split[1:]]
+                simlist.append(line)
+
+        # drop last row (contains only "END")
+        simlist = simlist[:-1]
+
+        # turn list into a pandas DataFrame
+        columns = [
+                "Mstar",
+                "sigma0",
+                "expo",
+                "a_in",
+                "a_out",
+                "fgp",
+                "mWind",]
+        simlist = pd.DataFrame(simlist, columns=columns, dtype=np.float64)
+
     return simlist
 
 
