@@ -1013,9 +1013,12 @@ def plot_clusterScatter(pop, clusters, x='a', y='m', fig=None, ax=None, **kwargs
     """
 
     def rename_clusters(cluster):
-        transl = {'HotRockies':'Hot Rockies','ColdStragglers':'Cold Stragglers',
+        try:
+            transl = {'HotRockies':'Hot Rockies','ColdStragglers':'Cold Stragglers',
                 'WarmNeptunes':'Warm Neptunes', 'USPs':'USPs','Giants':'Giants'}
-        return transl[cluster]
+            return transl[cluster]
+        except KeyError:
+            return cluster
 
     if ax is None:
         fig, ax = plt.subplots(figsize=plotstyle.set_size('aa', scale=1.25))
