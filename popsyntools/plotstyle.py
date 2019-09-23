@@ -5,6 +5,12 @@ from cycler import cycler
 import seaborn as sns
 
 
+def get_colorPalette():
+    """ return a custom made color palette."""
+    return ['#008fd5', '#fc4f30', '#e5ae38',
+        '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249']
+
+
 def styleplots():
     # Set plot style
     sns.set(context='notebook', style='ticks', font_scale=1.,\
@@ -49,12 +55,7 @@ def styleplots():
     })
 
     sns.set_color_codes()
-
-
-def get_colorPalette():
-    """ return a custom made color palette."""
-    return ['#008fd5', '#fc4f30', '#e5ae38',
-        '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249']
+    rcParams['axes.prop_cycle'] = cycler(color=get_colorPalette())
 
 
 def histKwargs(overrideDict=None):
@@ -124,4 +125,3 @@ def set_size(width='aa', subplot=[1,1], scale=1):
 
 
 styleplots()
-rcParams['axes.prop_cycle'] = cycler(color=get_colorPalette())
