@@ -185,6 +185,18 @@ def changeListCol(simlist, colname, func, *funcArgs, **funcKwargs):
     return simlist
 
 
+def var2str(variable):
+    """helper function to distinguish between floats and other data types.
+    Returns a string of length 11.
+    """
+    try:
+        # if variable is a float, return in scientific format
+        return '{:1.8E}'.format(variable)
+    except ValueError:
+        # if variable is a string/object, return string of length 14
+        return '{:11s}'.format(variable)
+
+
 def write_singleSim2File(fileHandle, singleSim):
     """Writes a single simulation (a "line" of a DataFrame) to a file.
 
@@ -195,16 +207,6 @@ def write_singleSim2File(fileHandle, singleSim):
     singleSim : pandas DataFrame row object
         one line of a simulation list
     """
-    def var2str(variable):
-        """helper function to distinguish between floats and other data types.
-        Returns a string of length 11.
-        """
-        try:
-            # if variable is a float, return in scientific format
-            return '{:1.8E}'.format(variable)
-        except ValueError:
-            # if variable is a string/object, return string of length 14
-            return '{:11s}'.format(variable)
 
     line = 'CD_' + var2str(singleSim['CDnumber'])\
     + 'FP_' + var2str(singleSim['fgp'])\
@@ -219,6 +221,19 @@ def write_singleSim2File(fileHandle, singleSim):
     line += '\n'
     fileHandle.write(line)
 
+def write_singleSim2File_NGPS(fileHandle, singleSim, SIMnumber):
+    """ Same as write_singleSim2File(), but for new population lists.
+    """
+    line = 'SIM{0:08d}'.format(SIMnumber)\
+    + ' MSTAR=' + str(singleSim['Mstar'])\
+    + ' SIGMA=' + str(singleSim['sigma0'])\
+    + ' EXPO=' + str(singleSim['expo'])\
+    + ' AIN=' + str(singleSim['a_in'])\
+    + ' AOUT=' + str(singleSim['a_out'])\
+    + ' FPG=' + str(singleSim['fgp'])\
+    + ' MWIND=' + str(singleSim['mWind'])
+    line += '\n'
+    fileHandle.write(line)
 
 def write_simlist(filename, simlist):
     """Write a simulation list to a file.
@@ -233,6 +248,11 @@ def write_simlist(filename, simlist):
     with open(filename, 'w') as fileHandle:
         for i in range(len(simlist)):
             row = simlist.iloc[i]
-            write_singleSim2File(fileHandle, row)
+            try:
+                # old populations until ~Summer 2019
+                write_singleSim2File(fileHandle, row)
+            except KeyError:
+                # NGPS populations
+                write_singleSim2File_NGPS(fileHandle, row, i + 1)
         fileHandle.write('END')
     print('{} simulations written to "{}".'.format(i, filename))
