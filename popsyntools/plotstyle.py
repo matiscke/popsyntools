@@ -1,8 +1,8 @@
 """ Config file with my personal preference of default matplotlibrc settings.
 """
+import matplotlib as mpl
 from matplotlib import rcParams
 from cycler import cycler
-import seaborn as sns
 
 
 def get_colorPalette():
@@ -13,53 +13,26 @@ def get_colorPalette():
 
 def styleplots():
     # Set plot style
-    sns.set(context='notebook', style='ticks', font_scale=1.,\
-        rc={
-    'text.usetex':False,
-    # 'text.latex.unicode':True,
-    'font.family' : 'sans-serif',
-    #'font.serif':'Computer Modern',
-    'font.style'         : 'normal',
-    'font.variant'        : 'normal',
-    'font.weight'         : 'normal',
-    'font.stretch'        : 'normal',
-    # # Use font size to match font in A&A documents
-    "font.size": 12,
-    "axes.labelsize": 12,
-    'axes.titlesize': 12,
-    'legend.fontsize': 12,
-    'legend.handletextpad' : 0.5,
-    'legend.handlelength' : 0.75,
-    'xtick.labelsize' :12,
-    'ytick.labelsize' :12,
-    'xtick.minor.size'     : 2.,
-    'ytick.minor.size'     : 2.,
-    'xtick.major.pad'      : 2.,    ## distance to major tick label in points
-    'ytick.major.pad'      : 2.,    ## distance to major tick label in points
-    'ytick.major.size'     : 4.,   ## major tick size in points'
-    'savefig.dpi'         : 400,
-    'lines.linewidth'     : 2.0,
-    'figure.figsize'   : [6.4, 4.8],         # figure size in inches
-    'figure.facecolor'      : 'white',
-    'figure.subplot.left'    : 0.16,    # the left side of the subplots of the figure
-    'figure.subplot.bottom'  : 0.21,   # the bottom of the subplots of the figure
-    'figure.subplot.right'   : 0.98,   # the right side of the subplots of the figure
-    'figure.subplot.top'     : 0.97,    # the top of the subplots of the figure
-    'figure.subplot.hspace'  : 0.0,    # height reserved for space between subplots
-    'axes.xmargin' : 0.02,             # default margin for autoscale
-    'axes.ymargin' : 0.02,
-    'image.cmap'   : 'inferno',
-    # histograms
-    'hist.bins' : 20,
-    'patch.edgecolor' : 'black',
-    'savefig.bbox'      : 'tight',    ## {tight, standard}
-                                     ## 'tight' is incompatible with pipe-based animation
-                                     ## backends but will workd with temporary file based ones:
-                                     ## e.g. setting animation.writer to ffmpeg will not work,
-                                     ## use ffmpeg_file instead
-    })
+    font = {'family' : 'normal',
+            'weight' : 'normal',
+            'size'   : 12}
+    legend = {'handlelength' : 0.75,
+              'handletextpad' : 0.5}
+    figure = {'subplot.left'    : 0.16,   # the left side of the subplots of the figure
+              'subplot.bottom'  : 0.21,   # the bottom of the subplots of the figure
+              'subplot.right'   : 0.98,   # the right side of the subplots of the figure
+              'subplot.top'     : 0.97,   # the top of the subplots of the figure
+              'subplot.hspace'  : 0.0}    # height reserved for space between subplots
 
-    sns.set_color_codes()
+    mpl.rc('font', **font)
+    mpl.rc('legend', **legend)
+    mpl.rc('figure', **figure)
+    mpl.rc('lines', linewidth = 2.5)
+    mpl.rc('image', cmap = 'inferno')
+    mpl.rc('hist', bins = 20)
+    mpl.rc('patch', edgecolor = 'black')
+    mpl.rc('savefig', bbox = 'tight')    ## {tight, standard}
+
     rcParams['axes.prop_cycle'] = cycler(color=get_colorPalette())
 
 
