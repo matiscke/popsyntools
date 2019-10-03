@@ -8,9 +8,10 @@
 
 *Untitled*
 
-popsyntools.egg-info/*
+popsyntools.egg*
 
 __pycache__/
 build/
 dist/
 .eggs/
+.DS_Store

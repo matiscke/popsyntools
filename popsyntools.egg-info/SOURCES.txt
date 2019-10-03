@@ -16,6 +16,7 @@ licenses/README.rst
 licenses/TEMPLATE_LICENCE.rst
 popsyntools/__init__.py
 popsyntools/_astropy_init.py
+popsyntools/checkFileOrder.py
 popsyntools/config.py
 popsyntools/conftest.py
 popsyntools/cython_version.py
