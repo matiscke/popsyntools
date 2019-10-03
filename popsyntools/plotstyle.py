@@ -23,15 +23,15 @@ def styleplots():
     'font.variant'        : 'normal',
     'font.weight'         : 'normal',
     'font.stretch'        : 'normal',
-    # Use font size to match font in A&A documents
-    "font.size": 9,
-    "axes.labelsize": 8,
-    'axes.titlesize': 8,
-    'legend.fontsize': 8,
+    # # Use font size to match font in A&A documents
+    "font.size": 12,
+    "axes.labelsize": 12,
+    'axes.titlesize': 12,
+    'legend.fontsize': 12,
     'legend.handletextpad' : 0.5,
     'legend.handlelength' : 0.75,
-    'xtick.labelsize' :8,
-    'ytick.labelsize' :8,
+    'xtick.labelsize' :12,
+    'ytick.labelsize' :12,
     'xtick.minor.size'     : 2.,
     'ytick.minor.size'     : 2.,
     'xtick.major.pad'      : 2.,    ## distance to major tick label in points
@@ -52,6 +52,11 @@ def styleplots():
     # histograms
     'hist.bins' : 20,
     'patch.edgecolor' : 'black',
+    'savefig.bbox'      : 'tight',    ## {tight, standard}
+                                     ## 'tight' is incompatible with pipe-based animation
+                                     ## backends but will workd with temporary file based ones:
+                                     ## e.g. setting animation.writer to ffmpeg will not work,
+                                     ## use ffmpeg_file instead
     })
 
     sns.set_color_codes()
