@@ -520,3 +520,20 @@ def normalize_rate(n_planet, n_star):
     """
     norm_rate = 100*n_planet/n_star
     return norm_rate
+
+def renameColumns2NG(pop):
+    """ Huge dirty hack to rename some columns. Necessary for NGPS.
+    """
+    # remove old column names to avoid double entries
+    rmOld = {'dust2gas':109, 'sigma0':110,'expo':111,'aCore':112,
+             'mWind':113,'fracIce':114}
+    pop.rename(columns=rmOld, inplace=True)
+
+    transCol = {115:'fracIce', 'systemNo':'fracIron', 'planetNo':'MP_taurad',
+                'isystem':'MP_Energies4', 'iplanet':'MP_Energies5',
+                'isystemorig':'dust2gas', 'iplanetorig':'sigma0',
+                'nplanets':'expo','line':'aCore', 124:'mWind',
+                126:'isystem', 127:'iplanet', 128:'isystemorig',
+                129:'iplanetorig', 130:'nplanets', 131:'line'}
+    pop.rename(columns=transCol, inplace=True)
+    return pop

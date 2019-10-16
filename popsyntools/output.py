@@ -10,11 +10,9 @@ import pandas as pd
 import tables
 import warnings
 
-from popsyntools import stats
-from popsyntools import config
-from popsyntools import make_list
+from popsyntools import stats, utils, config, make_list
 
-def rename_tracksColumns(planetTracks, ref_red=False):
+def rename_tracksColumns(planetTracks, ref_red=False, NGPS=True):
     """Rename some of the columns of a planet tracks or ref_red table.
 
     Newer versions of ref_red files (from ~May 2018) contain additional
@@ -28,6 +26,9 @@ def rename_tracksColumns(planetTracks, ref_red=False):
         whole population
     ref_red : bool
         rename additional columns for 'ref_red' files
+    NGPS : bool
+        switch for NGPS populations (different column order in ref_red and
+        tracks)
 
     Returns
     -------
@@ -127,6 +128,10 @@ def rename_tracksColumns(planetTracks, ref_red=False):
             123: 'line'
             }
             dfOut = dfOut.rename(columns=ref_redColumns)
+
+    if NGPS:
+        # columns have changed *again* - rename them for all newer populations
+        dfOut = utils.renameColumns2NG(dfOut)
     return dfOut
 
 
