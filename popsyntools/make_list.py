@@ -14,6 +14,9 @@ import warnings
 def read_simlist(filename, varlen=17):
     """Read a simulation list from a file.
 
+    With the "Next Generation Population Synthesis" (NGPS) models, the gas/dust
+    ratio turned into dust/gas, i.e. instead of "fgp" we read "fpg".
+
     Parameters
     ----------
     filename : string
@@ -26,6 +29,11 @@ def read_simlist(filename, varlen=17):
     simlist : Pandas dataframe
         simulation list as a dataframe
     """
+
+
+    print("read simlist")
+
+
 
     try:
         # old simlist format (roughly until summer 2019)
@@ -83,7 +91,7 @@ def read_simlist(filename, varlen=17):
                 "expo",
                 "a_in",
                 "a_out",
-                "fgp",
+                "fpg",
                 "mWind",]
         simlist = pd.DataFrame(simlist, columns=columns, dtype=np.float64)
 
