@@ -264,7 +264,12 @@ def read_ref_red(ref_redFilename):
         tracks = pd.read_csv(ref_redFilename)
     else:
         tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
-        tracks = rename_tracksColumns(tracks, ref_red=True)
+        if len(tracks.columns) > 132:
+            print("assuming this is an NGPS ref_red file (different column order).")
+            NGPS = True
+        else:
+            NGPS = False
+        tracks = rename_tracksColumns(tracks, ref_red=True, NGPS=NGPS)
     return tracks
 
 

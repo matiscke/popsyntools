@@ -483,6 +483,7 @@ def columnLabels():
     'Mgas0'  : '$M_\mathrm{gas}\, [\mathrm{M_\odot}]$',
     'sigma0' : '$\Sigma_0\, [\mathrm{g \, cm^{-2}}]$',
     'dust2gas'    : '$\zeta_\mathrm{d,g}$',
+    'fpg'    :  '$\zeta_\mathrm{d,g}$',
     'metallicity' : '[Fe/H]',
     'aCore'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
     'a_out'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',

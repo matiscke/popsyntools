@@ -1,2 +1,2 @@
 # Generated file; do not modify
-cython_version = '0.29.6'
+cython_version = '0.29.2'

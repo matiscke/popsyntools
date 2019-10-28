@@ -15,7 +15,7 @@ def styleplots():
     # Set plot style
     font = {'family' : 'normal',
             'weight' : 'normal',
-            'size'   : 12}
+            'size'   : 10}
     legend = {'handlelength' : 0.75,
               'handletextpad' : 0.5}
     figure = {'subplot.left'    : 0.16,   # the left side of the subplots of the figure
@@ -27,7 +27,8 @@ def styleplots():
     mpl.rc('font', **font)
     mpl.rc('legend', **legend)
     mpl.rc('figure', **figure)
-    mpl.rc('lines', linewidth = 2.5)
+    mpl.rc('lines', linewidth = 2)
+    mpl.rc('axes', linewidth = 1.25)
     mpl.rc('image', cmap = 'inferno')
     mpl.rc('hist', bins = 20)
     mpl.rc('patch', edgecolor = 'black')
