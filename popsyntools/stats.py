@@ -256,7 +256,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
         planet population
     pTypes : list of strings
         the planet types in column "planetType" that should be considered. If
-        this is 'all', survived planets of .5 Earth masses and higher that pass
+        this is 'all', survived planets that pass
         the detection limit are considered.
     nMax : int
         maximum multiplicity considered
@@ -298,8 +298,8 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
             masses = popAll['msini']
 
             mask_status = popAll['status'] == 0
-            mask = (mask_status & (masses > massLim['Earth'][0])
-                                & (masses <= np.inf))
+            mask=(mask_status & (masses <= np.inf))
+
             mask = (mask & (popAll['K'] > minRVamp['SuperEarth']))
             popAll.loc[mask, 'planetType'] = 'all'
             subPop = popAll[popAll.planetType == 'all']
