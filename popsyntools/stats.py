@@ -289,8 +289,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
             subPop = pop[(pd.notnull(pop.planetType)) &
                          (~pop['planetType'].str.contains('ejected', na=False))]
         elif pType.lower() == 'all':
-            # consider all survived planets more massive than 0.5 M_Earth and
-            # with K > Kmin(SE)
+            # consider all survived planets with K > Kmin(SE)
             popAll = pop.copy()
             popAll['planetType'] = None     # should this be 'NaN' instead?
             minRVamp = config.minRVamplitude()
@@ -303,8 +302,15 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
             mask = (mask & (popAll['K'] > minRVamp['SuperEarth']))
             popAll.loc[mask, 'planetType'] = 'all'
             subPop = popAll[popAll.planetType == 'all']
+
         else:
-            subPop = pop[pop.planetType == pType]
+            mask_status = pop['status'] == 0
+            subPop = pop[mask_status & (pop.planetType == pType)]
+
+        print(subPop.isystem.nunique())
+
+
+
         meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop,
             nMax)
         if verbose:
