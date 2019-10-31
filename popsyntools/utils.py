@@ -449,8 +449,8 @@ def add_msini(pop):
 def get_label(pType):
     """ Translate planet types to nicely formatted labels (e.g. for figure legends)"""
     dictionary = {
-    'SuperEarth' : 'Super Earth',
-    'SuperEarth_ejected' : 'Ejected Super Earth',
+    'SuperEarth' : 'super-Earth',
+    'SuperEarth_ejected' : 'Ejected super-Earth',
     'ColdJupiter' : 'Cold Jupiter',
     'ColdJupiter_ejected' : 'Ejected Cold Jupiter',
     'HotJupiter' : 'Hot Jupiter',
