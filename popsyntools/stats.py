@@ -46,7 +46,6 @@ def print_categories(population, Mgiant=300.):
 
 
 def categorizePlanets(population, ZhuWu18=False):
-    # CAUTION: VERSION FOR ALL PLANETS (NOT ONLY STATUS 0)
     """ Label planets into different mass categories.
 
     Each planet is categorized according to its mass with limits specified in
@@ -65,7 +64,6 @@ def categorizePlanets(population, ZhuWu18=False):
     population : pandas DataFrame
         categorized population
     """
-    print('CAUTION: VERSION FOR ALL PLANETS (NOT ONLY STATUS 0)')
     massLim = config.massLimits(ZhuWu18)
     population['planetType'] = np.nan
 
@@ -75,7 +73,7 @@ def categorizePlanets(population, ZhuWu18=False):
         minRVamp = config.minRVamplitude()
 
     # keep only survived and ejected planets
-    mask_status = [True for i in range(len(population))]
+    mask_status = (population['status'] == 0) | (population['status'] == 2)
 
     for pType in massLim:
         if ZhuWu18:
