@@ -636,9 +636,9 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
         # plot different columns of the same dataFrame
         for i, name in enumerate(columnNames):
             if labels == None:
-                kwargs['label'] = name
+                mplKwargs['label'] = name
             else:
-                kwargs['label'] = labels[i]
+                mplKwargs['label'] = labels[i]
 
             if not 'bins' in mplKwargs.keys():
                 # compute ideal bin width

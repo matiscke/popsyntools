@@ -307,10 +307,6 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
             mask_status = pop['status'] == 0
             subPop = pop[mask_status & (pop.planetType == pType)]
 
-        print(subPop.isystem.nunique())
-
-
-
         meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop,
             nMax)
         if verbose:
