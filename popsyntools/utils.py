@@ -450,8 +450,10 @@ def get_label(pType):
     """ Translate planet types to nicely formatted labels (e.g. for figure legends)"""
     dictionary = {
     'SuperEarth' : 'super-Earth',
+    'Super Earth' : 'super-Earth',
     'SuperEarth_ejected' : 'Ejected super-Earth',
     'ColdJupiter' : 'Cold Jupiter',
+    'Cold Jupiter' : 'Cold Jupiter',
     'ColdJupiter_ejected' : 'Ejected Cold Jupiter',
     'HotJupiter' : 'Hot Jupiter',
     'HotJupiter_ejected' : 'Ejected Hot Jupiter',

@@ -868,10 +868,10 @@ def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
     labels[0] = ''
     l = hm.set_yticklabels(labels)
 
-    ax.figure.axes[-1].yaxis.label.set_size(18)
-    ax.figure.axes[0].tick_params(labelsize=16, labelrotation=0)
-    ax.figure.axes[-1].tick_params(labelsize=16)
-    ax.figure.axes[-1].yaxis.labelpad = 20
+    # ax.figure.axes[-1].yaxis.label.set_size(18)
+    # ax.figure.axes[0].tick_params(labelsize=16, labelrotation=0)
+    # ax.figure.axes[-1].tick_params(labelsize=16)
+    # ax.figure.axes[-1].yaxis.labelpad = 20
     return fig, ax
 
 
@@ -913,7 +913,7 @@ def plot_rollingMean(df, columns, labels, onCol, winSize=100,
     # apply rolling mean along axis specified in 'onCol'
     roll = df.rolling(winSize, center=True, on=onCol).mean()
     for col, label in zip(columns, labels):
-        ax.plot(roll[onCol], roll[col], label=label)
+        ax.plot(roll[onCol], roll[col], label=utils.get_label(label))
 
     # plot confidence intervals (clip them below zero)
     roll_err = df.rolling(winSize, center=True, on=onCol).apply(errFun)
