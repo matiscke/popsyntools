@@ -4,7 +4,6 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 #%%
-import warnings
 import numpy as np
 import pandas as pd
 
@@ -47,6 +46,7 @@ def print_categories(population, Mgiant=300.):
 
 
 def categorizePlanets(population, ZhuWu18=False):
+    # CAUTION: VERSION FOR ALL PLANETS (NOT ONLY STATUS 0)
     """ Label planets into different mass categories.
 
     Each planet is categorized according to its mass with limits specified in
@@ -65,6 +65,7 @@ def categorizePlanets(population, ZhuWu18=False):
     population : pandas DataFrame
         categorized population
     """
+    print('CAUTION: VERSION FOR ALL PLANETS (NOT ONLY STATUS 0)')
     massLim = config.massLimits(ZhuWu18)
     population['planetType'] = np.nan
 
@@ -74,7 +75,7 @@ def categorizePlanets(population, ZhuWu18=False):
         minRVamp = config.minRVamplitude()
 
     # keep only survived and ejected planets
-    mask_status = (population['status'] == 0) | (population['status'] == 2)
+    mask_status = [True for i in range(len(population))]
 
     for pType in massLim:
         if ZhuWu18:
@@ -254,7 +255,7 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
         planet population
     pTypes : list of strings
         the planet types in column "planetType" that should be considered. If
-        this is 'all', survived planets that pass
+        this is 'all', survived planets of .5 Earth masses and higher that pass
         the detection limit are considered.
     nMax : int
         maximum multiplicity considered
@@ -275,19 +276,17 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
                 standard deviation of multiplicity
     """
     systemMultiplicities = {}
-    if pTypes is None:
-        pTypes = [pt for pt in pop.planetType.unique() if pt is not np.nan]
-    elif not isinstance(pTypes, list):
-        warnings.warn('"pTypes" must be a list of strings')
-        return None
-    for pType in list(pTypes):
+    if pTypes == None:
+        pTypes = pop.planetType.unique()
+    for pType in pTypes:
         if (pd.isnull(pType)) | (pType == 'allTypes'):
             # select all systems including any considered planet type, but
             # exclude ejected planets
             subPop = pop[(pd.notnull(pop.planetType)) &
                          (~pop['planetType'].str.contains('ejected', na=False))]
         elif pType.lower() == 'all':
-            # consider all survived planets with K > Kmin(SE)
+            # consider all survived planets more massive than 0.5 M_Earth and
+            # with K > Kmin(SE)
             popAll = pop.copy()
             popAll['planetType'] = None     # should this be 'NaN' instead?
             minRVamp = config.minRVamplitude()
@@ -295,16 +294,13 @@ def get_multiplicities(pop, pTypes=None, nMax=7, verbose=True):
             masses = popAll['msini']
 
             mask_status = popAll['status'] == 0
-            mask=(mask_status & (masses <= np.inf))
-
+            mask = (mask_status & (masses > massLim['Earth'][0])
+                                & (masses <= np.inf))
             mask = (mask & (popAll['K'] > minRVamp['SuperEarth']))
             popAll.loc[mask, 'planetType'] = 'all'
             subPop = popAll[popAll.planetType == 'all']
-
         else:
-            mask_status = pop['status'] == 0
-            subPop = pop[mask_status & (pop.planetType == pType)]
-
+            subPop = pop[pop.planetType == pType]
         meanMul, std, NsystemsPerMult, Nsystems, counts = multiplicityFreq(subPop,
             nMax)
         if verbose:
@@ -341,7 +337,6 @@ def add_pTypeFrequency(pop):
                                                        & (pop.isystem == val)])
     return pop
 
-
 def occurrenceTable(pop, onCol='Msolid'):
     """ create a table with occurrence rates depending on an initial parameter.
 
@@ -352,143 +347,13 @@ def occurrenceTable(pop, onCol='Msolid'):
     diskParam = []
     nSE = []
     nCJ = []
+    nAll = []
     for i, group in pop.groupby(onCol):
         isystem.append(int(group.isystem.unique()[0]))
         diskParam.append(group.median()[onCol])
         nSE.append(len(group[group.planetType == 'SuperEarth']))
         nCJ.append(len(group[group.planetType == 'ColdJupiter']))
-
-    occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ},
-                       index=isystem)
+        nAll.append(group.reset_index().multiplicity[0])
+    occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ,
+                        'nAll' : nAll}, index=isystem)
     return occ
-
-
-def finalFate(system, iplanet, iplanetOrig=None):
-    """
-    track the final fate of a planet that was accreted.
-
-    goes iteratively through the accretion cascade until the planet that was
-    *not* accreted anymore is found. The index of this final planet is returned.
-    This function calls itself recursively.
-
-    Parameters
-    ----------
-    system : pandas DataFrame
-        frame containing only the planets of a single system
-    iplanet : int
-        index of the current planet
-    iplanetOrig : int
-        index of the planet in question, remains the same during recursive
-        function calls.
-
-    Returns
-    -------
-    system : pandas DataFrame
-        frame containing only the planets of a single system
-    """
-    if iplanetOrig == None:
-        # first call from outside, store the original planet index
-        iplanetOrig = iplanet
-    planet = system[system.iplanet == iplanet]
-    if not (planet.status < 0).any():
-        system.loc[system.iplanet == iplanetOrig, 'finalFate'] = iplanet
-        return system
-    return finalFate(system, -int(planet.status), iplanetOrig)
-
-
-def get_finalFate(pop):
-    """
-    track down final planet fate of accreted planets for the whole population.
-
-    Uses function 'finalFate()' to add the final fate of each planet (See
-    docstring of that function).
-
-    Parameters
-    ----------
-    pop : pandas DataFrame
-        planet population
-
-    Returns
-    -------
-    pop : pandas DataFrame
-        planet population
-    """
-
-    # disable performance-killing calls of gc.collect()
-    pd.set_option('mode.chained_assignment', None)
-
-    for i, system in pop.groupby('isystem'):
-        for iplanet in system.iplanet:
-            system = finalFate(system, iplanet)
-        pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate']
-    return pop
-
-
-def crossCheck_finalFate(pop, planetType):
-    """
-    Determine which accreted planets ended up in a certain planet type.
-
-    Looks up column 'finalFate' (see function 'get_finalFate') and checks if the
-    corresponding planet belongs to the type specified in 'planetType'.
-
-    Parameters
-    ----------
-    pop : pandas DataFrame
-        planet population. Has to have a column 'finalFate' with indices of the
-        final accretors.
-    planetType : str
-        planet type in question; has to occur in column 'planetType'
-
-    Returns
-    -------
-    pop : pandas DataFrame
-        planet population with additional boolean column named according to
-        'accBy' + planetType.
-
-    Example
-    -------
-    >>> pop = stats.crossCheck_finalFate(pop, 'ColdJupiter')
-    >>> pop.accByColdJupiter.value_counts()[True]
-    """
-    def crossCheck(system):
-        accreted = system[system.status < 0]
-        iAccretor = system[system.planetType == planetType].iplanet
-        idx = accreted.loc[accreted.finalFate.isin(iAccretor)].index
-        system.loc[system.index.isin(idx), 'accBy' + planetType] = True
-        return system
-
-    pop = pop.groupby('isystem').apply(crossCheck)
-    return pop
-
-
-def print_statusFractions(pop, excludeSurvivors=False):
-    """
-    Prints a table showing fractions of different stati in a population.
-
-    Uses the column "status" in "pop" to show how many planets have survived,
-    got accreted, were ejected, etc.
-    """
-    if excludeSurvivors:
-        # consider only planets that have not survived
-        print('Fractions of non-surviving planets:')
-        pop = pop.copy()[pop.status != 0]
-    Nplanets_pop = len(pop)
-    statusCounts = pop.status.value_counts()
-
-    try:
-        print("Fractions:\nsurvived: {:.2f}".format(statusCounts[0.0]/Nplanets_pop))
-    except KeyError:
-        pass
-    try:
-        print("ejected: {:.2f}".format(statusCounts[2.0]/Nplanets_pop))
-    except KeyError:
-        pass
-    try:
-        print("accreted by star: {:.2f}".format(statusCounts[3.0]/Nplanets_pop))
-    except KeyError:
-        pass
-    try:
-        accretedCounts = statusCounts[statusCounts.keys() < 0]
-        print("accreted by planet: {:.2f}".format(accretedCounts.sum()/Nplanets_pop))
-    except KeyError:
-        pass

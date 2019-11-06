@@ -56,9 +56,9 @@ def periodLimits():
 def minRVamplitude():
     """ Provide minimum RV amplitude 'K' (in m/s) for planet categories."""
     minRVamp = {
-    'SuperEarth'  : 2.,
-    'ColdJupiter' : 2.,
-    'HotJupiter'  : 2.,
-    'WarmJupiter' : 2.
+    'SuperEarth'  : 0.,
+    'ColdJupiter' : 0.,
+    'HotJupiter'  : 0.,
+    'WarmJupiter' : 0.
     }
     return minRVamp
