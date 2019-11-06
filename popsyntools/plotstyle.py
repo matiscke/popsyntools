@@ -18,7 +18,8 @@ def styleplots():
             'size'   : 10}
     legend = {'handlelength' : 0.75,
               'handletextpad' : 0.5}
-    figure = {'subplot.left'    : 0.16,   # the left side of the subplots of the figure
+    figure = {'dpi' : 150,
+              'subplot.left'    : 0.16,   # the left side of the subplots of the figure
               'subplot.bottom'  : 0.21,   # the bottom of the subplots of the figure
               'subplot.right'   : 0.98,   # the right side of the subplots of the figure
               'subplot.top'     : 0.97,   # the top of the subplots of the figure
