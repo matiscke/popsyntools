@@ -418,7 +418,7 @@ def get_finalFate(pop):
     for i, system in pop.groupby('isystem'):
         for iplanet in system.iplanet:
             system = finalFate(system, iplanet)
-        pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate']
+        pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate'].astype('int32')
     return pop
 
 
@@ -518,3 +518,13 @@ def get_accretorMasses(pop, flattened=True, pType=None, massRange=None):
         return [y for x in accretorMasses for y in x]
     else:
         return accretorMasses
+
+
+def get_accretors(system):
+    """
+    Identify final accretors in a system.
+
+    To return all final accretors in a population 'pop', do:
+    >>> accretors = pop.groupby('isystem').apply(get_accretors)
+    """
+    return system[system.iplanet.isin(system.finalFate.unique())]
