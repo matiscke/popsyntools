@@ -359,6 +359,139 @@ def occurrenceTable(pop, onCol='Msolid'):
     return occ
 
 
+
+
+def finalFate(system, iplanet, iplanetOrig=None):
+    """
+    track the final fate of a planet that was accreted.
+
+    goes iteratively through the accretion cascade until the planet that was
+    *not* accreted anymore is found. The index of this final planet is returned.
+    This function calls itself recursively.
+
+    Parameters
+    ----------
+    system : pandas DataFrame
+        frame containing only the planets of a single system
+    iplanet : int
+        index of the current planet
+    iplanetOrig : int
+        index of the planet in question, remains the same during recursive
+        function calls.
+
+    Returns
+    -------
+    system : pandas DataFrame
+        frame containing only the planets of a single system
+    """
+    if iplanetOrig == None:
+        # first call from outside, store the original planet index
+        iplanetOrig = iplanet
+    planet = system[system.iplanet == iplanet]
+    if not (planet.status < 0).any():
+        system.loc[system.iplanet == iplanetOrig, 'finalFate'] = iplanet
+        return system
+    return finalFate(system, -int(planet.status), iplanetOrig)
+
+
+def get_finalFate(pop):
+    """
+    track down final planet fate of accreted planets for the whole population.
+
+    Uses function 'finalFate()' to add the final fate of each planet (See
+    docstring of that function).
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population
+
+    Returns
+    -------
+    pop : pandas DataFrame
+        planet population
+    """
+
+    # disable performance-killing calls of gc.collect()
+    pd.set_option('mode.chained_assignment', None)
+
+    for i, system in pop.groupby('isystem'):
+        for iplanet in system.iplanet:
+            system = finalFate(system, iplanet)
+        pop.loc[pop.isystem == i, 'finalFate'] = system['finalFate']
+    return pop
+
+
+def crossCheck_finalFate(pop, planetType):
+    """
+    Determine which accreted planets ended up in a certain planet type.
+
+    Looks up column 'finalFate' (see function 'get_finalFate') and checks if the
+    corresponding planet belongs to the type specified in 'planetType'.
+
+    Parameters
+    ----------
+    pop : pandas DataFrame
+        planet population. Has to have a column 'finalFate' with indices of the
+        final accretors.
+    planetType : str
+        planet type in question; has to occur in column 'planetType'
+
+    Returns
+    -------
+    pop : pandas DataFrame
+        planet population with additional boolean column named according to
+        'accBy' + planetType.
+
+    Example
+    -------
+    >>> pop = stats.crossCheck_finalFate(pop, 'ColdJupiter')
+    >>> pop.accByColdJupiter.value_counts()[True]
+    """
+    def crossCheck(system):
+        accreted = system[system.status < 0]
+        iAccretor = system[system.planetType == planetType].iplanet
+        idx = accreted.loc[accreted.finalFate.isin(iAccretor)].index
+        system.loc[system.index.isin(idx), 'accBy' + planetType] = True
+        return system
+
+    pop = pop.groupby('isystem').apply(crossCheck)
+    return pop
+
+
+def print_statusFractions(pop, excludeSurvivors=False):
+    """
+    Prints a table showing fractions of different stati in a population.
+
+    Uses the column "status" in "pop" to show how many planets have survived,
+    got accreted, were ejected, etc.
+    """
+    if excludeSurvivors:
+        # consider only planets that have not survived
+        print('Fractions of non-surviving planets:')
+        pop = pop.copy()[pop.status != 0]
+    Nplanets_pop = len(pop)
+    statusCounts = pop.status.value_counts()
+
+    try:
+        print("Fractions:\nsurvived: {:.2f}".format(statusCounts[0.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        print("ejected: {:.2f}".format(statusCounts[2.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        print("accreted by star: {:.2f}".format(statusCounts[3.0]/Nplanets_pop))
+    except KeyError:
+        pass
+    try:
+        accretedCounts = statusCounts[statusCounts.keys() < 0]
+        print("accreted by planet: {:.2f}".format(accretedCounts.sum()/Nplanets_pop))
+    except KeyError:
+        pass
+
+
 def get_accretorMasses(pop, flattened=True, pType=None, massRange=None):
     """
     Return masses of accretors as a list.
