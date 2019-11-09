@@ -357,3 +357,31 @@ def occurrenceTable(pop, onCol='Msolid'):
     occ = pd.DataFrame({onCol : diskParam, 'nSE' : nSE, 'nCJ' : nCJ,
                         'nAll' : nAll}, index=isystem)
     return occ
+
+
+def get_accretorMasses(pop, flattened=True, pType=None, massRange=None):
+    """
+    Return masses of accretors as a list.
+
+    May include double entries for planets
+    that accreted more than one other planet.
+    """
+    def sysAccretorMasses(system):
+        accretorMasses = []
+        if pType == None:
+            systemSubset = system
+        else:
+            systemSubset = system[system.planetType == pType]
+        if massRange == None:
+            systemSubset = system
+        else:
+            systemSubset = system[(system.m > massRange[0]) & (system.m < massRange[1])]
+        for i in systemSubset.finalFate:
+            accretorMasses.append(np.float(system[system.iplanet == i].m))
+        return accretorMasses
+
+    accretorMasses = pop.groupby('isystem').apply(sysAccretorMasses).tolist()
+    if flattened == True:
+        return [y for x in accretorMasses for y in x]
+    else:
+        return accretorMasses
