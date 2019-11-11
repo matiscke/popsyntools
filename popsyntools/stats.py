@@ -520,7 +520,7 @@ def get_accretorMasses(pop, flattened=True, pType=None, massRange=None):
         return accretorMasses
 
 
-def get_accretors(system):
+def get_finalAccretors(system):
     """
     Identify final accretors in a system.
 
@@ -528,3 +528,11 @@ def get_accretors(system):
     >>> accretors = pop.groupby('isystem').apply(get_accretors)
     """
     return system[system.iplanet.isin(system.finalFate.unique())]
+
+
+def get_directAccretors(system):
+    """
+    Identify planets that accreted other planets in a system.
+    """
+    i_accretors = [np.abs(i) for i in system.status.unique() if i < 0]
+    return system[system.iplanet.isin(i_accretors)]
