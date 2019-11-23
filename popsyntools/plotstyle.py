@@ -13,12 +13,14 @@ def get_colorPalette():
 
 def styleplots():
     # Set plot style
+    spinewidth = 1.5
+
     font = {'family' : 'normal',
             'weight' : 'normal',
-            'size'   : 10}
+            'size'   : 9}                 # 9 pt corresponds to caption size of 1-col A&A
     legend = {'handlelength' : 0.75,
               'handletextpad' : 0.5}
-    figure = {'dpi' : 150,
+    figure = {'dpi' : 100,
               'subplot.left'    : 0.16,   # the left side of the subplots of the figure
               'subplot.bottom'  : 0.21,   # the bottom of the subplots of the figure
               'subplot.right'   : 0.98,   # the right side of the subplots of the figure
@@ -29,10 +31,16 @@ def styleplots():
     mpl.rc('legend', **legend)
     mpl.rc('figure', **figure)
     mpl.rc('lines', linewidth = 2.5)
+
+    mpl.rc('axes', linewidth = spinewidth)
+    mpl.rc('xtick.major', width = spinewidth)
+    mpl.rc('ytick.major', width = spinewidth)
+    mpl.rc('xtick.minor', width = .5*spinewidth)
+    mpl.rc('ytick.minor', width = .5*spinewidth)
     mpl.rc('image', cmap = 'inferno')
     mpl.rc('hist', bins = 20)
     mpl.rc('patch', edgecolor = 'black')
-    mpl.rc('savefig', bbox = 'tight')    ## {tight, standard}
+    mpl.rc('savefig', bbox = 'tight', dpi = 200)
 
     rcParams['axes.prop_cycle'] = cycler(color=get_colorPalette())
 
