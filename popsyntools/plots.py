@@ -748,7 +748,7 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
             customLabel = True
         elif customLabel == False:
             legendLabel = arr[2]
-        if key == 'all':
+        if (key == 'all') & ~('color' in kwargs):
             ax.plot(nPlanets, norm_rate, label=legendLabel, color='k', **kwargs)
         else:
             ax.plot(nPlanets, norm_rate, label=legendLabel, **kwargs)
