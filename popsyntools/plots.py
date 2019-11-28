@@ -9,6 +9,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
@@ -41,6 +42,13 @@ def compute_logbins(binWidth_dex, Range):
     # add binWidth_dex to logrange to include last bin edge
     logRange = (np.log10(Range[0]), np.log10(Range[1]) + binWidth_dex)
     return 10**np.arange(logRange[0], logRange[1], binWidth_dex)
+
+
+def fix_hist_step_vertical_line_at_end(ax):
+    """remove vertical line at end of CDFs"""
+    axpolygons = [poly for poly in ax.get_children() if isinstance(poly, mpl.patches.Polygon)]
+    for poly in axpolygons:
+        poly.set_xy(poly.get_xy()[:-1])
 
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
@@ -953,7 +961,10 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
     if axs is None:
         fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
-    mplKwargs = plotstyle.histKwargs(kwargs)
+    if not kwargs['cumulative'] == True:
+        mplKwargs = plotstyle.histKwargs(kwargs)
+    else:
+        mplKwargs = kwargs
     # mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
