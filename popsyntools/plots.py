@@ -800,17 +800,22 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
     """
     if not ax:
         fig, ax = plt.subplots()
-    if diverging == True:
+    if diverging:
         from matplotlib.colors import Normalize
         # norm = Normalize(vmin=min(z), vmax=max(z))
         cmap = sns.diverging_palette(h_neg=250, h_pos=9., s=99, l=50,
                                  n=19, center="dark", as_cmap=True)
     else:
         norm = None
-        cmap = 'inferno'
+        # cmap = 'inferno'
 
-    sc = ax.scatter(x, y, c=z, cmap=cmap, edgecolors='black',# norm=norm,
-                    linewidth=.5, **kwargs)
+    if kwargs is None:
+        kwargs = {
+            'edgecolors' : 'black',
+            'linewidth' : .5
+        }
+
+    sc = ax.scatter(x, y, c=z, **kwargs)
     cbar = fig.colorbar(sc, label=cbarlabel)
     return fig, ax
 
@@ -965,7 +970,6 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
         mplKwargs = plotstyle.histKwargs(kwargs)
     else:
         mplKwargs = kwargs
-    # mplKwargs['bins'] = 30
 
     for ax, param in zip(axs, columns):
         ax.hist(simlist[param], density=True,
