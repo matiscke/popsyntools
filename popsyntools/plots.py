@@ -966,8 +966,9 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
     if axs is None:
         fig, axs = plt.subplots(1, len(columns), figsize=[12, 3], sharex=False)
 
-    if not kwargs['cumulative'] == True:
-        mplKwargs = plotstyle.histKwargs(kwargs)
+    if 'cumulative' in kwargs:
+        if kwargs['cumulative'] == True:
+            mplKwargs = plotstyle.histKwargs(kwargs)
     else:
         mplKwargs = kwargs
 
