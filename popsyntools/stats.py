@@ -327,12 +327,16 @@ def add_pTypeFrequency(pop):
     Realized planet types:
     'SuperEarth' => 'nSE'
     'ColdJupiter' => 'nCJ'
+    'giants': => 'nGiants'. Includes ALL surviving planets of "cold Jupiter mass", but
+        irrespective of their orbital periods or detection limits.
     """
     planetTypes = ['SuperEarth', 'ColdJupiter']
     for col, pt in zip(['nSE', 'nCJ'], planetTypes):
         for val in pop.isystem.unique():
             pop.loc[pop.isystem == val, col] = len(pop[(pop.planetType == pt)
                                                        & (pop.isystem == val)])
+            pop.loc[pop.isystem == val, 'nGiants'] = len(pop[(pop.m.between(*config.massLimits(True)['ColdJupiter']))
+                                                         & (pop.isystem == val) & (pop.status == 0)])
     return pop
 
 def occurrenceTable(pop, onCol='Msolid'):
