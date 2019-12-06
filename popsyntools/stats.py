@@ -45,7 +45,7 @@ def print_categories(population, Mgiant=300.):
             'Ngiants' : Ngiants, 'Ngiants_ejected' : Ngiants_ejected}
 
 
-def categorizePlanets(population, ZhuWu18=False):
+def categorizePlanets(population, ZhuWu18=False, flexibleLimits=False):
     """ Label planets into different mass categories.
 
     Each planet is categorized according to its mass with limits specified in
@@ -58,13 +58,18 @@ def categorizePlanets(population, ZhuWu18=False):
         planet population
     ZhuWu18 : Bool
         Flag to consider limits for comparison with Zhu & Wu 2018
+    flexibleLimits : Bool
+        Flag for flexible period limit computation: if a giant exists in the
+        system, all planets with periods smaller than the giant's period
+        and following super-Earth mass limits are considered super-Earths.
+        RV semi-amplitude is ignored.
 
     Returns
     -------
     population : pandas DataFrame
         categorized population
     """
-    massLim = config.massLimits(ZhuWu18)
+
     population['planetType'] = np.nan
 
     if ZhuWu18:
@@ -75,52 +80,81 @@ def categorizePlanets(population, ZhuWu18=False):
     # keep only survived and ejected planets
     mask_status = (population['status'] == 0) | (population['status'] == 2)
 
-    for pType in massLim:
-        if ZhuWu18:
-            # consider m*sin(i) (with random isotropic i) instead of m
-            while True:
-                try:
-                    masses = population['msini']
-                except KeyError:
-                    # apparently, there is no 'msini' column yet
-                    print("computing m*sin(i) with random, isotropic \
-                    inclination i. This will take a while.")
-                    population = utils.add_msini(population)
-                    masses = population['msini']
-                    continue
-                break
-        else:
-            masses = population['m']
+    if not flexibleLimits:
+        massLim = config.massLimits(ZhuWu18)
+        for pType in massLim:
+            if ZhuWu18:
+                # consider m*sin(i) (with random isotropic i) instead of m
+                while True:
+                    try:
+                        masses = population['msini']
+                    except KeyError:
+                        # apparently, there is no 'msini' column yet
+                        print("computing m*sin(i) with random, isotropic \
+                        inclination i. This will take a while.")
+                        population = utils.add_msini(population)
+                        masses = population['msini']
+                        continue
+                    break
+            else:
+                masses = population['m']
 
-        # assign planet type according to mass limits
-        mask = (mask_status & (masses > massLim[pType][0])
-                            & (masses <= massLim[pType][1]))
+            # assign planet type according to mass limits
+            mask = (mask_status & (masses > massLim[pType][0])
+                                & (masses <= massLim[pType][1]))
 
-        if ZhuWu18:
-            """Besides mass limits, consider period and RV semi-amplitude.
-            We have to make sure that the ejected planets are not removed (they
-            will be flagged in another step), thus we don't apply the period
-            and RV limits for ejected planets.
-            """
-            while True:
-                try:
-                    # mask_per_RV = ~(population['status'] == 0 & ((population['period'] > periodLim[pType][1]) & (population['period'] <= periodLim[pType][0]) | (population['K'] < minRVamp[pType])))
+            if ZhuWu18:
+                """Besides mass limits, consider period and RV semi-amplitude.
+                We have to make sure that the ejected planets are not removed (they
+                will be flagged in another step), thus we don't apply the period
+                and RV limits for ejected planets.
+                """
+                while True:
+                    try:
+                        # mask_per_RV = ~(population['status'] == 0 & ((population['period'] > periodLim[pType][1]) & (population['period'] <= periodLim[pType][0]) | (population['K'] < minRVamp[pType])))
 
-                    mask_per_RV = (population['status'] == 2) | (
-                                   (population['period'] > periodLim[pType][0])
-                                 & (population['period'] <= periodLim[pType][1])
-                                 & (population['K'] > minRVamp[pType]))
-                    mask = mask & mask_per_RV
+                        mask_per_RV = (population['status'] == 2) | (
+                                       (population['period'] > periodLim[pType][0])
+                                     & (population['period'] <= periodLim[pType][1])
+                                     & (population['K'] > minRVamp[pType]))
+                        mask = mask & mask_per_RV
 
-                except KeyError:
-                    # has RV semi-amplitude not been calculated yet?
-                    print("adding RV semi-amplitude using Mstar = 1.0 Msol.")
-                    population['K'] = utils.get_RVsemiamplitude(population['m'],
-                            population['period'], population['e'], Mstar=1.0)
-                    continue
-                break
+                    except KeyError:
+                        # has RV semi-amplitude not been calculated yet?
+                        print("adding RV semi-amplitude using Mstar = 1.0 Msol.")
+                        population['K'] = utils.get_RVsemiamplitude(population['m'],
+                                population['period'], population['e'], Mstar=1.0)
+                        continue
+                    break
+            population.loc[mask, 'planetType'] = pType
 
-        population.loc[mask, 'planetType'] = pType
+    else:
+        # flexible limits
+        massLim = config.massLimits(ZhuWu18=True)
+        periodLim = config.periodLimits()
+        masses = population['m']
+
+        # classify all planets of giant mass as cold Jupiters (no matter the orbit)
+        giantsMask = (mask_status & (masses > massLim['ColdJupiter'][0])
+                            & (masses <= massLim['ColdJupiter'][1]))
+        population.loc[giantsMask, 'planetType'] = 'ColdJupiter'
+
+        # classify super-Earths
+        customSEmassLim = (1., 47.)
+        mask_mass = (mask_status & (masses > customSEmassLim[0])
+                           & (masses <= customSEmassLim[1]))
+        for i in population.isystem.unique():
+            # extract period of innermost giant (will be 'nan' if no giant present)
+            period_innerCJ = np.min(population[(population.isystem == i)
+                                          & (population.planetType == 'ColdJupiter')].period)
+            if not period_innerCJ is np.nan:
+                mask_per = (population.isystem == i)\
+                           & ((population['status'] == 2) | (population.period < period_innerCJ))
+            else:
+                mask_per =  (population.isystem == i)\
+                            & ((population['status'] == 2) | (population.period < periodLim['SuperEarth'][1]))
+            mask = (mask_status & mask_mass & mask_per)
+            population.loc[mask, 'planetType'] = 'SuperEarth'
 
     # label ejected planets
     population.loc[population['status'] == 2, 'planetType'] += '_ejected'
