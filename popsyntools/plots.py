@@ -13,8 +13,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-from popsyntools import plotstyle
-from popsyntools import utils
+from popsyntools import plotstyle, config, utils
 
 
 def compute_logbins(binWidth_dex, Range):
@@ -1050,7 +1049,7 @@ def plot_clusterScatter(pop, clusters, x='a', y='m', fig=None, ax=None, **kwargs
     return fig, ax
 
 
-def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None, survivorsOnly=True, **kwargs):
+def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime=5, times=None, survivorsOnly=True, **kwargs):
     """ plot the temporal evolution of a system in a-m space.
 
     Based on ref_red times, it samples nTime geometrically spaced times.
@@ -1062,6 +1061,8 @@ def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None,
         multi-indexes.
     isystem : int
         system number to plot
+    poptdisk : Pandas dataframe, optional
+        population of systems at their disk dispersal time
     fig : matplotlib figure object, optional
         figure to plot on
     axs : array, optional
@@ -1081,6 +1082,20 @@ def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None,
     axs : iterable
         list containing matplotlib axes with the plots
     """
+
+    def plot_rvLimit(ax, K):
+        periods = np.arange(.1,1e7, 100)
+        M = utils.get_M_from_RVlim(K, periods, MstarRel=1.)
+        sma = utils.get_sma(periods, MstarRel=1.)
+        ax.plot(sma, M, '--', c='C6', alpha=.33)
+
+        # annotate line, rotated according to the line's slope
+        ax.annotate('K = {:.0f} m/s'.format(K), xy=(sma[30], M[30]), color='C6',
+                    xytext=(25, 7), textcoords='offset points',
+                    rotation=10, rotation_mode='anchor',
+                    verticalalignment='bottom')
+        return ax
+
     if not times:
         # sample some times
         times = tpop.index.levels[0]
@@ -1095,13 +1110,52 @@ def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None,
     for i, time in enumerate([times[t] for t in timeIdxs]):
         if i == nTime:
             break
-        t = tpop.loc[time]
-        if survivorsOnly:
-            t = t[t.status == 0]
-        sys = t[t.isystem == isystem]
+
+        if time == 'tdisk':
+            # plot system at time of disk dispersal
+            if survivorsOnly:
+                poptdisk = poptdisk[poptdisk.status == 0]
+            sys = poptdisk[poptdisk.isystem == isystem]
+            axs[i].set_title('$t_{disk}$')
+            text = axs[i].annotate('t = {:1.1f} Myr'.format(sys.iloc[0]['t']/1e6), xy=(.2, .8),
+                                   ha='center', textcoords='axes fraction', xytext=(.2, .8))
+
+        elif time == 5e9:
+            # 'observation' time. mark unobservable planets
+            t = tpop.loc[time]
+            axs[i].set_title('$t_\mathrm{obs} =$ 5 Gyr')
+            if survivorsOnly:
+                t = t[t.status == 0]
+            sys = t[t.isystem == isystem]
+
+            # mask unobservable planets
+            sys = utils.get_orbitalPeriod(sys, MstarRel=1.)
+            sys.loc[:,'K'] = utils.get_RVsemiamplitude(sys.m, sys.period)
+            minRVamp = config.minRVamplitude()['SuperEarth']
+            rvMask = sys.K >= minRVamp
+
+            axs[i].scatter(sys[rvMask].a, sys[rvMask].m, s=8, **kwargs)
+            axs[i].scatter(sys[~rvMask].a, sys[~rvMask].m, s=8, c='gray')
+
+            # overlay orbital radius range
+            r_per, r_apo = utils.get_ApoPeri(sys.a, sys.e)
+            per2apoLines = [sys.a - r_per, r_apo - sys.a]
+            axs[i].errorbar(sys.a, sys.m, xerr=per2apoLines,
+                            fmt='none', c='gray', lw=2., alpha=.5)
+
+            axs[i] = plot_rvLimit(axs[i], minRVamp)
+            axs[i].grid(which='major')
+            break
+
+        else:
+            t = tpop.loc[time]
+            axs[i].set_title('{:1.1f} Myr'.format(time/1e6))
+            if survivorsOnly:
+                t = t[t.status == 0]
+            sys = t[t.isystem == isystem]
+
         axs[i].scatter(sys.a, sys.m, s=8, **kwargs)
         #         axs[i].set_xlabel('Semi-major Axis [au]')
-        axs[i].set_title('t = {:.0e}'.format(time))
 
         # overlay orbital radius range
         r_per, r_apo = utils.get_ApoPeri(sys.a, sys.e)
@@ -1116,13 +1170,13 @@ def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None,
     axs[0].set_ylim([0.1, 50000])
     axs[0].set_ylabel('$\mathrm{M_P}$ [$\mathrm{M_{\oplus}}$]')
     axs[0].yaxis.set_major_locator(plt.FixedLocator([1, 100, 10000]))
-    text = axs[0].annotate('System {}'.format(isystem), xy=(.2, .8),
-                           ha='center', textcoords='axes fraction', xytext=(.2, .8))
+    text = axs[0].annotate('System {}'.format(isystem), xy=(.05, .8),
+                           ha='left', textcoords='axes fraction', xytext=(.05, .8))
     plt.subplots_adjust(.04, .25, .99, .88)
     return fig, axs
 
 
-def plot_randomSystemsEvo(pop, tpop, fig=None, axs=None, nTime=5, times=None,
+def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5, times=None,
                           nSystems=5, seed=None, **kwargs):
     """ sample random systems and plot their time evolution.
 
@@ -1136,6 +1190,8 @@ def plot_randomSystemsEvo(pop, tpop, fig=None, axs=None, nTime=5, times=None,
     tpop : Pandas multiindex dataframe
         data frame containing a planet population with simulation times as
         multi-indexes.
+    poptdisk : Pandas dataframe
+        population of systems at their disk dispersal time
     fig : matplotlib figure object, optional
         figure to plot on
     axs : array, optional
@@ -1168,8 +1224,9 @@ def plot_randomSystemsEvo(pop, tpop, fig=None, axs=None, nTime=5, times=None,
     np.random.seed(seed)
     for i, isys in enumerate(np.sort(np.random.choice(pop.isystem.unique(),
                                                       nSystems, replace=False))):
-        fig, axs[i] = plot_singleSystemEvo(tpop, isystem=isys, nTime=nTime,
+        fig, axs[i] = plot_singleSystemEvo(tpop, isystem=isys, poptdisk=poptdisk, nTime=nTime,
                                            times=times, fig=fig, axs=axs[i], **kwargs)
     [ax.set_xlabel('Semi-major Axis [au]') for ax in axs[-1]]
+    [ax.get_xticklabels()[1].set_visible(False) for ax in axs[-1][1:]]
     titles = [ax.title.set_visible(False) for ax in axs.flatten()[nTime:]]
     return fig, axs

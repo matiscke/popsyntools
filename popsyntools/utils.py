@@ -11,6 +11,10 @@ au = 1.496e13
 Msol = 1.98855e33
 G = 6.6740831e-8
 
+constants_SI = {
+
+}
+
 def get_M0(Sigma0, rc, expo, r0=5.2):
     """Compute the total gas disk mass from initial condition parameters.
 
@@ -88,7 +92,7 @@ def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
     # multiply by gas-to-dust ratio and transfer from Solar masses to Earth masses
     return M0*332948.6*dgr
 
-def get_sma(period_d, MstarRel=0.1):
+def get_sma(period_d, MstarRel=1.0):
     """ Compute semi-major axis from the orbital period and Mstar.
 
     Parameters
@@ -113,7 +117,7 @@ def get_sma(period_d, MstarRel=0.1):
     sma_cm = np.cbrt(period_s(period_d)**2/KeplerConst)
     return sma_au(sma_cm)
 
-def get_orbitalPeriod(population, MstarRel=0.1):
+def get_orbitalPeriod(population, MstarRel=1.):
     """ Compute the orbital period P from the semi-major axis a and Mstar.
 
     get_orbitalPeriod uses Kepler's Third Law to calculate the orbital period of
@@ -380,6 +384,17 @@ def get_RVsemiamplitude(Mp, P, e=0., Mstar=1.0):
 
     return (2*np.pi*G/(P*d))**(1/3)*Mp*Mearth/((Mstar*Msol +
             Mp*Mearth)**(2/3))*(1-e**2)**(-1/2)
+
+
+def get_M_from_RVlim(K, P, e=0., MstarRel=1.0):
+    """ Compute planet mass from RV semi-amplitude and period."""
+    # some conversions (into m/kg/s SI units)
+    Mearth = 5.9722e24
+    Msol = 1.9891e30
+    d = 86400
+    G = 6.67e-11
+
+    return K*(2*np.pi*G/(P*d))**(-1/3)*(1-e**2)**(-1/2)*(MstarRel*Msol)**(2/3)/Mearth
 
 
 def r_Jup2r_Earth(r):
