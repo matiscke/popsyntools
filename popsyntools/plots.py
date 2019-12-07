@@ -1048,3 +1048,128 @@ def plot_clusterScatter(pop, clusters, x='a', y='m', fig=None, ax=None, **kwargs
         ax.set_ylabel('Mass [M$_\oplus$]')
     plt.legend()
     return fig, ax
+
+
+def plot_singleSystemEvo(tpop, isystem, fig=None, axs=None, nTime=5, times=None, survivorsOnly=True, **kwargs):
+    """ plot the temporal evolution of a system in a-m space.
+
+    Based on ref_red times, it samples nTime geometrically spaced times.
+
+    Parameters
+    ----------
+    tpop : Pandas multiindex dataframe
+        data frame containing a planet population with simulation times as
+        multi-indexes.
+    isystem : int
+        system number to plot
+    fig : matplotlib figure object, optional
+        figure to plot on
+    axs : array, optional
+        list of matplotlib axis objects containing axes to plot on
+    nTime : int, optional
+        number of times to sample
+    times : iterable, optional
+        list of times to plot
+    survivorsOnly : bool
+        should only surviving planets (status 0) be plotted?
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    axs : iterable
+        list containing matplotlib axes with the plots
+    """
+    if not times:
+        # sample some times
+        times = tpop.index.levels[0]
+        timeIdxs = np.rint(np.geomspace(1, 40, nTime)).astype(np.int32)
+    else:
+        nTime = len(times)
+        timeIdxs = [i for i in range(nTime)]
+    if axs is None:
+        fig, axs = plt.subplots(1, nTime, figsize=plotstyle.set_size('aaDouble', subplot=[1, nTime], scale=2),
+                                sharex=True, sharey=True)
+
+    for i, time in enumerate([times[t] for t in timeIdxs]):
+        if i == nTime:
+            break
+        t = tpop.loc[time]
+        if survivorsOnly:
+            t = t[t.status == 0]
+        sys = t[t.isystem == isystem]
+        axs[i].scatter(sys.a, sys.m, s=8, **kwargs)
+        #         axs[i].set_xlabel('Semi-major Axis [au]')
+        axs[i].set_title('t = {:.0e}'.format(time))
+
+        # overlay orbital radius range
+        r_per, r_apo = utils.get_ApoPeri(sys.a, sys.e)
+        per2apoLines = [sys.a - r_per, r_apo - sys.a]
+        axs[i].errorbar(sys.a, sys.m, xerr=per2apoLines,
+                        fmt='none', c='gray', lw=2., alpha=.5)
+        axs[i].grid(which='major')
+
+    axs[0].set_xscale('log')
+    axs[0].set_yscale('log')
+    axs[0].set_xlim([0.01, 1000])
+    axs[0].set_ylim([0.1, 50000])
+    axs[0].set_ylabel('$\mathrm{M_P}$ [$\mathrm{M_{\oplus}}$]')
+    axs[0].yaxis.set_major_locator(plt.FixedLocator([1, 100, 10000]))
+    text = axs[0].annotate('System {}'.format(isystem), xy=(.2, .8),
+                           ha='center', textcoords='axes fraction', xytext=(.2, .8))
+    plt.subplots_adjust(.04, .25, .99, .88)
+    return fig, axs
+
+
+def plot_randomSystemsEvo(pop, tpop, fig=None, axs=None, nTime=5, times=None,
+                          nSystems=5, seed=None, **kwargs):
+    """ sample random systems and plot their time evolution.
+
+    draw some systems from the population 'pop', then plot their time evolution
+    using the time-dependent full population 'tpop'.
+
+    Parameters
+    ----------
+    pop : Pandas dataframe
+        population from which to draw the systems
+    tpop : Pandas multiindex dataframe
+        data frame containing a planet population with simulation times as
+        multi-indexes.
+    fig : matplotlib figure object, optional
+        figure to plot on
+    axs : array, optional
+        list of matplotlib axis objects containing axes to plot on
+    nTime : int, optional
+        number of times to sample
+    times : iterable, optional
+        list of times to plot
+    nSystems : int
+        number of systems to sample
+    seed : int
+        seed for the random number generator
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    axs : iterable
+        list containing matplotlib axes with the plots
+    """
+    if times:
+        nTime = len(times)
+    if axs is None:
+        fig, axs = plt.subplots(nSystems, nTime,
+                                figsize=plotstyle.set_size('aaDouble',
+                                subplot=[nSystems, nTime], scale=2),
+                                sharex=True, sharey=True)
+    fig.subplots_adjust(wspace=0, hspace=0)
+    np.random.seed(seed)
+    for i, isys in enumerate(np.sort(np.random.choice(pop.isystem.unique(),
+                                                      nSystems, replace=False))):
+        fig, axs[i] = plot_singleSystemEvo(tpop, isystem=isys, nTime=nTime,
+                                           times=times, fig=fig, axs=axs[i], **kwargs)
+    [ax.set_xlabel('Semi-major Axis [au]') for ax in axs[-1]]
+    titles = [ax.title.set_visible(False) for ax in axs.flatten()[nTime:]]
+    return fig, axs
