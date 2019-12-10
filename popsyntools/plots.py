@@ -768,7 +768,7 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     return ax
 
 
-def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel='',
+def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbar=True, cbarlabel='',
                            **kwargs):
     """ Produce a scatter plot with color code and color bar.
 
@@ -786,6 +786,8 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
         axis to plot on
     diverging : bool
         use a diverging color palette
+    cbar : bool
+        if True, add a colorbar
     cbarlabel : str
         label for the color bar
     **kwargs : keyword arguments to pass to matplotlib
@@ -796,6 +798,8 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
         figure with the plot
     ax : matplotlib axis
         axis with the plot
+    sc : matplotlib PathCollection
+        output of the scatter plot
     """
     if not ax:
         fig, ax = plt.subplots()
@@ -806,7 +810,6 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
                                  n=19, center="dark", as_cmap=True)
     else:
         norm = None
-        # cmap = 'inferno'
 
     if kwargs is None:
         kwargs = {
@@ -815,8 +818,9 @@ def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbarlabel
         }
 
     sc = ax.scatter(x, y, c=z, **kwargs)
-    cbar = fig.colorbar(sc, label=cbarlabel)
-    return fig, ax
+    if cbar:
+        cbar = fig.colorbar(sc, label=cbarlabel)
+    return fig, ax, sc
 
 
 def plot_correlationMap(pop, columns, fig=None, ax=None, **kwargs):
@@ -1226,7 +1230,8 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
                                                       nSystems, replace=False))):
         fig, axs[i] = plot_singleSystemEvo(tpop, isystem=isys, poptdisk=poptdisk, nTime=nTime,
                                            times=times, fig=fig, axs=axs[i], **kwargs)
-    [ax.set_xlabel('Semi-major Axis [au]') for ax in axs[-1]]
+    # [ax.set_xlabel('Semi-major Axis [au]') for ax in axs[-1]]
+    [ax.set_xlabel('a [au]') for ax in axs[-1]]
     [ax.get_xticklabels()[1].set_visible(False) for ax in axs[-1][1:]]
     titles = [ax.title.set_visible(False) for ax in axs.flatten()[nTime:]]
     return fig, axs
