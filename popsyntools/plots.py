@@ -1094,9 +1094,8 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
         ax.plot(sma, M, '--', c='C6', alpha=.33)
 
         # annotate line, rotated according to the line's slope
-        ax.annotate('K = {:.0f} m/s'.format(K), xy=(sma[30], M[30]), color='C6',
-                    xytext=(25, 7), textcoords='offset points',
-                    rotation=10, rotation_mode='anchor',
+        ax.annotate('K = {:.0f} m/s'.format(K), xy=(.97,.73), color='C6', xytext=(.97,.73), textcoords='axes fraction',
+                    rotation=10, rotation_mode='anchor', horizontalalignment='right',
                     verticalalignment='bottom')
         return ax
 
@@ -1120,9 +1119,9 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
             if survivorsOnly:
                 poptdisk = poptdisk[poptdisk.status == 0]
             sys = poptdisk[poptdisk.isystem == isystem]
-            axs[i].set_title('$t_{disk}$')
-            text = axs[i].annotate('t = {:1.1f} Myr'.format(sys.iloc[0]['t']/1e6), xy=(.2, .8),
-                                   ha='center', textcoords='axes fraction', xytext=(.2, .8))
+            axs[i].set_title('$t_\mathrm{disk}$')
+            text = axs[i].annotate('t = {:1.1f} Myr'.format(sys.iloc[0]['t']/1e6), xy=(.04, .75),
+                                   ha='left', textcoords='axes fraction', xytext=(.04, .75))
 
         elif time == 5e9:
             # 'observation' time. mark unobservable planets
@@ -1174,8 +1173,8 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
     axs[0].set_ylim([0.1, 50000])
     axs[0].set_ylabel('$\mathrm{M_P}$ [$\mathrm{M_{\oplus}}$]')
     axs[0].yaxis.set_major_locator(plt.FixedLocator([1, 100, 10000]))
-    text = axs[0].annotate('System {}'.format(isystem), xy=(.05, .8),
-                           ha='left', textcoords='axes fraction', xytext=(.05, .8))
+    text = axs[0].annotate('System {}'.format(isystem), xy=(.04, .75),
+                           ha='left', textcoords='axes fraction', xytext=(.04, .75))
     plt.subplots_adjust(.04, .25, .99, .88)
     return fig, axs
 
@@ -1222,7 +1221,7 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
     if axs is None:
         fig, axs = plt.subplots(nSystems, nTime,
                                 figsize=plotstyle.set_size('aaDouble',
-                                subplot=[nSystems, nTime], scale=2),
+                                subplot=[nSystems, nTime], scale=1.5),
                                 sharex=True, sharey=True)
     fig.subplots_adjust(wspace=0, hspace=0)
     np.random.seed(seed)
