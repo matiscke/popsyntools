@@ -238,7 +238,7 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
     return population
 
 
-def read_ref_red(ref_redFilename):
+def read_ref_red(ref_redFilename, NGPS=None):
     """Reads the content from a 'ref_redXeY' file into a pandas DataFrame.
 
     'ref_redXeY' files contain the data of all planets in a population at
@@ -264,11 +264,12 @@ def read_ref_red(ref_redFilename):
         tracks = pd.read_csv(ref_redFilename)
     else:
         tracks = pd.read_csv(ref_redFilename, delim_whitespace=True, header=None)
-        if len(tracks.columns) > 132:
-            print("assuming this is an NGPS ref_red file (different column order).")
-            NGPS = True
-        else:
-            NGPS = False
+        if NGPS is None:
+            if len(tracks.columns) > 132:
+                print("assuming this is an NGPS ref_red file (different column order).")
+                NGPS = True
+            else:
+                NGPS = False
         tracks = rename_tracksColumns(tracks, ref_red=True, NGPS=NGPS)
     return tracks
 
@@ -302,9 +303,9 @@ def join_rrSimlist(simlist, ref_red):
 
 class Population():
     """ a planet population consisting of systems which in turn contain planets."""
-    def __init__(self, dataFile=None, name=None):
+    def __init__(self, dataFile=None, name=None, NGPS=None):
         if dataFile is not None:
-            self.data = self.read_data(dataFile)
+            self.data = self.read_data(dataFile, NGPS=NGPS)
         else:
             self.data = None
         self.name = name
@@ -317,7 +318,7 @@ class Population():
         warnings.warn("""This population contains no data. Please read in data
                        using the 'read_data' method.""")
 
-    def read_data(self, populationFile, tDiskDispersal=False):
+    def read_data(self, populationFile, tDiskDispersal=False, NGPS=None):
         """ reads data into a pandas DataFrame.
 
         The method distinguishes between a single file and a list of files.
@@ -342,7 +343,7 @@ class Population():
         """
         if isinstance(populationFile, list):
             # create a multiindex data frame from multiple populations
-            populationsData = [read_ref_red(f) if 'ref_red' in f else read_popHdf5(f) for f in populationFile]
+            populationsData = [read_ref_red(f, NGPS) if 'ref_red' in f else read_popHdf5(f) for f in populationFile]
             if not populationsData:
                 self.__fileTypeWarning()
                 return
@@ -368,7 +369,7 @@ ref_reds such as 'ref_redtdisk.dat'.")
             data = jointDF
 
         elif "ref_red" in populationFile:
-            data = read_ref_red(populationFile)
+            data = read_ref_red(populationFile, NGPS)
         elif ("hd5" in populationFile) or ("hdf5" in populationFile):
             data = read_popHdf5(populationFile)
         else:
@@ -384,12 +385,12 @@ ref_reds such as 'ref_redtdisk.dat'.")
             self.data = data
             return self.data
 
-    def read_tDiskData(self, tDiskFile):
+    def read_tDiskData(self, tDiskFile, NGPS=None):
         """ Read data at disk dispersal time, e.g. a 'ref_redtdisk.dat' file.
 
         The data is stored under a new attribute 'Population.tDiskData'.
         """
-        self.read_data(tDiskFile, tDiskDispersal=True)
+        self.read_data(tDiskFile, tDiskDispersal=True, NGPS=NGPS)
 
     def read_simlist(self, simlistFile):
         """ read the list of initial parameters corresponding to the population.
