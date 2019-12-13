@@ -8,7 +8,8 @@ from cycler import cycler
 def get_colorPalette():
     """ return a custom made color palette."""
     return ['#008fd5', '#fc4f30', '#e5ae38',
-        '#810f7c', '#029e73', '#8b8b8b', '#00035b', '#fe828c','#005249']
+            '#810f7c', '#029e73', '#00035b',
+            '#8b8b8b', '#fe828c','#005249']
 
 
 def styleplots():
