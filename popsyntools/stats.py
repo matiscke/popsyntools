@@ -572,3 +572,24 @@ def get_directAccretors(system):
     """
     i_accretors = [np.abs(i) for i in system.status.unique() if i < 0]
     return system[system.iplanet.isin(i_accretors)]
+
+
+def add_periodRatios(pop):
+    """ add a column 'periodRatio' with period ratios of neighboring planets."""
+    popSurv = pop[pop.status==0]
+    for isystem, system in popSurv.groupby('isystem'):
+        system.sort_values(by=['period'], inplace=True)
+        try:
+           ratios = np.array([system.iplanet,
+                              [np.nan for i in range(len(system.iplanet))]]) # 2D array with planet index and period ratio
+        except KeyError:
+            # number of survived planets is < 2
+            continue
+        periods = np.array(system.period)
+        for i in range(len(ratios[0, :-1])):
+            ratios[1,i] = periods[i+1]/periods[i]
+
+        # sort ratios by iplanet and assign to pop dataframe
+        pop.loc[(pop.isystem == isystem)
+                    & (pop.status ==0), 'periodRatio'] = ratios[:,ratios[0,:].argsort()][1,:]
+    return pop
