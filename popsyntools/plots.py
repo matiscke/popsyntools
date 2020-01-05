@@ -1234,3 +1234,53 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
     [ax.get_xticklabels()[1].set_visible(False) for ax in axs[-1][1:]]
     titles = [ax.title.set_visible(False) for ax in axs.flatten()[nTime:]]
     return fig, axs
+
+
+def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
+    """
+    Plot empirical CDFs of initial conditions for different populations.
+
+    Parameters
+    ----------
+    pops : list of pandas DataFrames
+        data of different populations
+    labels : list of strings
+        labels for the legend
+    columns : list
+        list containing column names in pop to plot
+    fig : matplotlib figure object, optional
+        figure to plot on
+    axs : list (opional)
+        list containing axis objects
+    **kwargs : dict
+        additional keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    axs : list
+        list of subaxes
+    """
+    if fig is None:
+        fig, axs = plt.subplots(2,3, sharey=True,
+                                          figsize=plotstyle.set_size('aaDouble', subplot=[2,3]))
+        axs = axs.reshape(-1)
+
+    if columns is None:
+        columns = ['metallicity', 'Msolid', 'Mgas0','aCore','tdisk','aStart']
+
+    for pop, label in zip(pops, labels):
+        for ax, param in zip(axs, columns):
+            ax.hist(pop[param], density=True, cumulative=True, histtype='step',
+                       label=label, **kwargs)
+            ax.set_xlabel(utils.columnLabels()[param])
+            ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
+                                useMathText=True)
+            ax = fix_hist_step_vertical_line_at_end(ax)
+    axs[0].legend(loc='lower left', ncol=99, bbox_to_anchor=(0., 1.),
+                          frameon=False, columnspacing=1.6)
+    [axs[i].get_xticklabels()[1].set_visible(False) for i in [1,2]]
+    plt.subplots_adjust(wspace=0., hspace=.8)
+    axs[0].set_ylim([0,1])
+    return fig, axs
