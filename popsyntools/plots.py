@@ -1280,7 +1280,7 @@ def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
             ax = fix_hist_step_vertical_line_at_end(ax)
     axs[0].legend(loc='lower left', ncol=99, bbox_to_anchor=(0., 1.),
                           frameon=False, columnspacing=1.6)
-    [axs[i].get_xticklabels()[1].set_visible(False) for i in [1,2]]
-    plt.subplots_adjust(wspace=0., hspace=.8)
+    [axs[i].get_xticklabels()[1].set_visible(False) for i in [1,2,5]]
+    plt.subplots_adjust(wspace=0., hspace=.7)
     axs[0].set_ylim([0,1])
     return fig, axs
