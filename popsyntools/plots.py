@@ -11,6 +11,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 from matplotlib import cm
 
 from popsyntools import plotstyle, config, utils
@@ -184,7 +185,6 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
 
     if logColormap:
         # logarithmic color mapping. Use linear scale around zero.
-        import matplotlib.colors as colors
         threshold  = 0.01
         if zRange is not None:
             if zRange[0] > h.min() or zRange[1] < h.max():
@@ -354,7 +354,6 @@ def plot_planetTracks(simulation, truths=None, lwRange = (2., 40.),
         axis with the plot
     """
     import types
-    import matplotlib.colors as colors
     from matplotlib.backend_bases import GraphicsContextBase, RendererBase
 
     # dirty hack to get round line caps
@@ -1284,3 +1283,75 @@ def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
     plt.subplots_adjust(wspace=0., hspace=.7)
     axs[0].set_ylim([0,1])
     return fig, axs
+
+
+def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
+                                     seed=None):
+    """ Make scatter plots showing ice mass fractions for different populations.
+
+    This produces subplots for each population and an additional rug plot for the
+    starting positions of super-Earths in the system, color-coded by final ice
+    mass fraction. The number of planets is balanced to the size of the smallest
+    population.
+    """
+    import matplotlib.cm as cmx
+
+    N_rows = len(populations)
+    seed = 88
+    N_samples = min([len(p[(p.status == 0) & (p.m > 0.5)]) for p in populations])
+    # N_samples = min([len(p[(p.status==0) & (p.m > 1.)]) for p in populations])
+    # N_samples = 333
+
+    print('size of smallest population = N_samples = {}'.format(N_samples))
+
+    fig = plt.figure(figsize=plotstyle.set_size(subplot=[round(1.5 * N_rows), 2]))
+    gs = fig.add_gridspec(N_rows, 2, left=0.05, right=0.98, wspace=0.1,
+                          hspace=0., width_ratios=[1, 0.07])
+    axs = [fig.add_subplot(gs[i, 0]) for i in range(N_rows)]
+    cax = fig.add_subplot(gs[:, -1])
+
+    for i, label, p in zip(range(N_rows), labels, populations):
+        p = p[(p.status == 0) & (p.m > 0.5)].sample(N_samples,
+                                                    random_state=seed, replace=False)
+
+        fig, axs[i], sc = plot_scatterColorCoded(p.a, p.m, p.fracIce, fig=fig,
+                                                       ax=axs[i], cmap='viridis_r',
+                                                       diverging=False, cbar=False, alpha=.75, s=3)
+
+        '''add rugplot of initial starting positions. Consider only SE for rugplot'''
+        p = p[p.planetType == 'SuperEarth']
+        try:
+            cNorm = colors.Normalize(vmin=0, vmax=max(p.fracIce))
+            scalarMap = cmx.ScalarMappable(norm=cNorm, cmap='viridis_r')
+            axs[i] = sns.rugplot(p.aStart, ax=axs[i], c=scalarMap.to_rgba(p.fracIce),
+                                 lw=.5, alpha=.99, height=0.075)
+            text = axs[i].annotate('SE initial orbit', xy=(.65, .05), fontsize=8,
+                                   xycoords='axes fraction',
+                                   ha='right', va='center', textcoords='axes fraction',
+                                   xytext=(.99, .05))
+            text = axs[i].annotate('', xy=(.65, .05), xycoords='axes fraction',
+                                   ha='right', va='center', textcoords='axes fraction',
+                                   xytext=(.72, .05), arrowprops=dict(arrowstyle="->",
+                                   connectionstyle="arc3"))
+        except ValueError:
+            # skip rug plot for pops without SE
+            pass
+
+        axs[i].loglog()
+        axs[i].set_xlim([1e-2, 1e3])
+        axs[i].set_ylim([.15, 1e4])
+        axs[i].set_ylabel('$\mathrm{M_P} [\mathrm{M}_{\oplus}$]')
+        text = axs[i].annotate(label, xy=(.04, .83),
+                               ha='left', textcoords='axes fraction', xytext=(.04, .83))
+        axs[i].grid(which='major')
+
+    cbar = fig.colorbar(sc, cax=cax)
+    cbar.set_label('Core Ice Mass Fraction')
+    axs[-1].set_xlabel('Semi-major Axis [au]')
+
+    [ax.xaxis.set_ticklabels([]) for ax in axs[:-1]]
+    [ax.get_yticklabels()[-2].set_visible(False) for ax in axs[1:]]
+
+    return fig, axs
+
+
