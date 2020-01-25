@@ -504,6 +504,7 @@ def columnLabels():
     'metallicity' : '[Fe/H]',
     'aCore'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
     'a_in' : '$R_\mathrm{in}\, [\mathrm{au}]$',
+    'aIn' : '$R_\mathrm{in}\, [\mathrm{au}]$',
     'a_out'  : '$R_\mathrm{disk}\, [\mathrm{au}]$',
     'expo'   : '$\gamma$',
     'nSE'    : '$n_\mathrm{SE}$',

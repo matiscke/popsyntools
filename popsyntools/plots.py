@@ -975,7 +975,7 @@ def plot_initialConditionHist(simlist, columns, fig=None, axs=None, **kwargs):
         mplKwargs = kwargs
 
     for ax, param in zip(axs, columns):
-        ax.hist(simlist[param], density=True,
+        ax.hist(simlist[param], density=False,
                 **mplKwargs)
         ax.set_xlabel(utils.columnLabels()[param])
         ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
@@ -1235,7 +1235,8 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
     return fig, axs
 
 
-def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
+def plot_ECDFofPops(pops, labels=None, columns=None, fig=None, axs=None,
+                                bins=5000, **kwargs):
     """
     Plot empirical CDFs of initial conditions for different populations.
 
@@ -1251,6 +1252,8 @@ def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
         figure to plot on
     axs : list (opional)
         list containing axis objects
+    bins : int
+        number of bins
     **kwargs : dict
         additional keyword arguments to pass to matplotlib
 
@@ -1266,21 +1269,27 @@ def plot_ECDFofPops(pops, labels, columns=None, fig=None, axs=None, **kwargs):
                                           figsize=plotstyle.set_size('aaDouble', subplot=[2,3]))
         axs = axs.reshape(-1)
 
+    if labels is None:
+        labels= [None for i in range(len(pops))]
+        showLegend = False
+    else:
+        showLegend = True
+
     if columns is None:
         columns = ['metallicity', 'Msolid', 'Mgas0','aCore','tdisk','aStart']
 
     for pop, label in zip(pops, labels):
         for ax, param in zip(axs, columns):
             ax.hist(pop[param], density=True, cumulative=True, histtype='step',
-                       label=label, **kwargs)
+                       label=label, bins=bins, **kwargs)
             ax.set_xlabel(utils.columnLabels()[param])
             ax.ticklabel_format(axis='both', style='sci', scilimits=(-2,3),
                                 useMathText=True)
             ax = fix_hist_step_vertical_line_at_end(ax)
-    axs[0].legend(loc='lower left', ncol=99, bbox_to_anchor=(0., 1.),
-                          frameon=False, columnspacing=1.6)
-    [axs[i].get_xticklabels()[1].set_visible(False) for i in [1,2,5]]
-    plt.subplots_adjust(wspace=0., hspace=.7)
+    if showLegend:
+        axs[0].legend(loc='lower left', ncol=99, bbox_to_anchor=(0., 1.),
+                              frameon=False, columnspacing=1.6)
+
     axs[0].set_ylim([0,1])
     return fig, axs
 
