@@ -1052,7 +1052,9 @@ def plot_clusterScatter(pop, clusters, x='a', y='m', fig=None, ax=None, **kwargs
     return fig, ax
 
 
-def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime=5, times=None, survivorsOnly=True, **kwargs):
+def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None,
+                         nTime=5, times=None, survivorsOnly=True,
+                         xAxis='a', yAxis='m', **kwargs):
     """ plot the temporal evolution of a system in a-m space.
 
     Based on ref_red times, it samples nTime geometrically spaced times.
@@ -1076,6 +1078,10 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
         list of times to plot
     survivorsOnly : bool
         should only surviving planets (status 0) be plotted?
+    xAxis : string
+        parameter for the x axis
+    yAxis : string
+        parameter for the y axis
     **kwargs : keyword arguments to pass to matplotlib
 
     Returns
@@ -1136,13 +1142,13 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
             minRVamp = config.minRVamplitude()['SuperEarth']
             rvMask = sys.K >= minRVamp
 
-            axs[i].scatter(sys[rvMask].a, sys[rvMask].m, s=8, **kwargs)
-            axs[i].scatter(sys[~rvMask].a, sys[~rvMask].m, s=8, c='gray')
+            axs[i].scatter(sys[rvMask][xAxis], sys[rvMask][yAxis], s=8, **kwargs)
+            axs[i].scatter(sys[~rvMask][xAxis], sys[~rvMask][yAxis], s=8, c='gray')
 
             # overlay orbital radius range
-            r_per, r_apo = utils.get_ApoPeri(sys.a, sys.e)
-            per2apoLines = [sys.a - r_per, r_apo - sys.a]
-            axs[i].errorbar(sys.a, sys.m, xerr=per2apoLines,
+            r_per, r_apo = utils.get_ApoPeri(sys[xAxis], sys.e)
+            per2apoLines = [sys[xAxis] - r_per, r_apo - sys[xAxis]]
+            axs[i].errorbar(sys[xAxis], sys[yAxis], xerr=per2apoLines,
                             fmt='none', c='gray', lw=2., alpha=.5)
 
             axs[i] = plot_rvLimit(axs[i], minRVamp)
@@ -1156,21 +1162,25 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
                 t = t[t.status == 0]
             sys = t[t.isystem == isystem]
 
-        axs[i].scatter(sys.a, sys.m, s=8, **kwargs)
+        axs[i].scatter(sys[xAxis], sys[yAxis], s=8, **kwargs)
         #         axs[i].set_xlabel('Semi-major Axis [au]')
 
-        # overlay orbital radius range
-        r_per, r_apo = utils.get_ApoPeri(sys.a, sys.e)
-        per2apoLines = [sys.a - r_per, r_apo - sys.a]
-        axs[i].errorbar(sys.a, sys.m, xerr=per2apoLines,
-                        fmt='none', c='gray', lw=2., alpha=.5)
-        axs[i].grid(which='major')
+        if xAxis == 'a':
+            # overlay orbital radius range
+            r_per, r_apo = utils.get_ApoPeri(sys[xAxis], sys.e)
+            per2apoLines = [sys[xAxis] - r_per, r_apo - sys[xAxis]]
+            axs[i].errorbar(sys[xAxis], sys[yAxis], xerr=per2apoLines,
+                            fmt='none', c='gray', lw=2., alpha=.5)
 
+    axs[i].grid(which='major')
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
     axs[0].set_xlim([0.01, 1000])
     axs[0].set_ylim([0.1, 50000])
-    axs[0].set_ylabel('$\mathrm{M_P}$ [$\mathrm{M_{\oplus}}$]')
+    try:
+        axs[0].set_ylabel(utils.columnLabels()[yAxis])
+    except:
+        pass
     axs[0].yaxis.set_major_locator(plt.FixedLocator([1, 100, 10000]))
     text = axs[0].annotate('System {}'.format(isystem), xy=(.04, .75),
                            ha='left', textcoords='axes fraction', xytext=(.04, .75))
@@ -1179,7 +1189,7 @@ def plot_singleSystemEvo(tpop, isystem, poptdisk=None, fig=None, axs=None, nTime
 
 
 def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5, times=None,
-                          nSystems=5, seed=None, **kwargs):
+                          nSystems=5, seed=None, xAxis='a', yAxis='m', **kwargs):
     """ sample random systems and plot their time evolution.
 
     draw some systems from the population 'pop', then plot their time evolution
@@ -1206,6 +1216,10 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
         number of systems to sample
     seed : int
         seed for the random number generator
+    xAxis : string
+        parameter for the x axis
+    yAxis : string
+        parameter for the y axis
     **kwargs : keyword arguments to pass to matplotlib
 
     Returns
@@ -1227,9 +1241,13 @@ def plot_randomSystemsEvo(pop, tpop, poptdisk=None, fig=None, axs=None, nTime=5,
     for i, isys in enumerate(np.sort(np.random.choice(pop.isystem.unique(),
                                                       nSystems, replace=False))):
         fig, axs[i] = plot_singleSystemEvo(tpop, isystem=isys, poptdisk=poptdisk, nTime=nTime,
-                                           times=times, fig=fig, axs=axs[i], **kwargs)
+                                           times=times, fig=fig, axs=axs[i], xAxis=xAxis,
+                                           yAxis=yAxis, **kwargs)
     # [ax.set_xlabel('Semi-major Axis [au]') for ax in axs[-1]]
-    [ax.set_xlabel('a [au]') for ax in axs[-1]]
+    try:
+        [ax.set_xlabel(utils.columnLabels()[xAxis]) for ax in axs[-1]]
+    except:
+        pass
     [ax.get_xticklabels()[1].set_visible(False) for ax in axs[-1][1:]]
     titles = [ax.title.set_visible(False) for ax in axs.flatten()[nTime:]]
     return fig, axs
