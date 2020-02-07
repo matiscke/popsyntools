@@ -514,7 +514,10 @@ def columnLabels():
     'mWind'  : '$\dot{M}_\mathrm{wind}\, [\mathrm{M_\odot \, yr^{-1}}]$',
     'L_X'    : '$L_\mathrm{X}\, [10^{30}\mathrm{erg \, s^{-1}}]$',
     'aStart' : '$a_\mathrm{start}\, [\mathrm{au}]$',
-    'm' : '$M_\mathrm{P} \, [\mathrm{M_\oplus}]$'
+    'm' : '$M_\mathrm{P} \, [\mathrm{M_\oplus}]$',
+    'a' : '$a \, [\mathrm{au}]$',
+    'r' : '$R_\mathrm{P} \, [\mathrm{R_{Jup}}]$',
+    'r_rEarth' : '$R_\mathrm{P} \, [\mathrm{R_\oplus}]$'
     }
     return colLabels
 
