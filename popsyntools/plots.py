@@ -1327,7 +1327,6 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
     seed = 88
     N_samples = min([len(p[(p.status == 0) & (p.m > 0.5)]) for p in populations])
     # N_samples = min([len(p[(p.status==0) & (p.m > 1.)]) for p in populations])
-    # N_samples = 333
 
     print('size of smallest population = N_samples = {}'.format(N_samples))
 

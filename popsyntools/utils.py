@@ -406,6 +406,9 @@ def m_Earth2m_Jup(m):
     """ Transform a mass given in Earth masses into Jupiter masses."""
     return m*0.00314636
 
+def m_Jup2m_Earth(m):
+    """ Transform a mass given in Jupiter masses into Earth masses."""
+    return m/0.00314636
 
 def get_msini(m):
     """ transform a given true m into m*sin(i) with random isotropic inclination i.
