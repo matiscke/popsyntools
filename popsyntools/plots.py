@@ -767,8 +767,8 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     return ax
 
 
-def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True, cbar=True, cbarlabel='',
-                           **kwargs):
+def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True,
+                           cbar=True, cbarlabel='', **kwargs):
     """ Produce a scatter plot with color code and color bar.
 
     Parameters
@@ -1324,7 +1324,6 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
     import matplotlib.cm as cmx
 
     N_rows = len(populations)
-    seed = 88
     N_samples = min([len(p[(p.status == 0) & (p.m > 0.5)]) for p in populations])
     # N_samples = min([len(p[(p.status==0) & (p.m > 1.)]) for p in populations])
 
@@ -1336,18 +1335,23 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
     axs = [fig.add_subplot(gs[i, 0]) for i in range(N_rows)]
     cax = fig.add_subplot(gs[:, -1])
 
+    # normalize color range across populations
+    vmin = min([min(p.fracIce) for p in populations])
+    vmax = max([max(p.fracIce) for p in populations])
+
     for i, label, p in zip(range(N_rows), labels, populations):
         p = p[(p.status == 0) & (p.m > 0.5)].sample(N_samples,
                                                     random_state=seed, replace=False)
 
         fig, axs[i], sc = plot_scatterColorCoded(p.a, p.m, p.fracIce, fig=fig,
                                                        ax=axs[i], cmap='viridis_r',
-                                                       diverging=False, cbar=False, alpha=.75, s=3)
+                                                       diverging=False, cbar=False,
+                                                       vmin=vmin, vmax=vmax, alpha=.75, s=3)
 
         '''add rugplot of initial starting positions. Consider only SE for rugplot'''
         p = p[p.planetType == 'SuperEarth']
-        try:
-            cNorm = colors.Normalize(vmin=0, vmax=max(p.fracIce))
+        if len(p) > 0:
+            cNorm = colors.Normalize(vmin=vmin, vmax=vmax)
             scalarMap = cmx.ScalarMappable(norm=cNorm, cmap='viridis_r')
             axs[i] = sns.rugplot(p.aStart, ax=axs[i], c=scalarMap.to_rgba(p.fracIce),
                                  lw=.5, alpha=.99, height=0.075)
@@ -1359,9 +1363,6 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
                                    ha='right', va='center', textcoords='axes fraction',
                                    xytext=(.72, .05), arrowprops=dict(arrowstyle="->",
                                    connectionstyle="arc3"))
-        except ValueError:
-            # skip rug plot for pops without SE
-            pass
 
         axs[i].loglog()
         axs[i].set_xlim([1e-2, 1e3])
