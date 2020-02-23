@@ -1382,3 +1382,70 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
     return fig, axs
 
 
+def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
+                               seed=None, **kwargs):
+    """
+    Make a mass-radius plot for different populations.
+
+    Parameters
+    ----------
+    populations : list of pandas DataFrames
+        data of different populations
+    labels : list of strings
+        labels for the legend
+    fig : matplotlib figure object, optional
+        figure to plot on
+    axs : list (opional)
+        list containing axis objects
+    **kwargs : dict
+        additional keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    fig : matplotlib figure object
+        figure with the plot
+    axs : list
+        list of subaxes
+    sc : PathCollection
+        as returned from plt.scatter
+    """
+    colors = ['C2', 'C4']
+
+    def filterPop(p, massLim=(1., 47.), smaLim=(0., 0.3)):
+        filtered = p[(p.status == 0) & (p.m.between(*massLim)) & (p.a.between(*smaLim))]
+        return filtered
+
+    N_samples = min([len(filterPop(p)) for p in populations])
+    print(N_samples)
+
+    if axs is None:
+        fig, axs = plt.subplots(3, 1, figsize=plotstyle.set_size(subplot=[3, 1], scale=1.),
+                                          sharex=True)
+
+    # normalize color range across populations
+    vmin = min([min(p.fracIce) for p in populations])
+    vmax = max([max(p.fracIce) for p in populations])
+
+    # first two axes: the two populations separately, color-coded by ice mass fraction
+    for ax, label, p, in zip(axs[:2], labels, populations):
+        p = filterPop(p)
+        sc = ax.scatter(p.m, p.r_rEarth, c=p.fracIce, cmap='viridis_r', alpha=.9,
+                   s=3, label=label, vmin=vmin, vmax=vmax)
+        text = ax.annotate(label, xy=(.04, .87),
+                           ha='left', xycoords='axes fraction')
+
+    # third axis: balanced samples of both populations in one scatter plot, colored by population.
+    # reverse orders to have yellow on top.
+    for label, p, col in zip(reversed(labels), reversed(populations), reversed(colors) ):
+        p = filterPop(p)
+        p = p.sample(N_samples, random_state=seed)
+        axs[2].scatter(p.m, p.r_rEarth, edgecolors=col, alpha=.66,
+                       s=9, label=label, facecolors='none')
+        # reverse order of legend
+        handles, labels = [hl[:-1] for hl in axs[2].get_legend_handles_labels()]
+        axs[2].legend(handles[::-1], labels[::-1])
+
+    axs[-1].set_xlabel('Planet Mass [M$_\oplus$]')
+    [ax.set_ylabel('Planet Radius [R$_\oplus$]') for ax in axs]
+    [ax.loglog() for ax in axs]
+    return fig, axs, sc
