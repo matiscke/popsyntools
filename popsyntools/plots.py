@@ -664,55 +664,6 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
     return ax
 
 
-def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
-    """ Plot a histogram and its empirical distribution function.
-
-    Parameters
-    ----------
-    data : array, list, or series object
-        the data for the statistics
-    axes : tuple
-        contains two Matplotlib axis objects
-    axvlines : list
-        list of x coordinates at which to plot vertical lines across both axes
-    cdfbins : list or array
-        bin edges to use for the cumulative histogram
-    **kwargs : keyword arguments to pass to matplotlib
-
-    Returns
-    -------
-    ax : tuple or list
-        contains two Matplotlib axis objects
-    """
-    if axes is None:
-        fig, axes = plt.subplots(2, sharex=True, figsize=[6.4, 4.8])
-    if 'histtype' in kwargs.keys():
-            del kwargs['histtype']
-
-    # plot histogram in first axis
-    n, bins, patches = axes[0].hist(data, histtype='stepfilled',
-                                    lw=1.2, **kwargs)
-    if 'bins' in kwargs:
-        del kwargs['bins']
-
-    # plot vertical lines across all axes
-    if isinstance(axvlines, list):
-        for x in axvlines:
-            [a.axvline(x, ls='--', color='gray') for a in axes]
-
-    if cdfbins is None:
-        # use bins of normal histogram
-        cdfbins = bins
-    axes[1].hist(data, cumulative=True, histtype='step',bins=cdfbins, lw=2, **kwargs)
-
-    # fix collision of tick labels and write y labels
-    axes[1].get_yticklabels()[-1].set_visible(False)
-    axes[0].set_ylabel('Probability Density')
-    axes[1].set_ylabel('Cumulative Fraction')
-    axes[1].set_ylim(0,1)
-    return axes
-
-
 def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     """ Plot multiple histograms from a dataFrame into the same axis.
 
@@ -765,6 +716,55 @@ def plot_multiplicities(systemMultiplicities, ax=None, legend=True, **kwargs):
     ax.set_xlabel('Number of Planets')
     ax.set_ylabel('Frequency per 100 Systems')
     return ax
+
+
+def plot_histCDF(data, axes=None, axvlines=None, cdfbins=None, **kwargs):
+    """ Plot a histogram and its empirical distribution function.
+
+    Parameters
+    ----------
+    data : array, list, or series object
+        the data for the statistics
+    axes : tuple
+        contains two Matplotlib axis objects
+    axvlines : list
+        list of x coordinates at which to plot vertical lines across both axes
+    cdfbins : list or array
+        bin edges to use for the cumulative histogram
+    **kwargs : keyword arguments to pass to matplotlib
+
+    Returns
+    -------
+    ax : tuple or list
+        contains two Matplotlib axis objects
+    """
+    if axes is None:
+        fig, axes = plt.subplots(2, sharex=True, figsize=[6.4, 4.8])
+    if 'histtype' in kwargs.keys():
+            del kwargs['histtype']
+
+    # plot histogram in first axis
+    n, bins, patches = axes[0].hist(data, histtype='stepfilled',
+                                    lw=1.2, **kwargs)
+    if 'bins' in kwargs:
+        del kwargs['bins']
+
+    # plot vertical lines across all axes
+    if isinstance(axvlines, list):
+        for x in axvlines:
+            [a.axvline(x, ls='--', color='gray') for a in axes]
+
+    if cdfbins is None:
+        # use bins of normal histogram
+        cdfbins = bins
+    axes[1].hist(data, cumulative=True, histtype='step',bins=cdfbins, lw=2, **kwargs)
+
+    # fix collision of tick labels and write y labels
+    axes[1].get_yticklabels()[-1].set_visible(False)
+    axes[0].set_ylabel('Probability Density')
+    axes[1].set_ylabel('Cumulative Fraction')
+    axes[1].set_ylim(0,1)
+    return axes
 
 
 def plot_scatterColorCoded(x, y, z, fig=None, ax=None, diverging=True,
@@ -1416,7 +1416,7 @@ def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
         return filtered
 
     N_samples = min([len(filterPop(p)) for p in populations])
-    print(N_samples)
+    print('balanced sample: N={}'.format(N_samples))
 
     if axs is None:
         fig, axs = plt.subplots(3, 1, figsize=plotstyle.set_size(subplot=[3, 1], scale=1.),
