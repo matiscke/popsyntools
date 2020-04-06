@@ -7,7 +7,6 @@ schlecker@mpia.de
 #%%
 import numpy as np
 import pandas as pd
-import tables
 import warnings
 
 from popsyntools import stats, utils, config, make_list
@@ -200,6 +199,7 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
     """
     if hierarchical:
         # read into a hierarchical structure
+        import tables
         population = {}
         tab = tables.open_file(filename)
         for i, sim in enumerate(tab.walk_groups('/')):
