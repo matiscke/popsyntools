@@ -238,7 +238,7 @@ def read_popHdf5(filename, hierarchical=False, nSample=None):
     return population
 
 
-def read_ref_red(ref_redFilename, NGPS=None):
+def read_ref_red(ref_redFilename, NGPS=True):
     """Reads the content from a 'ref_redXeY' file into a pandas DataFrame.
 
     'ref_redXeY' files contain the data of all planets in a population at
@@ -303,7 +303,7 @@ def join_rrSimlist(simlist, ref_red):
 
 class Population():
     """ a planet population consisting of systems which in turn contain planets."""
-    def __init__(self, dataFile=None, name=None, NGPS=None):
+    def __init__(self, dataFile=None, name=None, NGPS=True):
         if dataFile is not None:
             self.data = self.read_data(dataFile, NGPS=NGPS)
         else:
@@ -318,7 +318,7 @@ class Population():
         warnings.warn("""This population contains no data. Please read in data
                        using the 'read_data' method.""")
 
-    def read_data(self, populationFile, tDiskDispersal=False, NGPS=None):
+    def read_data(self, populationFile, tDiskDispersal=False, NGPS=True):
         """ reads data into a pandas DataFrame.
 
         The method distinguishes between a single file and a list of files.
