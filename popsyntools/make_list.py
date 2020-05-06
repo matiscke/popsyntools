@@ -55,7 +55,6 @@ def read_simlist(filename, varlen=17):
 
         # turn list into a pandas DataFrame
         columns = [
-                "CDnumber",
                 "fgp",
                 "sigma0",
                 "a_in",
@@ -72,7 +71,7 @@ def read_simlist(filename, varlen=17):
                  'a_start','t_start']] = simlist[['fgp','sigma0','a_in','a_out',
                  'expo','mWind','a_start','t_start']].apply(pd.to_numeric)
 
-    except AssertionError:
+    except (AssertionError, ValueError) as e:
         # new format (from early "NG" populations on (summer 2019))
         simlist = []
         with open(filename) as f:
