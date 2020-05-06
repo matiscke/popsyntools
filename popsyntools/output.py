@@ -306,6 +306,7 @@ class Population():
     def __init__(self, dataFile=None, name=None, NGPS=True):
         if dataFile is not None:
             self.data = self.read_data(dataFile, NGPS=NGPS)
+            self.dir = dataFile
         else:
             self.data = None
         self.name = name
