@@ -5,7 +5,6 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 #%%
-import os
 import numpy as np
 import pandas as pd
 import warnings
@@ -307,7 +306,7 @@ class Population():
     def __init__(self, dataFile=None, name=None, NGPS=True):
         if dataFile is not None:
             self.data = self.read_data(dataFile, NGPS=NGPS)
-            self.dir = os.path.split(dataFile)[0]
+            self.dir = dataFile
         else:
             self.data = None
         self.name = name
