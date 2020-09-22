@@ -85,7 +85,7 @@ def set_size(width='aa', subplot=[1,1], scale=1):
     -------
     Adapted from https://jwalton.info/Embed-Publication-Matplotlib-Latex/
     """
-    aa_textwidth = 523.53       # textwidth of A&A template, as measured with "/the/textwidth" Latex command
+    aa_textwidth = 523.53       # textwidth of A&A template, as measured with "\the\textwidth" Latex command
     if width == 'aaDouble':
         width_pt = aa_textwidth
     elif width == 'aa':

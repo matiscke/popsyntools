@@ -1312,7 +1312,7 @@ def plot_ECDFofPops(pops, labels=None, columns=None, fig=None, axs=None,
     return fig, axs
 
 
-def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
+def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None, rugplot=True,
                                      seed=None):
     """ Make scatter plots showing ice mass fractions for different populations.
 
@@ -1348,21 +1348,22 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None,
                                                        diverging=False, cbar=False,
                                                        vmin=vmin, vmax=vmax, alpha=.75, s=3)
 
-        '''add rugplot of initial starting positions. Consider only SE for rugplot'''
-        p = p[p.planetType == 'SuperEarth']
-        if len(p) > 0:
-            cNorm = colors.Normalize(vmin=vmin, vmax=vmax)
-            scalarMap = cmx.ScalarMappable(norm=cNorm, cmap='viridis_r')
-            axs[i] = sns.rugplot(p.aStart, ax=axs[i], c=scalarMap.to_rgba(p.fracIce),
-                                 lw=.5, alpha=.99, height=0.075)
-            text = axs[i].annotate('SE initial orbit', xy=(.65, .05), fontsize=8,
-                                   xycoords='axes fraction',
-                                   ha='right', va='center', textcoords='axes fraction',
-                                   xytext=(.99, .05))
-            text = axs[i].annotate('', xy=(.65, .05), xycoords='axes fraction',
-                                   ha='right', va='center', textcoords='axes fraction',
-                                   xytext=(.72, .05), arrowprops=dict(arrowstyle="->",
-                                   connectionstyle="arc3"))
+        if rugplot:
+            '''add rugplot of initial starting positions. Consider only SE for rugplot'''
+            p = p[p.planetType == 'SuperEarth']
+            if len(p) > 0:
+                cNorm = colors.Normalize(vmin=vmin, vmax=vmax)
+                scalarMap = cmx.ScalarMappable(norm=cNorm, cmap='viridis_r')
+                axs[i] = sns.rugplot(p.aStart, ax=axs[i], c=scalarMap.to_rgba(p.fracIce),
+                                     lw=.5, alpha=.99, height=0.075)
+                text = axs[i].annotate('SE initial orbit', xy=(.65, .05), fontsize=8,
+                                       xycoords='axes fraction',
+                                       ha='right', va='center', textcoords='axes fraction',
+                                       xytext=(.99, .05))
+                text = axs[i].annotate('', xy=(.65, .05), xycoords='axes fraction',
+                                       ha='right', va='center', textcoords='axes fraction',
+                                       xytext=(.72, .05), arrowprops=dict(arrowstyle="->",
+                                       connectionstyle="arc3"))
 
         axs[i].loglog()
         axs[i].set_xlim([1e-2, 1e3])
@@ -1434,16 +1435,20 @@ def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
         text = ax.annotate(label, xy=(.04, .87),
                            ha='left', xycoords='axes fraction')
 
-    # third axis: balanced samples of both populations in one scatter plot, colored by population.
-    # reverse orders to have yellow on top.
-    for label, p, col in zip(reversed(labels), reversed(populations), reversed(colors) ):
-        p = filterPop(p)
-        p = p.sample(N_samples, random_state=seed)
-        axs[2].scatter(p.m, p.r_rEarth, edgecolors=col, alpha=.66,
-                       s=9, label=label, facecolors='none')
-        # reverse order of legend
-        handles, labels = [hl[:-1] for hl in axs[2].get_legend_handles_labels()]
-        axs[2].legend(handles[::-1], labels[::-1])
+    try:
+        # third axis: balanced samples of both populations in one scatter plot, colored by population.
+        # reverse orders to have yellow on top.
+        for label, p, col in zip(reversed(labels), reversed(populations), reversed(colors) ):
+            p = filterPop(p)
+            p = p.sample(N_samples, random_state=seed)
+            axs[2].scatter(p.m, p.r_rEarth, edgecolors=col, alpha=.66,
+                           s=9, label=label, facecolors='none')
+            # reverse order of legend
+            handles, labels = [hl[:-1] for hl in axs[2].get_legend_handles_labels()]
+            axs[2].legend(handles[::-1], labels[::-1])
+    except IndexError:
+        # no third axis provided
+        pass
 
     axs[-1].set_xlabel('Planet Mass [M$_\oplus$]')
     [ax.set_ylabel('Planet Radius [R$_\oplus$]') for ax in axs]
