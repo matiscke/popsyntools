@@ -1371,7 +1371,7 @@ def plot_iceMassFractionsPopulations(populations, labels, fig=None, axs=None, ru
         axs[i].set_ylabel('$\mathrm{M_P} [\mathrm{M}_{\oplus}$]')
         text = axs[i].annotate(label, xy=(.04, .83),
                                ha='left', textcoords='axes fraction', xytext=(.04, .83))
-        axs[i].grid(which='major')
+        # axs[i].grid(which='major')
 
     cbar = fig.colorbar(sc, cax=cax)
     cbar.set_label('Core Ice Mass Fraction')
