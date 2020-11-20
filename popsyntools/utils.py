@@ -5,6 +5,7 @@ schlecker@mpia.de
 """
 import numpy as np
 import pandas as pd
+from astropy import units as u
 
 # Define au, Msol, Gravitational Constant in cm, g, s
 au = 1.496e13
@@ -91,6 +92,34 @@ def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
 
     # multiply by gas-to-dust ratio and transfer from Solar masses to Earth masses
     return M0*332948.6*dgr
+
+
+def get_Msolid_at_Miso(a, rc, Miso=10, expo_pla=1.5, Mstar=1):
+    """
+    compute the solid disk mass needed to reach M_iso at a given orbit distance.
+
+    Parameters
+    ----------
+    a : float
+        orbital distance, free parameter
+    rc : float
+        characteristic radius [au]
+    Miso : float
+        planetesimal isolation mass in Mearth
+    expo_pla : float
+        Power law slope of the planetesimal disk
+    Mstar : float
+        stellar mass in Solar masses
+
+    Returns
+    -------
+    Msolid : float
+        total solid disk mass in Earth masses
+
+    """
+    Msolid = 3**(1/3)/10*(rc*u.au)**(2-expo_pla)/(2-expo_pla)*(Mstar*u.Msun)**(1/3)*(Miso*u.Mearth)**(2/3)\
+             *(a*u.au)**(expo_pla-2)*(np.exp(-((a*u.au)/(rc*u.au))**(2-expo_pla)))**-1
+    return Msolid.to(u.Mearth)
 
 def get_sma(period_d, MstarRel=1.0):
     """ Compute semi-major axis from the orbital period and Mstar.
