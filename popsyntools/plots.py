@@ -50,6 +50,11 @@ def fix_hist_step_vertical_line_at_end(ax):
     for poly in axpolygons:
         poly.set_xy(poly.get_xy()[:-1])
 
+def log_col(pop, variables):
+    """apply a log10 to columns and write result to new columns named <name>_log"""
+    for v in variables:
+        pop.loc[:,'{}_log'.format(v)] = np.log10(pop[v])
+    return pop
 
 def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                     binWidth_dex=(0.25, 0.1), xRange=None, yRange=None,
@@ -1454,3 +1459,54 @@ def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
     [ax.set_ylabel('Planet Radius [R$_\oplus$]') for ax in axs]
     [ax.loglog() for ax in axs]
     return fig, axs, sc
+
+
+def plot_InitialsPairplot(data, variables, samplesize=np.inf):
+    """ make a corner plot of disk features, color-coded by planet cluster affiliation.
+
+    Parameters
+    ----------
+    data : pandas DataFrame
+        DataFrame containing the data. Has to contain a numerical column 'labels' for the color-coding.
+    variables : list
+        list of strings with column names to consider for the plot
+
+    Returns
+    -------
+    pp : seaborn PairGrid
+        object with the pairplot
+    """
+
+    sample =  data.sample(min(samplesize,len(data)))
+    sample = log_col(sample, variables)
+
+    pp = sns.pairplot(sample, vars=[v + '_log' for v in variables], hue='labels',
+                      palette=sns.color_palette(),
+                      plot_kws = {'alpha':.5,
+                      's':2,
+                      'linewidth':0}) # remove white marker edges)
+
+    # remove upper triangle
+    for i, j in zip(*np.triu_indices_from(pp.axes, 1)):
+        pp.axes[i, j].set_visible(False)
+
+    pp.fig.set_size_inches(8,8)
+
+    # fix legend
+    handles = pp._legend_data.values()
+    labels = pp._legend_data.keys()
+    pp._legend.remove()
+    lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper center', ncol=1, title='cluster')
+
+    #change the marker size manually for legend
+    for i in range(len(lgnd.legendHandles)):
+        lgnd.legendHandles[i]._sizes = [30]
+
+    # fix labels
+    for ax in pp.axes[-1,:]:
+        xlabel = ax.xaxis.get_label_text()
+        ax.xaxis.set_label_text(utils.get_plotlabels(xlabel))
+    for ax in pp.axes[:,0]:
+        ylabel = ax.yaxis.get_label_text()
+        ax.yaxis.set_label_text(utils.get_plotlabels(ylabel))
+    return pp

@@ -118,7 +118,7 @@ def get_Msolid_at_Miso(a, rc, Miso=10, expo_pla=1.5, Mstar=1):
 
     """
     Msolid = 3**(1/3)/10*(rc*u.au)**(2-expo_pla)/(2-expo_pla)*(Mstar*u.Msun)**(1/3)*(Miso*u.Mearth)**(2/3)\
-             *(a*u.au)**(expo_pla-2)*(np.exp(-((a*u.au)/(rc*u.au))**(2-expo_pla)))**-1
+             *(a*u.au)**(expo_pla-2)*(np.exp(-((a*u.au)/(rc*u.au))**(2-expo_pla)))**(-1)
     return Msolid.to(u.Mearth)
 
 def get_sma(period_d, MstarRel=1.0):
@@ -552,6 +552,36 @@ def columnLabels():
     'r_rEarth' : '$R_\mathrm{P} \, [\mathrm{R_\oplus}]$'
     }
     return colLabels
+
+def get_plotlabels(string, units=True):
+    """ Return labels for plots, optionally with units.
+
+    Should replace function columnLabels() in the long run.
+    """
+    dictionary = {
+        'aStart' : ['$a_\mathrm{start}$','[au]'],
+        'Msolid' : ['$M_\mathrm{solid,0}$','$[\mathrm{M}_\oplus]$'],
+        'Mgas0' : ['$M_\mathrm{gas,0}$','$[\mathrm{M}_\odot]$'],
+        'aCore' : ['$R_\mathrm{disk}$','[au]'],
+        'tDisk' : ['$t_\mathrm{disk}$','[yr]'],
+        'aStart_log' : ['$\log_{10}(a_\mathrm{start})$','[au]'],
+        'Msolid_log' : ['$\log_{10}(M_\mathrm{solid,0})$','$[\mathrm{M}_\oplus]$'],
+        'Mgas0_log' : ['$\log_{10}(M_\mathrm{gas,0})$','$[\mathrm{M}_\odot]$'],
+        'aCore_log' : ['$\log_{10}(R_\mathrm{disk})$','[au]'],
+        'tDisk_log' : ['$\log_{10}(t_\mathrm{disk})$','[yr]'],
+    # observables:
+        'a_log' : ['$\log_{10}(a)$','[au]'],
+        'm_log' : ['$\log_{10}(M_\mathrm{P})$','[$\mathrm{M}_\oplus]$'],
+        'r_log' : ['$\log_{10}(R_\mathrm{P})$','[$\mathrm{R}_\mathrm{Jup}]$']
+    }
+    try:
+        if units == True:
+            label = dictionary[string][0] + ' ' + dictionary[string][1]
+        else:
+            label = dictionary[string[0]]
+    except:
+        label = string
+    return label
 
 
 def sqrtOfMean(arr):
