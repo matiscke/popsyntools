@@ -94,7 +94,36 @@ def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
     return M0*332948.6*dgr
 
 
-def get_Msolid_at_Miso(a, rc, Miso=10, expo_pla=1.5, Mstar=1):
+def get_Sigma_pla_at_Miso(a, rc, Miso=10, expo_pla=1.5, Mstar=1., r0=5.2):
+    """ compute the planetesimal surface density for a given M_iso.
+
+    Parameters
+    ----------
+    a : float
+        orbital distance, free parameter
+    rc : float
+        characteristic radius [au]
+    Miso : float
+        planetesimal isolation mass in Mearth
+    expo_pla : float
+        Power law slope of the planetesimal disk
+    Mstar : float
+        stellar mass in Solar masses
+    r0 : float
+        reference radius [au], in general 5.2 au
+
+    Returns
+    -------
+    Sigma_pla : Quantity object
+        planetesimal surface density at r0 [g/cm^2]
+    """
+    # return (a*u.au)**-(3/2*(2-expo_pla))*(Miso*u.Mearth/0.16)**(-3/2)
+    Sigma_pla = 3**(1/3)/(20*np.pi)*(Mstar*u.Msun)**(1/3)*(Miso*u.Mearth)**(2/3)\
+        *(a*u.au)**(expo_pla-2)*(r0*u.au)**(-expo_pla)\
+        *(np.exp(-((a*u.au)/(rc*u.au))**(2-expo_pla)))**(-1)
+    return Sigma_pla.cgs
+
+def get_Msolid_at_Miso(a, rc, Miso=10., expo_pla=1.5, Mstar=1):
     """
     compute the solid disk mass needed to reach M_iso at a given orbit distance.
 
@@ -113,13 +142,23 @@ def get_Msolid_at_Miso(a, rc, Miso=10, expo_pla=1.5, Mstar=1):
 
     Returns
     -------
-    Msolid : float
+    Msolid : Quantity object
         total solid disk mass in Earth masses
 
     """
     Msolid = 3**(1/3)/10*(rc*u.au)**(2-expo_pla)/(2-expo_pla)*(Mstar*u.Msun)**(1/3)*(Miso*u.Mearth)**(2/3)\
              *(a*u.au)**(expo_pla-2)*(np.exp(-((a*u.au)/(rc*u.au))**(2-expo_pla)))**(-1)
     return Msolid.to(u.Mearth)
+
+
+def get_Msolid_for_fixed_Tgrow(a, rc, M_p=10., ):
+    """ Compute solid disk mass needed to reach specific planet mass within a growth timescale.
+
+    Prescription of growth timescale from Kokubo et al. 2000, Eqn 23. It is
+    valid under their model assumptions and for Jovian planets '(a >2.7 au)'.
+
+    """
+
 
 def get_sma(period_d, MstarRel=1.0):
     """ Compute semi-major axis from the orbital period and Mstar.
