@@ -61,6 +61,27 @@ def get_Sigma0(M0, rc, expo, r0=5.2):
     """
     return (r0*au)**(-expo)*(rc*au)**(-2+expo)*(2-expo)*M0*Msol/(2*np.pi)
 
+def get_Sigma_gas(r, Sigma0, rc, expo=0.9, R_in=0.06, r0=5.2):
+    """ Compute the gas surface density at radius r.
+
+    Parameters
+    ----------
+    r : float
+        orbit radius in au
+    Sigma0 : float
+        gas surface density at 5.2 au [g/cm^2]
+    rc : float
+        characteristic radius [au]
+    expo : float, optional
+        Power law slope (positive for decrease with orbit radius)
+    R_in : float, optional
+        inner disk radius [au]
+    r0: float, optional
+        reference radius [au], in general 5.2 au
+    """
+    return (Sigma0*(u.g/(u.cm)**2)*(r*u.au/(r0*u.au))**(-expo))\
+            *(np.exp(-(r/rc)**(2-expo)))*(1-np.sqrt(R_in/r))
+
 def get_Msolid(Sigma0, rc, expo, dgr, r0=5.2, condensationFactor=0.65):
     """ Compute solid disk mass in Earth masses using disk initial conditions.
 
