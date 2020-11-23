@@ -172,13 +172,60 @@ def get_Msolid_at_Miso(a, rc, Miso=10., expo_pla=1.5, Mstar=1):
     return Msolid.to(u.Mearth)
 
 
-def get_Msolid_for_fixed_Tgrow(a, rc, M_p=10., ):
+def get_Msolid_for_fixed_Tgrow(a, rc, Sigma0, M_p=10., Tgrow=10, r0=5.2,
+                               expo_gas=0.9, expo_pla=1.5, R_in=0.06,
+                               R_pla=300., rho_pla=1.,MstarRel=1.0):
     """ Compute solid disk mass needed to reach specific planet mass within a growth timescale.
 
-    Prescription of growth timescale from Kokubo et al. 2000, Eqn 23. It is
-    valid under their model assumptions and for Jovian planets '(a >2.7 au)'.
+    Prescription of growth timescale from Mordasini+2018, Handbook of Exoplanets,
+    Eqn (10).
+
+    Parameters
+    ----------
+    a : float or array
+        orbital distance in au
+    rc : float
+        disk cutoff radius [au]
+    Sigma0 : float
+        reference gas surface density in g/cm^2
+    M_p : float
+        planet mass [Mearth]
+    Tgrow : int
+        growth timescale in Myr
+    r0 : float
+        reference radius [au]
+    expo_gas : float
+        power law slope of gas disk
+    expo_pla : float
+        power law slope of planetesimal disk
+    R_in : float
+        inner disk radius [au]
+    R_pla : float
+        planetesimal radius in m
+    rho_pla : float
+        planetesimal density in g/cm^3
+    MstarRel : float
+        Mass of the stellar host in solar Masses
+
+    Returns
+    -------
+    Msolid : Quantity object
+        total solid disk mass in Earth masses
 
     """
+    # compute mass of a planetesimal of size R_pla, density rho_pla
+    M_pla = rho_pla*u.g/(u.cm**3)*4/3*np.pi*(R_pla*u.m)**3
+
+    Sigma_gas = get_Sigma_gas(a, Sigma0, rc, expo_gas, R_in, r0)
+
+    # compute planetesimal surface density for a fixed Tgrow (Mordasini18+ Eq 10):
+    Sigma_pla = 10*u.g/u.cm**2*1.2e5*u.yr/(Tgrow*1e6*u.yr)*np.sqrt(a)*np.cbrt(M_p)*(MstarRel)**(-1/6)\
+    *(((Sigma_gas)/(2400*u.g/u.cm**2))**(-1/5)*a**1/20*(M_pla/(1e18*u.g))**(1/15))**2
+    Sigma_pla = Sigma_pla.to(u.g/u.cm**2)
+
+    Msolid = 2*np.pi*Sigma_pla*(r0*u.au)**expo_pla*(rc*u.au)**(2-expo_pla)\
+        *1/(2-expo_pla)
+    return Msolid.to(u.Mearth)
 
 
 def get_sma(period_d, MstarRel=1.0):
