@@ -151,13 +151,35 @@ def get_Msolid_at_Miso(a, rc, Miso=10., expo_pla=1.5, Mstar=1):
     return Msolid.to(u.Mearth)
 
 
-def get_Msolid_for_fixed_Tgrow(a, rc, M_p=10., ):
+def get_Msolid_for_fixed_Tgrow(a, rc, M_p=10., Tgrow=10, r0=5.2, expo_pla=1.5):
     """ Compute solid disk mass needed to reach specific planet mass within a growth timescale.
 
     Prescription of growth timescale from Kokubo et al. 2000, Eqn 23. It is
     valid under their model assumptions and for Jovian planets '(a >2.7 au)'.
 
+    Parameters
+    ----------
+    Tgrow : int
+        growth timescale in Myr
+
+    Returns
+    -------
+    Msolid : Quantity object
+        total solid disk mass in Earth masses
+
     """
+    h_M = lambda M_p: (((M_p*u.Mearth).to(u.Msun))/(3*u.Msun))**(1/3)
+
+    # eccentricity estimate from Kokubo et al. 2000 for Jovians:
+    e = 11*((M_p*u.Mearth)/(1e24*u.g))**(1/18)*((a*u.au)/(5*u.au))**(7.24)*h_M(M_p)
+
+    # compute planetesimal surface density for a fixed Tgrow:
+    Sigma_pla = 4*u.g/(u.cm)**2*u.yr/(Tgrow*1e6*u.yr)*9e4*(e/h_M(M_p))**2\
+        *((M_p*u.Mearth)/(1e26*u.g))**(1/3)*((a*u.au)/(5*u.au))**(1/2)
+
+    Msolid = 2*np.pi*Sigma_pla*(r0*u.au)**expo_pla*(rc*u.au)**(2-expo_pla)\
+        *1/(2-expo_pla)
+    return Msolid.to(u.Mearth)
 
 
 def get_sma(period_d, MstarRel=1.0):
