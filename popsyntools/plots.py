@@ -1461,23 +1461,31 @@ def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
     return fig, axs, sc
 
 
-def plot_InitialsPairplot(data, variables, samplesize=np.inf):
+def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
+                          namedict=None):
     """ make a corner plot of disk features, color-coded by planet cluster affiliation.
 
     Parameters
     ----------
     data : pandas DataFrame
-        DataFrame containing the data. Has to contain a numerical column 'labels' for the color-coding.
+        DataFrame containing the data. Has to contain a numerical column 'labels'
+        or 'labelname' for the color-coding.
     variables : list
         list of strings with column names to consider for the plot
+    sample : bool
+        sample from data?
+    samplesize : int
+        size of the sample
 
     Returns
     -------
     pp : seaborn PairGrid
         object with the pairplot
     """
-
-    sample =  data.sample(min(samplesize,len(data)))
+    if sample:
+        sample = data.sample(min(samplesize,len(data)), random_state=42)
+    else:
+        sample=data
     sample = log_col(sample, variables)
 
     pp = sns.pairplot(sample, vars=[v + '_log' for v in variables], hue='labels',
@@ -1493,8 +1501,10 @@ def plot_InitialsPairplot(data, variables, samplesize=np.inf):
     pp.fig.set_size_inches(8,8)
 
     # fix legend
+    if namedict is None:
+        namedict = {1: 'Neptunes', 2: 'icy cores', 3: 'giant planets', 4: '(super-)Earths'}
     handles = pp._legend_data.values()
-    labels = pp._legend_data.keys()
+    labels = [str(i) + ': ' + namedict[int(key)] for i, key in enumerate(pp._legend_data.keys())]
     pp._legend.remove()
     lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper center', ncol=1, title='cluster')
 
