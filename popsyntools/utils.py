@@ -217,12 +217,14 @@ def get_Msolid_for_fixed_Tgrow(a, rc_gas, rc_solid, Sigma0, M_p=10., Tgrow=10, r
     """
     # compute mass of a planetesimal of size R_pla, density rho_pla
     M_pla = rho_pla*u.g/(u.cm**3)*4/3*np.pi*(R_pla*u.m)**3
+    M_pla = M_pla.to(u.kg)
+    print(M_pla)
 
     Sigma_gas = get_Sigma_gas(a, Sigma0, rc_gas, expo_gas, R_in, r0)
 
     # compute planetesimal surface density for a fixed Tgrow (Mordasini18+ Eq 10):
     Sigma_pla = 10*u.g/u.cm**2*1.2e5*u.yr/(Tgrow*1e6*u.yr)*np.sqrt(a)*np.cbrt(M_p)*(MstarRel)**(-1/6)\
-    *(((Sigma_gas)/(2400*u.g/u.cm**2))**(-1/5)*a**1/20*(M_pla/(1e18*u.g))**(1/15))**2
+    *(((Sigma_gas)/(2400*u.g/u.cm**2))**(-1/5)*a**(1/20)*(M_pla/(1e18*u.g))**(1/15))**2
     Sigma_pla = Sigma_pla.to(u.g/u.cm**2)
 
     Msolid = 2*np.pi*Sigma_pla*(r0*u.au)**expo_pla*(rc_solid*u.au)**(2-expo_pla)\
