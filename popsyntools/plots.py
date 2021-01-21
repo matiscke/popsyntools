@@ -1504,7 +1504,7 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
     if namedict is None:
         namedict = {1: 'Neptunes', 2: 'icy cores', 3: 'giant planets', 4: '(super-)Earths'}
     handles = pp._legend_data.values()
-    labels = [str(i) + ': ' + namedict[int(key)] for i, key in enumerate(pp._legend_data.keys())]
+    labels = [str(key) + ': ' + namedict[int(key)] for key in pp._legend_data.keys()]
     pp._legend.remove()
     lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper center', ncol=1, title='cluster')
 

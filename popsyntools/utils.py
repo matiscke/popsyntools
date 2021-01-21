@@ -734,3 +734,9 @@ def renameColumns2NG(pop):
                 129:'iplanetorig', 130:'nplanets', 131:'line'}
     pop.rename(columns=transCol, inplace=True)
     return pop
+
+def log_col(pop, variables):
+    """apply a log10 to columns and write result to new columns named <name>_log"""
+    for v in variables:
+        pop.loc[:,'{}_log'.format(v)] = np.log10(pop[v])
+    return pop
