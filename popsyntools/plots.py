@@ -5,6 +5,7 @@ Written by: Martin Schlecker
 schlecker@mpia.de
 """
 import astropy
+from astropy.stats import knuth_bin_width
 import warnings
 import numpy as np
 import pandas as pd
@@ -653,14 +654,14 @@ def plot_multiHistogram(dataFrame, columnNames, ax=None, labels=None, **kwargs):
 
             if not 'bins' in mplKwargs.keys():
                 # compute ideal bin width
-                mplKwargs['bins'] = astropy.stats.knuth_bin_width(dataFrame[name],
+                mplKwargs['bins'] = knuth_bin_width(dataFrame[name],
                                         return_bins=True)[1]
             ax.hist(dataFrame[name], **mplKwargs)
 
     elif isinstance(columnNames, str):
         if not 'bins' in mplKwargs.keys():
             # compute ideal bin width
-            mplKwargs['bins'] = astropy.stats.knuth_bin_width(dataFrame[columnNames],
+            mplKwargs['bins'] = knuth_bin_width(dataFrame[columnNames],
                                         return_bins=True)[1]
         # assume that dataFrame is multiindexed, iterate over outermost level
         for label, subpopulation in dataFrame.groupby(level=0):
