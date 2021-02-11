@@ -6,6 +6,7 @@ schlecker@mpia.de
 import numpy as np
 import pandas as pd
 from astropy import units as u
+import seaborn as sns
 
 # Define au, Msol, Gravitational Constant in cm, g, s
 au = 1.496e13
@@ -740,3 +741,18 @@ def log_col(pop, variables):
     for v in variables:
         pop.loc[:,'{}_log'.format(v)] = np.log10(pop[v])
     return pop
+
+def map_colors(color_labels):
+    """ maps discrete color labels to RGB values of the current color palette
+
+    Example
+    =======
+    cmap = map_colors(tt.labels.unique())
+    plt.scatter(tt.m, tt.r, c=tt.labels.map(cmap))
+    """
+    # List of RGB triplets
+    rgb_values = sns.color_palette()
+
+    # Map label to RGB
+    color_map = dict(zip(color_labels, rgb_values))
+    return color_map
