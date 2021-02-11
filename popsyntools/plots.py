@@ -1486,18 +1486,18 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
     if sample:
         sample = data.sample(min(samplesize,len(data)), random_state=42)
     else:
-        sample=data
+        sample = data
     sample = log_col(sample, variables)
+    cmap = utils.map_colors(np.unique(sample.labels))
 
-    pp = sns.pairplot(sample, vars=[v + '_log' for v in variables], hue='labels',
-                      palette=sns.color_palette(),
-                      plot_kws = {'alpha':.5,
-                      's':2,
-                      'linewidth':0}) # remove white marker edges)
-
-    # remove upper triangle
-    for i, j in zip(*np.triu_indices_from(pp.axes, 1)):
-        pp.axes[i, j].set_visible(False)
+    pp = sns.pairplot(
+        data=sample, vars=[v + '_log' for v in variables], hue='labels',
+        palette=cmap,
+        kind='scatter', diag_kind='kde',
+        #                   plot_kws = {'alpha':.5, 's':3, 'linewidth':0, 'rasterized':True},
+        plot_kws={'alpha': .99, 's': .5, 'linewidth': 0, 'rasterized': True},
+        diag_kws={'common_norm': False},  # If True, scale each conditional density by the number of observations
+        corner=True)
 
     pp.fig.set_size_inches(8,8)
 
@@ -1507,7 +1507,7 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
     handles = pp._legend_data.values()
     labels = [str(key) + ': ' + namedict[int(key)] for key in pp._legend_data.keys()]
     pp._legend.remove()
-    lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper center', ncol=1, title='cluster')
+    lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper right', bbox_to_anchor=(0.85, 0.85), ncol=1, title='cluster', frameon=False)
 
     #change the marker size manually for legend
     for i in range(len(lgnd.legendHandles)):
