@@ -1521,3 +1521,45 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
         ylabel = ax.yaxis.get_label_text()
         ax.yaxis.set_label_text(utils.get_plotlabels(ylabel))
     return pp
+
+
+def plot_evolution(pop, times,  X='a', Y='m', namedict=None,npRandom=42, fig=None, axs=None):
+    """plot the time evolution of a population, color-coded by cluster affiliation.
+
+    Parameters
+    ==========
+    pop : pandas DataFrame
+        multiindex DF with times (from ref_red files) as index. Must contain time t=5e9
+    times : list
+        list of times to plot
+    npRandom : int
+        seed for RNG
+
+    """
+    if axs == None:
+        fig, axs = plt.subplots(1, len(times), figsize=plotstyle.set_size('aaDouble', subplot=[1, 2], scale=1.5),
+                                sharey=True)
+
+    cmap = utils.map_colors(np.unique(pop.loc[5e9].labels))
+
+    for i, t in enumerate(times):
+        axs[i].scatter(pop.loc[t].sample(5000, random_state=npRandom)[X],
+                       pop.loc[t].sample(5000, random_state=npRandom)[Y], alpha=.9,
+                       c=[cmap[l] for l in pop.loc[5e9].sample(5000, random_state=npRandom).labels], s=.07)
+        axs[i].set_xlabel(utils.get_plotlabels(X))
+        axs[i].set_title('t = {:.1f} Myr'.format(t / 1e6), fontsize=9)
+    try:
+        axs[0].set_ylabel(utils.get_plotlabels(Y))
+    except KeyError:
+        pass
+
+    # create legend
+    if namedict is None:
+        namedict = {1: 'Neptunes', 2: 'icy cores', 3: 'giant planets', 4: '(super-)Earths'}
+    for c in np.sort(pop.labels.unique()):
+        plt.scatter([], [], label='{}: {}'.format(c, namedict[c]))
+    legend = fig.legend(loc='lower left', ncol=99, bbox_to_anchor=(.07, .97),
+                        frameon=False, columnspacing=1.6)
+
+    fig.subplots_adjust(left=0.075, right=.98, bottom=0.22, top=.90, wspace=0)
+    return fig, axs
