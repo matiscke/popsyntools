@@ -1463,7 +1463,7 @@ def plot_massRadiusPopulations(populations, labels, fig=None, axs=None,
 
 
 def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
-                          namedict=None):
+                          namedict=None, tight=True):
     """ make a corner plot of disk features, color-coded by planet cluster affiliation.
 
     Parameters
@@ -1477,6 +1477,10 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
         sample from data?
     samplesize : int
         size of the sample
+    namedict : dict
+        dictionary translating cluster numbers to names displayed in the legend
+    tight : boolean
+        switch to save space in the figure
 
     Returns
     -------
@@ -1494,12 +1498,9 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
         data=sample, vars=[v + '_log' for v in variables], hue='labels',
         palette=cmap,
         kind='scatter', diag_kind='kde',
-        #                   plot_kws = {'alpha':.5, 's':3, 'linewidth':0, 'rasterized':True},
-        plot_kws={'alpha': .99, 's': .5, 'linewidth': 0, 'rasterized': True},
+        plot_kws = {'alpha':.66, 's':.75, 'linewidth':0, 'rasterized':True},
         diag_kws={'common_norm': False},  # If True, scale each conditional density by the number of observations
         corner=True)
-
-    pp.fig.set_size_inches(8,8)
 
     # fix legend
     if namedict is None:
@@ -1507,7 +1508,8 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
     handles = pp._legend_data.values()
     labels = [str(key) + ': ' + namedict[int(key)] for key in pp._legend_data.keys()]
     pp._legend.remove()
-    lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper right', bbox_to_anchor=(0.85, 0.85), ncol=1, title='cluster', frameon=False)
+    lgnd = pp.fig.legend(handles=handles, labels=labels, loc='upper right', bbox_to_anchor=(0.85, 0.8), ncol=1,
+                         title='cluster', frameon=False)
 
     #change the marker size manually for legend
     for i in range(len(lgnd.legendHandles)):
@@ -1520,6 +1522,18 @@ def plot_InitialsPairplot(data, variables, sample=True, samplesize=np.inf,
     for ax in pp.axes[:,0]:
         ylabel = ax.yaxis.get_label_text()
         ax.yaxis.set_label_text(utils.get_plotlabels(ylabel))
+
+    if tight:
+        # save space: make diagonal axes less tall, adapt figure size, adapt margins
+        for i in range(len(variables)):
+            pp.diag_axes[i].set_box_aspect(1/3)
+            pp.diag_axes[i].set_anchor('S')
+        pp.fig.set_size_inches(10, 6)
+        for ax in pp.axes.flatten():
+            if ax is not None:
+                ax.set_xmargin(-0.04)
+                ax.set_ymargin(0.05)
+
     return pp
 
 
