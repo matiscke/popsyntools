@@ -198,10 +198,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
                 given in 'zRange'. The visual representation of your data might
                 be corrupted!""")
             colorNorm = colors.SymLogNorm(vmin=zRange[0], vmax=zRange[1],
-            linthresh=max(h.min(), threshold))
+            linthresh=max(h.min(), threshold), base=10)
         else:
             colorNorm = colors.SymLogNorm(vmin=h.min(), vmax=h.max(),
-            linthresh=max(h.min(), threshold))
+            linthresh=max(h.min(), threshold), base=10)
         cbar_kws = {'label' : cbarlabel, 'ticks' : [.01, .1, 1., 1e1, 1e2, 1e3]}
     else:
         colorNorm = zRange
