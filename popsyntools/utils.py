@@ -296,8 +296,13 @@ def get_orbitalPeriod(population, MstarRel=1.):
     # convert a from au to cm
     sma_cm = lambda sma_au : sma_au*au
 
-    # Remove entries with negative semi-major axis
-    pop_posSma = population[population['a'] > 0.].copy()
+    """The following step has caused issues (when single planets got lost because they were missing in the population 
+    returned by this method. Instead, we'll accept np.sqrt returning a nan (and throwing a RuntimeWarning) 
+    where its argument is negative.
+    """
+    # # Remove entries with negative semi-major axis
+    # pop_posSma = population[population['a'] > 0.].copy()
+    pop_posSma = population.copy()
 
     Mstar = MstarRel*Msol
     KeplerConst = 4*np.pi**2/(G*Mstar)
