@@ -174,7 +174,10 @@ def plot_occurrence(population, ax=None, xAxis='period', yAxis='r', nBins=0,
         h = nd.gaussian_filter(h,1)
 
     # obtain number of systems
-    if 'isystem' in survivedPlanets:
+    if 'isystem_oversampled' in survivedPlanets:
+        # some systems occur several times. Count all of them.
+        Nsystems = survivedPlanets.isystem_oversampled.nunique()
+    elif 'isystem' in survivedPlanets:
         Nsystems = survivedPlanets.isystem.nunique()
     else:
         print("""Column "isystem" missing - old ref_red file? Using column
