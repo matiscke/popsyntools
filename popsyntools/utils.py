@@ -551,6 +551,17 @@ def m_Jup2m_Earth(m):
     """ Transform a mass given in Jupiter masses into Earth masses."""
     return m/0.00314636
 
+def get_bulkdensity(M, R):
+    """compute the bulk density of a sphere with mass M, radius R"""
+    rho = 3 * M / (4 * np.pi * R ** 3)
+
+    if isinstance(M, u.quantity.Quantity):
+        # if variables given as astropy quantities with units, return as g/cm3
+        return rho.cgs
+    else:
+        # else, return as is
+        return rho
+
 def get_msini(m):
     """ transform a given true m into m*sin(i) with random isotropic inclination i.
 
