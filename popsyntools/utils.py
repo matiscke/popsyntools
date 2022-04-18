@@ -677,7 +677,8 @@ def columnLabels():
     'm' : '$M_\mathrm{P} \, [\mathrm{M_\oplus}]$',
     'a' : '$a \, [\mathrm{au}]$',
     'r' : '$R_\mathrm{P} \, [\mathrm{R_{Jup}}]$',
-    'r_rEarth' : '$R_\mathrm{P} \, [\mathrm{R_\oplus}]$'
+    'r_rEarth' : '$R_\mathrm{P} \, [\mathrm{R_\oplus}]$',
+    'period' : '$P\, [\mathrm{d}]$'
     }
     return colLabels
 
